@@ -1,0 +1,21 @@
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# Uploads (optional - uncomment if you don't want to commit uploads)
+# src/uploads/
+
+# Database
+*.db
+*.sqlite
+

@@ -6,6 +6,13 @@ const { jwtDecode } = require('jwt-decode');
 
 require('dotenv').config();
 
+// Helper function để gia hạn ApiKey (tránh code trùng lặp)
+const extendApiKeyExpiry = async (findApiKey) => {
+    findApiKey.expireAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await findApiKey.save();
+    return findApiKey;
+};
+
 const createApiKey = async (userId) => {
     const findApiKey = await modelApiKey.findOne({ userId });
     if (findApiKey) {
@@ -55,6 +62,9 @@ const verifyToken = async (token) => {
         if (!findApiKey) {
             throw new AuthFailureError('Vui lòng đăng nhập lại');
         }
+
+        // Gia hạn ApiKey mỗi khi verify token thành công
+        await extendApiKeyExpiry(findApiKey);
 
         return jwt.verify(token, findApiKey.publicKey, {
             algorithms: ['RS256'],

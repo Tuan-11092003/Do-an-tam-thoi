@@ -89,13 +89,20 @@ class UserController {
         if (!refreshToken) {
             throw new BadRequestError('Vui lòng đăng nhập lại');
         }
-        const { token } = await UserService.refreshToken(refreshToken);
+        const { token, refreshToken: newRefreshToken } = await UserService.refreshToken(refreshToken);
 
         res.cookie('token', token, {
             httpOnly: true, // Chặn truy cập từ JavaScript (bảo mật hơn)
             secure: true, // Chỉ gửi trên HTTPS (để đảm bảo an toàn)
             sameSite: 'Strict', // Chống tấn công CSRF
             maxAge: 15 * 60 * 1000, // 15 phút
+        });
+
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true, // Chặn truy cập từ JavaScript (bảo mật hơn)
+            secure: true, // Chỉ gửi trên HTTPS (để đảm bảo an toàn)
+            sameSite: 'Strict', // Chống tấn công CSRF
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
         });
 
         res.cookie('logged', 1, {

@@ -118,7 +118,7 @@ function LoginUser() {
                                 className="mb-4"
                             >
                                 <Input
-                                    placeholder="nguyenvana@gmail.com"
+                                    placeholder="anhtuan123@gmail.com"
                                     className="h-12 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                 />
                             </Form.Item>

@@ -393,6 +393,8 @@ Admin Routes (quản trị viên):
    - `CartRequest.jsx` - Cart API
    - v.v.
 
+**📄 Xem chi tiết:** `API_CONFIGURATION_CHI_TIET.md`
+
 ---
 
 ### BƯỚC 3.5: Hiểu Components Structure (30 phút)

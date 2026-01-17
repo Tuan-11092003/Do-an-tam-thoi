@@ -87,7 +87,8 @@ class UserService {
         const user = await modelUser.findOne({ _id: decoded.id });
 
         const token = await createToken({ id: user._id });
-        return { token };
+        const newRefreshToken = await createRefreshToken({ id: user._id });
+        return { token, refreshToken: newRefreshToken };
     }
 
     async getAllUser(search = '') {
