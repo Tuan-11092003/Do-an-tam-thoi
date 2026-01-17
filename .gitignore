@@ -36,9 +36,6 @@ build/
 .DS_Store
 Thumbs.db
 
-# Uploads (nếu không muốn commit)
-# server/src/uploads/
-
 # Database
 *.db
 *.sqlite
