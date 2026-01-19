@@ -2,20 +2,18 @@ import { ShoppingCart, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { requestCreateFavourite } from '../config/FavouriteRequest';
 import { toast } from 'react-toastify';
-import { requestAddToCart } from '../config/CartRequest';
 import { useStore } from '../hooks/useStore';
 import { useState } from 'react';
 
-function CardBody({ product }) {
+function CardBody({ product, onOpenModal }) {
     // Use totalStock from server instead of calculating on client
     const sumStock = product?.totalStock ?? (product?.variants?.reduce((acc, curr) => acc + curr.stock, 0) || 0);
     const hasDiscount = product?.discount > 0;
     // Use priceAfterDiscount from server instead of calculating on client
     const finalPrice = product?.priceAfterDiscount ?? product?.price;
     const [isHovered, setIsHovered] = useState(false);
-    const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-    const { fetchCart, dataUser } = useStore();
+    const { dataUser } = useStore();
 
     // Format currency function (same as FlashSale)
     const formatCurrency = (amount) => {
@@ -57,12 +55,7 @@ function CardBody({ product }) {
     const hoverImage = getHoverImage();
     const displayImage = isHovered && hoverImage ? hoverImage : defaultImage;
 
-    // Get first available color and size for quick add to cart
-    const firstColor = product?.colors?.[0];
-    // Tìm size đầu tiên còn hàng (stock > 0), nếu không có thì lấy size đầu tiên
-    const firstVariant = product?.variants?.find(variant => variant.stock > 0) || product?.variants?.[0];
-
-    const handleAddToCart = async (e) => {
+    const handleOpenModal = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -71,68 +64,17 @@ function CardBody({ product }) {
             return;
         }
 
-        if (!firstColor || !firstVariant) {
-            toast.error('Sản phẩm chưa có màu hoặc size');
-            return;
-        }
-
         if (sumStock === 0) {
             toast.error('Sản phẩm đã hết hàng');
             return;
         }
 
-        setIsAddingToCart(true);
-        try {
-            const response = await requestAddToCart({
-                productId: product._id,
-                quantity: 1,
-                size: firstVariant._id,
-                color: firstColor._id,
-            });
-            
-            // Lấy itemId từ response (ID của item trong giỏ hàng)
-            const addedItemId = response?.metadata?.addedItemId;
-            
-            // Nếu không có addedItemId từ response, thử lấy từ cart.products
-            let finalAddedItemId = addedItemId;
-            if (!finalAddedItemId && response?.metadata?.cart?.products) {
-                const products = response.metadata.cart.products;
-                const lastProduct = products[products.length - 1];
-                if (lastProduct && lastProduct._id) {
-                    finalAddedItemId = lastProduct._id.toString();
-                }
-            }
-            
-            fetchCart();
-            
-            // Lưu itemId vào localStorage để đẩy lên đầu danh sách trong giỏ hàng
-            if (finalAddedItemId) {
-                const itemIdStr = String(finalAddedItemId);
-                const recentlyAdded = JSON.parse(localStorage.getItem('recentlyAddedToCart') || '[]');
-                const recentlyAddedStr = recentlyAdded.map(id => String(id));
-                
-                if (!recentlyAddedStr.includes(itemIdStr)) {
-                    recentlyAdded.unshift(finalAddedItemId); // Thêm vào đầu mảng
-                } else {
-                    // Nếu đã có, di chuyển lên đầu
-                    const filtered = recentlyAdded.filter(id => String(id) !== itemIdStr);
-                    filtered.unshift(finalAddedItemId);
-                    recentlyAdded.length = 0;
-                    recentlyAdded.push(...filtered);
-                }
-                localStorage.setItem('recentlyAddedToCart', JSON.stringify(recentlyAdded));
-                
-                // Dispatch custom event với itemId để Cart page sắp xếp lại
-                window.dispatchEvent(new CustomEvent('productAddedToCart', { 
-                    detail: { itemId: finalAddedItemId, productId: product._id } 
-                }));
-            }
-            
-            toast.success('Đã thêm vào giỏ hàng');
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
-        } finally {
-            setIsAddingToCart(false);
+        // Tính giá sau giảm (nếu có discount)
+        const discountPrice = product?.priceAfterDiscount ?? product?.price;
+        
+        // Mở modal với product data
+        if (onOpenModal) {
+            onOpenModal(product, discountPrice);
         }
     };
 
@@ -171,23 +113,17 @@ function CardBody({ product }) {
                     </div>
                 )}
 
-                {/* Add to Cart Button */}
+                {/* Nút thêm vào giỏ */}
                 {sumStock > 0 && (
                     <div className="absolute bottom-2 right-2 z-10">
                         <button
-                            onClick={handleAddToCart}
-                            disabled={isAddingToCart}
-                            className="group/btn relative bg-sky-400 hover:bg-sky-500 text-white rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleOpenModal}
+                            className="group/btn relative bg-sky-400 hover:bg-sky-500 text-white rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5"
                         >
                             <ShoppingCart className="w-4 h-4" />
                             <span className="hidden group-hover/btn:inline-block text-xs font-medium whitespace-nowrap">
                                 Thêm vào giỏ
                             </span>
-                            {isAddingToCart && (
-                                <span className="absolute inset-0 flex items-center justify-center bg-sky-400 rounded-lg">
-                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                </span>
-                            )}
                         </button>
                     </div>
                 )}

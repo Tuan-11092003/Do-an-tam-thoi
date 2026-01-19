@@ -8,6 +8,7 @@ import { requestAddToCart, requestUpdateCartSelection, requestGetCart } from '..
 import { toast } from 'react-toastify';
 import { useStore } from '../hooks/useStore';
 import CardBody from '../components/CardBody';
+import ProductQuickAddModal from '../components/ProductQuickAddModal';
 import { requestCreateFavourite } from '../config/FavouriteRequest';
 
 function DetailProduct() {
@@ -25,6 +26,9 @@ function DetailProduct() {
     const [reviews, setReviews] = useState([]);
     const [productRelated, setProductRelated] = useState([]);
     const [activeTab, setActiveTab] = useState('description'); // 'description', 'policy', 'reviews'
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
 
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
 
@@ -166,6 +170,18 @@ function DetailProduct() {
         }).format(price);
     };
 
+    const handleOpenModal = (product, discountPrice) => {
+        setSelectedProduct(product);
+        setSelectedDiscountPrice(discountPrice);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+        setSelectedDiscountPrice(null);
+    };
+
     // Use priceAfterDiscount from server instead of calculating
 
     const formatDate = (dateString) => {
@@ -248,9 +264,46 @@ function DetailProduct() {
                 size: selectedSize,
                 color: selectedColor,
             };
-            await requestAddToCart(data);
+            const response = await requestAddToCart(data);
 
+            // Lấy itemId từ response (ID của item trong giỏ hàng)
+            const addedItemId = response?.metadata?.addedItemId;
+            
+            // Nếu không có addedItemId từ response, thử lấy từ cart.products
+            let finalAddedItemId = addedItemId;
+            if (!finalAddedItemId && response?.metadata?.cart?.products) {
+                const products = response.metadata.cart.products;
+                const lastProduct = products[products.length - 1];
+                if (lastProduct && lastProduct._id) {
+                    finalAddedItemId = lastProduct._id.toString();
+                }
+            }
+            
             fetchCart();
+            
+            // Lưu itemId vào localStorage để đẩy lên đầu danh sách trong giỏ hàng
+            if (finalAddedItemId) {
+                const itemIdStr = String(finalAddedItemId);
+                const recentlyAdded = JSON.parse(localStorage.getItem('recentlyAddedToCart') || '[]');
+                const recentlyAddedStr = recentlyAdded.map(id => String(id));
+                
+                if (!recentlyAddedStr.includes(itemIdStr)) {
+                    recentlyAdded.unshift(finalAddedItemId); // Thêm vào đầu mảng
+                } else {
+                    // Nếu đã có, di chuyển lên đầu
+                    const filtered = recentlyAdded.filter(id => String(id) !== itemIdStr);
+                    filtered.unshift(finalAddedItemId);
+                    recentlyAdded.length = 0;
+                    recentlyAdded.push(...filtered);
+                }
+                localStorage.setItem('recentlyAddedToCart', JSON.stringify(recentlyAdded));
+                
+                // Dispatch custom event với itemId để Cart page sắp xếp lại
+                window.dispatchEvent(new CustomEvent('productAddedToCart', { 
+                    detail: { itemId: finalAddedItemId, productId: product._id } 
+                }));
+            }
+            
             toast.success('Thêm vào giỏ hàng thành công');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
@@ -949,7 +1002,10 @@ function DetailProduct() {
                                     key={item._id}
                                     className="transform hover:scale-105 transition-all duration-300 hover:shadow-lg"
                                 >
-                                    <CardBody product={item} />
+                                    <CardBody 
+                                        product={item} 
+                                        onOpenModal={handleOpenModal}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -966,6 +1022,15 @@ function DetailProduct() {
             </main>
 
             <Footer />
+
+            {/* Modal thêm vào giỏ hàng cho sản phẩm liên quan */}
+            <ProductQuickAddModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                discountPrice={selectedDiscountPrice}
+                formatCurrency={formatPrice}
+            />
         </div>
     );
 }

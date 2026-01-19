@@ -204,7 +204,7 @@ class CartService {
         // Tính summary cho các sản phẩm đã chọn (isSelected: true)
         const selectedItems = items.filter(item => item.isSelected === true);
         const subtotal = selectedItems.reduce((sum, item) => sum + item.subtotal, 0);
-        
+
         // Tính coupon discount nếu có coupon
         let couponDiscount = 0;
         let finalTotal = subtotal;
@@ -220,7 +220,7 @@ class CartService {
             summary: {
                 subtotal,
                 couponDiscount,
-                finalTotal,
+                finalTotal
             }
         };
     }

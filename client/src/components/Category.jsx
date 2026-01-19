@@ -3,11 +3,15 @@ import CardBody from './CardBody';
 import { requestGetAllCategory } from '../config/CategoryRequest';
 import { requestGetProductByCategory } from '../config/ProductRequest';
 import { Package, Sparkles } from 'lucide-react';
+import ProductQuickAddModal from './ProductQuickAddModal';
 
 function Category() {
     const [categories, setCategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState();
     const [products, setProducts] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
 
     // 🟢 Lấy danh sách category 1 lần
     useEffect(() => {
@@ -32,6 +36,26 @@ function Category() {
         };
         fetchProducts();
     }, [activeCategory]);
+
+    // Format currency function
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(amount);
+    };
+
+    const handleOpenModal = (product, discountPrice) => {
+        setSelectedProduct(product);
+        setSelectedDiscountPrice(discountPrice);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+        setSelectedDiscountPrice(null);
+    };
 
     return (
         <div className="w-full bg-gradient-to-b from-gray-50 to-white py-12">
@@ -72,7 +96,11 @@ function Category() {
                 {/* Products Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                     {products.map((item) => (
-                        <CardBody key={item._id} product={item} />
+                        <CardBody 
+                            key={item._id} 
+                            product={item} 
+                            onOpenModal={handleOpenModal}
+                        />
                     ))}
                 </div>
 
@@ -84,6 +112,15 @@ function Category() {
                     </div>
                 )}
             </div>
+
+            {/* Modal thêm vào giỏ hàng */}
+            <ProductQuickAddModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                discountPrice={selectedDiscountPrice}
+                formatCurrency={formatCurrency}
+            />
         </div>
     );
 }

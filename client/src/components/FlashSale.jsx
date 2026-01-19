@@ -5,11 +5,11 @@ import { useEffect, useState, useMemo } from 'react';
 import { requestGetFlashSaleByDate } from '../config/flashSale';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Star } from 'lucide-react';
-import { requestAddToCart } from '../config/CartRequest';
 import { useStore } from '../hooks/useStore';
 import { toast } from 'react-toastify';
+import ProductQuickAddModal from './ProductQuickAddModal';
 
-// Helper function to get first image from color
+// Hàm helper để lấy ảnh đầu tiên từ color
 const getFirstImage = (color) => {
     if (!color?.images) return '';
     if (Array.isArray(color.images)) {
@@ -18,44 +18,39 @@ const getFirstImage = (color) => {
     return color.images;
 };
 
-// Helper function to get hover image
+// Hàm helper để lấy ảnh khi hover
 const getHoverImage = (product) => {
     const firstColor = product?.colors?.[0];
     const secondColor = product?.colors?.[1];
 
-    // If first color has multiple images, return second image
+    // Nếu color đầu có nhiều ảnh, trả về ảnh thứ 2
     if (firstColor?.images && Array.isArray(firstColor.images) && firstColor.images.length > 1) {
         return firstColor.images[1];
     }
 
-    // If there's a second color, return its first image
+    // Nếu có color thứ 2, trả về ảnh đầu tiên của color đó
     if (secondColor) {
         return getFirstImage(secondColor);
     }
 
-    // Fallback to first image
+    // Fallback về ảnh đầu tiên
     return getFirstImage(firstColor);
 };
 
-// Product Card Component with hover effect
-const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
+// Component Product Card với hiệu ứng hover
+const ProductCard = ({ sale, product, discountPrice, formatCurrency, onOpenModal }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [isAddingToCart, setIsAddingToCart] = useState(false);
-    const { fetchCart, dataUser } = useStore();
+    const { dataUser } = useStore();
     const defaultImage = useMemo(() => getFirstImage(product?.colors?.[0]), [product?.colors]);
     const hoverImage = useMemo(() => getHoverImage(product), [product]);
     
-    // Only change image if hoverImage exists and is different from defaultImage
+    // Chỉ đổi ảnh nếu hoverImage tồn tại và khác với defaultImage
     const shouldChangeImage = hoverImage && hoverImage !== defaultImage;
     const displayImage = isHovered && shouldChangeImage ? hoverImage : defaultImage;
 
-    // Get first available color and size for quick add to cart
-    const firstColor = product?.colors?.[0];
-    // Tìm size đầu tiên còn hàng (stock > 0), nếu không có thì lấy size đầu tiên
-    const firstVariant = product?.variants?.find(variant => variant.stock > 0) || product?.variants?.[0];
     const sumStock = product?.totalStock ?? (product?.variants?.reduce((acc, curr) => acc + curr.stock, 0) || 0);
 
-    const handleAddToCart = async (e) => {
+    const handleOpenModal = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -64,69 +59,13 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
             return;
         }
 
-        if (!firstColor || !firstVariant) {
-            toast.error('Sản phẩm chưa có màu hoặc size');
-            return;
-        }
-
         if (sumStock === 0) {
             toast.error('Sản phẩm đã hết hàng');
             return;
         }
 
-        setIsAddingToCart(true);
-        try {
-            const response = await requestAddToCart({
-                productId: product._id,
-                quantity: 1,
-                size: firstVariant._id,
-                color: firstColor._id,
-            });
-            
-            // Lấy itemId từ response (ID của item trong giỏ hàng)
-            const addedItemId = response?.metadata?.addedItemId;
-            
-            // Nếu không có addedItemId từ response, thử lấy từ cart.products
-            let finalAddedItemId = addedItemId;
-            if (!finalAddedItemId && response?.metadata?.cart?.products) {
-                const products = response.metadata.cart.products;
-                const lastProduct = products[products.length - 1];
-                if (lastProduct && lastProduct._id) {
-                    finalAddedItemId = lastProduct._id.toString();
-                }
-            }
-            
-            fetchCart();
-            
-            // Lưu itemId vào localStorage để đẩy lên đầu danh sách trong giỏ hàng
-            if (finalAddedItemId) {
-                const itemIdStr = String(finalAddedItemId);
-                const recentlyAdded = JSON.parse(localStorage.getItem('recentlyAddedToCart') || '[]');
-                const recentlyAddedStr = recentlyAdded.map(id => String(id));
-                
-                if (!recentlyAddedStr.includes(itemIdStr)) {
-                    recentlyAdded.unshift(finalAddedItemId); // Thêm vào đầu mảng
-                } else {
-                    // Nếu đã có, di chuyển lên đầu
-                    const filtered = recentlyAdded.filter(id => String(id) !== itemIdStr);
-                    filtered.unshift(finalAddedItemId);
-                    recentlyAdded.length = 0;
-                    recentlyAdded.push(...filtered);
-                }
-                localStorage.setItem('recentlyAddedToCart', JSON.stringify(recentlyAdded));
-                
-                // Dispatch custom event với itemId để Cart page sắp xếp lại
-                window.dispatchEvent(new CustomEvent('productAddedToCart', { 
-                    detail: { itemId: finalAddedItemId, productId: product._id } 
-                }));
-            }
-            
-            toast.success('Đã thêm vào giỏ hàng');
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
-        } finally {
-            setIsAddingToCart(false);
-        }
+        // Mở modal với product data
+        onOpenModal(product);
     };
 
     return (
@@ -137,7 +76,7 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {/* Product Image */}
+                {/* Ảnh sản phẩm */}
                 <div className="relative overflow-hidden">
                     <img
                         src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${displayImage}`}
@@ -146,55 +85,49 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
                             isHovered ? 'scale-110' : 'scale-100'
                         }`}
                         onError={(e) => {
-                            e.target.src =
-                                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U=';
+                            // Sử dụng SVG placeholder đơn giản thay vì base64 dài
+                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="160"%3E%3Crect width="160" height="160" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
                         }}
                     />
 
-                    {/* Discount Badge */}
+                    {/* Badge giảm giá */}
                     <div className="absolute top-1.5 left-1.5 z-10">
                         <div className="bg-yellow-400 text-red-800 px-1.5 py-0.5 rounded-full text-xs font-bold flex items-center">
                             <span className="mr-0.5">🔥</span>-{sale.discount}%
                         </div>
                     </div>
 
-                    {/* Flash Sale Badge */}
+                    {/* Badge Flash Sale */}
                     <div className="absolute top-1.5 right-1.5 z-10">
                         <div className="bg-red-600 text-white px-1.5 py-0.5 rounded text-xs font-bold">
                             FLASH SALE
                         </div>
                     </div>
 
-                    {/* Add to Cart Button */}
+                    {/* Nút thêm vào giỏ */}
                     {sumStock > 0 && (
                         <div className="absolute bottom-2 right-2 z-10">
                             <button
-                                onClick={handleAddToCart}
-                                disabled={isAddingToCart}
-                                className="group/btn relative bg-sky-400 hover:bg-sky-500 text-white rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={handleOpenModal}
+                                className="group/btn relative bg-sky-400 hover:bg-sky-500 text-white rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5"
                             >
                                 <ShoppingCart className="w-4 h-4" />
                                 <span className="hidden group-hover/btn:inline-block text-xs font-medium whitespace-nowrap">
                                     Thêm vào giỏ
                                 </span>
-                                {isAddingToCart && (
-                                    <span className="absolute inset-0 flex items-center justify-center bg-sky-400 rounded-lg">
-                                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    </span>
-                                )}
                             </button>
                         </div>
                     )}
                 </div>
 
-                {/* Product Info */}
+                {/* Thông tin sản phẩm */}
                 <div className="p-3 text-gray-800">
-                    {/* Product Name */}
+                    {/* Tên sản phẩm */}
                     <h3 className="font-semibold text-sm mb-1.5 line-clamp-2 min-h-[2.5rem]">
                         {product?.name || 'N/A'}
                     </h3>
 
-                    {/* Colors Available */}
+                    {/* Màu sắc có sẵn */}
                     {product?.colors && product.colors.length > 0 && (
                         <div className="flex items-center mb-1.5">
                             <span className="text-sm text-gray-500 mr-1.5">Màu:</span>
@@ -211,7 +144,7 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
                         </div>
                     )}
 
-                    {/* Price */}
+                    {/* Giá */}
                     {product?.price && (
                         <div className="mb-2">
                             <div className="flex items-center space-x-2">
@@ -228,9 +161,9 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
                         </div>
                     )}
 
-                    {/* Rating and Sold Status */}
+                    {/* Đánh giá và số lượng đã bán */}
                     <div className="flex items-center justify-between mt-2">
-                        {/* Rating - Left aligned */}
+                        {/* Đánh giá - Căn trái */}
                         <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md">
                             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                             <span className="text-sm font-semibold text-gray-800">
@@ -238,7 +171,7 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency }) => {
                             </span>
                         </div>
 
-                        {/* Sold Count - Right aligned */}
+                        {/* Số lượng đã bán - Căn phải */}
                         <span className="text-sm text-gray-600">
                             Đã bán {product?.totalSold || 0}
                         </span>
@@ -253,6 +186,9 @@ function FlashSale() {
     const [flashSale, setFlashSale] = useState([]);
     const [currentEndDate, setCurrentEndDate] = useState(null);
     const [timeLeft, setTimeLeft] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
 
     useEffect(() => {
         const fetchFlashSale = async () => {
@@ -348,8 +284,20 @@ function FlashSale() {
         }).format(amount);
     };
 
-    // Use priceAfterDiscount from server instead of calculating
-    // This function is kept for backward compatibility but should use product.priceAfterDiscount
+    const handleOpenModal = (product, discountPrice) => {
+        setSelectedProduct(product);
+        setSelectedDiscountPrice(discountPrice);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+        setSelectedDiscountPrice(null);
+    };
+
+    // Sử dụng priceAfterDiscount từ server thay vì tính toán
+    // Hàm này được giữ lại để tương thích ngược nhưng nên sử dụng product.priceAfterDiscount
 
     const sliderSettings = {
         dots: false,
@@ -388,14 +336,14 @@ function FlashSale() {
     return (
         <div className="bg-[#ed1d24] text-white py-6">
             <div className="w-[90%] mx-auto">
-                {/* Header */}
+                {/* Phần header */}
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                     <div className="flex items-center space-x-2">
                         <div className="text-yellow-300 text-xl">⚡</div>
                         <h2 className="text-lg md:text-xl font-bold">SẢN PHẨM SIÊU KHUYẾN MÃI</h2>
                     </div>
                     
-                    {/* Countdown Timer */}
+                    {/* Bộ đếm ngược */}
                     {timeLeft && (
                         <div className="flex items-center space-x-1.5 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
                             {timeLeft.days > 0 && (
@@ -416,7 +364,7 @@ function FlashSale() {
                     )}
                 </div>
 
-                {/* Products Slider */}
+                {/* Slider sản phẩm */}
                 <div className="mb-4">
                     <Slider {...sliderSettings}>
                         {flashSale
@@ -425,7 +373,7 @@ function FlashSale() {
                             .map((sale) => {
                                 const product = sale.productId;
                                 if (!product) return null; // Bảo vệ thêm
-                                // Use priceAfterDiscount from server, fallback to calculation if not available
+                                // Sử dụng priceAfterDiscount từ server, fallback về tính toán nếu không có
                                 const discountPrice = product.priceAfterDiscount ?? (product.price * (1 - (sale.discount || 0) / 100));
 
                                 return (
@@ -435,12 +383,22 @@ function FlashSale() {
                                         product={product}
                                         discountPrice={discountPrice}
                                         formatCurrency={formatCurrency}
+                                        onOpenModal={(product) => handleOpenModal(product, discountPrice)}
                                     />
                                 );
                         })}
                     </Slider>
                 </div>
             </div>
+
+            {/* Modal thêm vào giỏ hàng */}
+            <ProductQuickAddModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                discountPrice={selectedDiscountPrice}
+                formatCurrency={formatCurrency}
+            />
 
             <style>{`
                 .bg-red-700 .slick-dots {

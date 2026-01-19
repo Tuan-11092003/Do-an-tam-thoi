@@ -25,7 +25,7 @@ function Header() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
-    // Check if current path is active
+    // Kiểm tra đường dẫn hiện tại có đang active không
     const isActive = (path) => {
         if (path === '/') {
             return location.pathname === '/';
@@ -69,7 +69,7 @@ function Header() {
         fetchSearchProduct();
     }, [debounce]);
 
-    // Close search results when clicking outside
+    // Đóng kết quả tìm kiếm khi click bên ngoài
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container')) {
@@ -83,7 +83,7 @@ function Header() {
         };
     }, []);
 
-    // Handle scroll to show/hide header
+    // Xử lý scroll để hiện/ẩn header
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
@@ -126,8 +126,6 @@ function Header() {
             currency: 'VND',
         }).format(price);
     };
-
-    // Use priceAfterDiscount from server instead of calculating
 
     const handleSearchInputChange = (e) => {
         setQuery(e.target.value);
@@ -230,7 +228,7 @@ function Header() {
 
                 {/* Right Section - Container cho search và navigation */}
                 <div className="flex-1 flex items-center justify-end max-w-[calc(100%-200px)] pr-4 sm:pr-6 lg:pr-8">
-                    {/* Search Bar Section */}
+                    {/* Phần thanh tìm kiếm */}
                     <div className="flex-1 max-w-lg mx-8">
                         <div className="relative search-container">
                             <div className="flex items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
@@ -247,7 +245,7 @@ function Header() {
                                 </button>
                             </div>
 
-                            {/* Search Results Dropdown */}
+                            {/* Dropdown kết quả tìm kiếm */}
                             {showResults && (
                                 <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto mt-1">
                                     {isSearching ? (

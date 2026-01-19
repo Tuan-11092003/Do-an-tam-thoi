@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams, Link } from 'react-router-do
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import CardBody from '../components/CardBody';
+import ProductQuickAddModal from '../components/ProductQuickAddModal';
 import { requestFilterProduct } from '../config/ProductRequest';
 import { requestGetAllCategory } from '../config/CategoryRequest';
 import { Filter, Grid, List, SlidersHorizontal, ChevronDown, X, Package, Loader2, Star, Heart, Home, ChevronRight } from 'lucide-react';
@@ -18,6 +19,9 @@ function Category() {
     const [loading, setLoading] = useState(true);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -159,6 +163,18 @@ function Category() {
             currency: 'VND',
             minimumFractionDigits: 0,
         }).format(price);
+    };
+
+    const handleOpenModal = (product, discountPrice) => {
+        setSelectedProduct(product);
+        setSelectedDiscountPrice(discountPrice);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedProduct(null);
+        setSelectedDiscountPrice(null);
     };
 
     const getActiveFiltersCount = () => {
@@ -447,7 +463,10 @@ function Category() {
                                 >
                                     {products.map((product) => (
                                         <div key={product._id} className="group">
-                                            <CardBody product={product} />
+                                            <CardBody 
+                                                product={product} 
+                                                onOpenModal={handleOpenModal}
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -687,6 +706,15 @@ function Category() {
                     </div>
                 </div>
             )}
+
+            {/* Modal thêm vào giỏ hàng */}
+            <ProductQuickAddModal
+                product={selectedProduct}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                discountPrice={selectedDiscountPrice}
+                formatCurrency={formatPrice}
+            />
 
             <Footer />
         </div>
