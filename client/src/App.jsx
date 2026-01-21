@@ -1,13 +1,13 @@
 import './App.css';
-import Banner from './components/Banner';
-import Category from './components/Category';
-import Chatbot from './components/ChatBot';
-import Counpon from './components/Counpon';
-import FlashSale from './components/FlashSale';
-import Footer from './components/Footer';
-import Header from './components/Header';
+import Banner from './components/banner/Banner';
+import CategoryList from './components/category/CategoryList';
+import Chatbot from './components/chat/ChatBot';
+import Coupon from './components/coupon/Coupon';
+import FlashSale from './components/flashsale/FlashSale';
+import Footer from './components/layout/Footer';
+import Header from './components/layout/Header';
 import ModalChat from './components/chat/ModalChat';
-import NewsHome from './components/NewsHome';
+import NewsHome from './components/news/NewsHome';
 
 function App() {
     return (
@@ -18,9 +18,9 @@ function App() {
 
             <main className="pt-16">
                 <Banner />
-                <Counpon />
+                <Coupon />
                 <FlashSale />
-                <Category />
+                <CategoryList />
                 <NewsHome />
                 <ModalChat />
                 <Chatbot />

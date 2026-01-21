@@ -4,14 +4,14 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant
 import { v4 as uuidv4 } from 'uuid';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { requestGetAllCategory } from '../../../config/CategoryRequest';
+import { requestGetAllCategory } from '../../../services/category/categoryService';
 import {
     requestCreateProduct,
     requestDeleteProduct,
     requestGetAllProduct,
     requestUpdateProduct,
     requestUploadImage,
-} from '../../../config/ProductRequest';
+} from '../../../services/product/productService';
 import { toast } from 'react-toastify';
 
 function ProductManager() {

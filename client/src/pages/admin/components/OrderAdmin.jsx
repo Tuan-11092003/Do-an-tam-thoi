@@ -35,7 +35,8 @@ import {
     Wallet,
 } from 'lucide-react';
 import dayjs from 'dayjs';
-import { requestGetAllOrder, requestUpdateOrderStatus } from '../../../config/PaymentsRequest';
+import { requestGetAllOrder, requestUpdateOrderStatus } from '../../../services/payment/paymentService';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const { Title, Text } = Typography;
 const { Search: AntSearch } = Input;
@@ -200,13 +201,6 @@ function OrderAdmin() {
             console.error('Error updating order status:', error);
             message.error('Lỗi khi cập nhật trạng thái đơn hàng');
         }
-    };
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(price);
     };
 
     const getPaymentMethodBadge = (paymentMethod) => {
@@ -421,7 +415,7 @@ function OrderAdmin() {
         },
     ];
 
-    // Calculate status counts
+    // Tính số lượng theo trạng thái
     const getStatusCount = () => {
         const counts = orders.reduce((acc, order) => {
             acc[order.status] = (acc[order.status] || 0) + 1;
@@ -432,7 +426,7 @@ function OrderAdmin() {
 
     const statusCounts = getStatusCount();
 
-    // Tab items with counts
+    // Các tab với số lượng đơn hàng
     const tabItems = [
         {
             key: 'all',

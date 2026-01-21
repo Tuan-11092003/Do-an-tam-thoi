@@ -18,7 +18,8 @@ const SendMailForgotPassword = require('../utils/sendMailForgotPassword');
 class UserService {
     async createUser(data) {
         const { fullName, email, password, phone } = data;
-        const findUser = await modelUser.findOne({ email });
+        // Kiểm tra email đã tồn tại với typeLogin = 'email' (không cho phép trùng email + typeLogin)
+        const findUser = await modelUser.findOne({ email, typeLogin: 'email' });
         if (findUser) {
             throw new ConflictRequestError('Email đã tồn tại');
         }
@@ -56,12 +57,10 @@ class UserService {
 
     async login(data) {
         const { email, password } = data;
-        const user = await modelUser.findOne({ email });
+        // Chỉ tìm user có typeLogin = 'email'
+        const user = await modelUser.findOne({ email, typeLogin: 'email' });
         if (!user) {
             throw new BadRequestError('Tài khoản hoặc mật khẩu không chính xác');
-        }
-        if (user.typeLogin === 'google') {
-            throw new BadRequestError('Tài khoản đăng nhập bằng google');
         }
 
         const checkPassword = bcrypt.compareSync(password, user.password);
@@ -180,7 +179,8 @@ class UserService {
 
     async loginGoogle(credential) {
         const dataToken = jwtDecode(credential);
-        const user = await modelUser.findOne({ email: dataToken.email });
+        // Chỉ tìm user có typeLogin = 'google' (tách riêng với email/password login)
+        const user = await modelUser.findOne({ email: dataToken.email, typeLogin: 'google' });
 
         if (user) {
             await createApiKey(user._id);
@@ -188,10 +188,12 @@ class UserService {
             const refreshToken = await createRefreshToken({ id: user._id });
             return { token, refreshToken };
         } else {
+            // Tạo tài khoản Google mới (có thể cùng email với tài khoản email/password)
             const newUser = await modelUser.create({
                 email: dataToken.email,
                 typeLogin: 'google',
                 fullName: dataToken.name,
+                password: '', // Google login không cần password
             });
             await createApiKey(newUser._id);
             const token = await createToken({ id: newUser._id });
@@ -201,9 +203,10 @@ class UserService {
     }
 
     async forgotPassword(email) {
-        const user = await modelUser.findOne({ email });
+        // Chỉ cho phép reset password cho tài khoản email/password
+        const user = await modelUser.findOne({ email, typeLogin: 'email' });
         if (!user) {
-            throw new BadRequestError('Tài khoản không tồn tại');
+            throw new BadRequestError('Tài khoản không tồn tại hoặc đăng nhập bằng Google');
         }
 
         const token = jwt.sign({ id: user._id }, process.env.SECRET_CRYPTO, { expiresIn: '5m' });

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { requestGetWarrantyByAdmin, requestUpdateWarrantyStatus } from '../../../config/WarrantyRequest';
+import { requestGetWarrantyByAdmin, requestUpdateWarrantyStatus } from '../../../services/warranty/warrantyService';
 import {
     Card,
     Table,
@@ -34,6 +34,7 @@ import {
     X,
     RefreshCw,
 } from 'lucide-react';
+import { formatDateTime as formatDate } from '../../../utils/formatDate';
 
 const { Option } = Select;
 
@@ -56,7 +57,7 @@ function WarrantyAdmin() {
             let warrantyList = res.metadata || [];
             setWarranty(warrantyList);
             
-            // Filter warranty based on selected status
+            // Lọc bảo hành theo trạng thái đã chọn
             let filteredList = statusFilter === 'all' 
                 ? warrantyList 
                 : warrantyList.filter((item) => item.status === statusFilter);
@@ -181,16 +182,6 @@ function WarrantyAdmin() {
         }
     };
 
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
-
     const openDetailModal = (warrantyItem) => {
         setSelectedWarranty(warrantyItem);
         setDetailModalVisible(true);
@@ -310,7 +301,7 @@ function WarrantyAdmin() {
 
     const statusCounts = getStatusCount();
 
-    // Tab items with counts
+    // Các tab với số lượng bảo hành
     const tabItems = [
         {
             key: 'all',

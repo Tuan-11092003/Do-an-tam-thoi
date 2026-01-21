@@ -8,7 +8,7 @@ import {
     requestGetAllConversation,
     requestGetMessageByConversationIdAdmin,
     requestUpdateMessageIsRead,
-} from '../../../config/MessageRequest';
+} from '../../../services/message/messageService';
 import { useStore } from '../../../hooks/useStore';
 
 const { TextArea } = Input;

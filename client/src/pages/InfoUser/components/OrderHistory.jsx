@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { requestGetOrderHistory, requestCancelOrder } from '../../../config/PaymentsRequest';
+import { requestGetOrderHistory, requestCancelOrder } from '../../../services/payment/paymentService';
 import {
     Card,
     Table,
@@ -38,7 +38,8 @@ import {
     ChevronRight,
     ArrowRight,
 } from 'lucide-react';
-import { requestCreatePreviewProduct } from '../../../config/PreviewProduct';
+import { requestCreatePreviewProduct } from '../../../services/previewProduct/previewProductService';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
@@ -119,13 +120,7 @@ function OrderHistory() {
         }
     };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(amount);
-    };
-
+    // Định dạng ngày giờ theo format đặc biệt của trang lịch sử đơn hàng
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const hours = date.getHours().toString().padStart(2, '0');
@@ -289,13 +284,13 @@ function OrderHistory() {
                 <div className="text-right">
                     {record.discount > 0 ? (
                         <>
-                            <div className="text-sm text-gray-400 line-through">{formatCurrency(price)}</div>
+                            <div className="text-sm text-gray-400 line-through">{formatPrice(price)}</div>
                             <div className="font-semibold text-red-500">
-                                {formatCurrency(record.priceAfterDiscount)}
+                                {formatPrice(record.priceAfterDiscount)}
                             </div>
                         </>
                     ) : (
-                        <div className="font-semibold">{formatCurrency(price)}</div>
+                        <div className="font-semibold">{formatPrice(price)}</div>
                     )}
                 </div>
             ),
@@ -313,7 +308,7 @@ function OrderHistory() {
             dataIndex: 'subtotal',
             key: 'subtotal',
             render: (subtotal) => (
-                <div className="text-right font-semibold text-blue-600">{formatCurrency(subtotal)}</div>
+                <div className="text-right font-semibold text-blue-600">{formatPrice(subtotal)}</div>
             ),
             width: 120,
         },
@@ -471,11 +466,11 @@ function OrderHistory() {
                                 {/* Price */}
                                 <div className="text-right min-w-[120px]">
                                     <div className="font-bold text-lg text-blue-600">
-                                        {formatCurrency(order.finalPrice)}
+                                        {formatPrice(order.finalPrice)}
                                     </div>
                                     {order.totalPrice !== order.finalPrice && (
                                         <div className="text-sm text-gray-400 line-through">
-                                            {formatCurrency(order.totalPrice)}
+                                            {formatPrice(order.totalPrice)}
                                         </div>
                                     )}
                                 </div>
@@ -549,7 +544,7 @@ function OrderHistory() {
                                             </Tag>
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Tổng tiền hàng">
-                                            {formatCurrency(order.totalPrice)}
+                                            {formatPrice(order.totalPrice)}
                                         </Descriptions.Item>
                                         {order.coupon && (
                                             <Descriptions.Item
@@ -563,7 +558,7 @@ function OrderHistory() {
                                                 <div>
                                                     <Tag color="red">{order.coupon.code}</Tag>
                                                     <span className="text-red-500">
-                                                        -{formatCurrency(order.coupon.discountAmount)} (
+                                                        -{formatPrice(order.coupon.discountAmount)} (
                                                         {order.coupon.discount}%)
                                                     </span>
                                                 </div>
@@ -571,7 +566,7 @@ function OrderHistory() {
                                         )}
                                         <Descriptions.Item label="Thành tiền">
                                             <span className="text-lg font-bold text-blue-600">
-                                                {formatCurrency(order.finalPrice)}
+                                                {formatPrice(order.finalPrice)}
                                             </span>
                                         </Descriptions.Item>
                                     </Descriptions>
@@ -642,7 +637,7 @@ function OrderHistory() {
                                     Màu: {selectedProduct.color} | Size: {selectedProduct.size}
                                 </div>
                                 <div className="font-medium text-blue-600 mt-1">
-                                    {formatCurrency(selectedProduct.priceAfterDiscount || selectedProduct.price)}
+                                    {formatPrice(selectedProduct.priceAfterDiscount || selectedProduct.price)}
                                 </div>
                             </div>
                         </div>

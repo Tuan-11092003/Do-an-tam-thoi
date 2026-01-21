@@ -1,21 +1,21 @@
 import App from '../App';
 import Admin from '../pages/admin';
-import Cart from '../pages/Cart';
-import Checkout from '../pages/Checkout';
-import DetailProduct from '../pages/DetailProduct';
+import CartPage from '../pages/cart/CartPage';
+import CheckoutPage from '../pages/cart/CheckoutPage';
+import ProductDetailPage from '../pages/product/ProductDetailPage';
 import InfoUser from '../pages/InfoUser';
-import LoginUser from '../pages/LoginUser';
-import PaymentSucces from '../pages/PaymentSucces';
-import Register from '../pages/Register';
-import ForgotPassword from '../pages/ForgotPassword';
-import Category from '../pages/Category';
-import DetailNewsPage from '../pages/DetailNewsPage';
+import LoginPage from '../pages/auth/LoginPage';
+import PaymentSuccessPage from '../pages/payment/PaymentSuccessPage';
+import RegisterPage from '../pages/auth/RegisterPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import ProductListPage from '../pages/product/ProductListPage';
+import DetailNewsPage from '../pages/news/DetailNewsPage';
 
 // Admin components
-import Dashbroad from '../pages/admin/components/Dashbroad';
+import Dashboard from '../pages/admin/components/Dashboard';
 import CategoryAdmin from '../pages/admin/components/CategoryAdmin';
 import ProductAdmin from '../pages/admin/components/ProductAdmin';
-import CouponManagement from '../pages/admin/components/CounponManager';
+import CouponManagement from '../pages/admin/components/CouponManager';
 import OrderAdmin from '../pages/admin/components/OrderAdmin';
 import WarrantyAdmin from '../pages/admin/components/WarrantyAdmin';
 import MessageManager from '../pages/admin/components/MessageManager';
@@ -27,7 +27,7 @@ import AdminRedirect from '../pages/admin/components/AdminRedirect';
 export const routes = [
     {
         path: '/login',
-        component: <LoginUser />,
+        component: <LoginPage />,
     },
     {
         path: '/',
@@ -35,7 +35,7 @@ export const routes = [
     },
     {
         path: '/register',
-        component: <Register />,
+        component: <RegisterPage />,
     },
     {
         path: '/admin',
@@ -47,7 +47,7 @@ export const routes = [
             },
             {
                 path: 'dashboard',
-                component: <Dashbroad />,
+                component: <Dashboard />,
             },
             {
                 path: 'category',
@@ -89,19 +89,19 @@ export const routes = [
     },
     {
         path: '/product/:id',
-        component: <DetailProduct />,
+        component: <ProductDetailPage />,
     },
     {
         path: '/cart',
-        component: <Cart />,
+        component: <CartPage />,
     },
     {
         path: '/checkout',
-        component: <Checkout />,
+        component: <CheckoutPage />,
     },
     {
         path: '/payment/success/:id',
-        component: <PaymentSucces />,
+        component: <PaymentSuccessPage />,
     },
     {
         path: '/profile',
@@ -117,7 +117,7 @@ export const routes = [
     },
     {
         path: '/forgot-password',
-        component: <ForgotPassword />,
+        component: <ForgotPasswordPage />,
     },
     {
         path: '/favourite',
@@ -125,7 +125,7 @@ export const routes = [
     },
     {
         path: '/category',
-        component: <Category />,
+        component: <ProductListPage />,
     },
     {
         path: '/news/:id',

@@ -10,7 +10,7 @@ import {
     requestGetAllNews,
     requestDeleteNews,
     requestUpdateNews,
-} from '../../../config/NewsRequest';
+} from '../../../services/news/newsService';
 
 const { TabPane } = Tabs;
 const { Option } = Select;

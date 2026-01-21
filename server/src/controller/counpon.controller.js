@@ -33,7 +33,9 @@ class CouponController {
     }
 
     async findActive(req, res) {
-        const coupons = await couponService.findActive();
+        // Lấy userId từ req.user nếu user đã đăng nhập (optional)
+        const userId = req.user?.id || null;
+        const coupons = await couponService.findActive(userId);
         new OK({
             message: 'Lấy danh sách mã giảm giá đang hoạt động thành công',
             metadata: coupons,

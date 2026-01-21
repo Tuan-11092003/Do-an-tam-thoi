@@ -14,7 +14,7 @@ import {
     requestGetAllCategory,
     requestUpdateCategory,
     requestDeleteCategory,
-} from '../../../config/CategoryRequest';
+} from '../../../services/category/categoryService';
 
 const { Title, Text } = Typography;
 

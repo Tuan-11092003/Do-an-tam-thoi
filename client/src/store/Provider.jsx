@@ -5,10 +5,10 @@ import cookies from 'js-cookie';
 import { io } from 'socket.io-client';
 
 import { useEffect, useState, useRef } from 'react';
-import { requestAuth } from '../config/UserRequest';
+import { requestAuth } from '../services/user/userService';
 import { ToastContainer } from 'react-toastify';
-import { requestGetCart } from '../config/CartRequest';
-import { requestGetConversationByUserId } from '../config/MessageRequest';
+import { requestGetCart } from '../services/cart/cartService';
+import { requestGetConversationByUserId } from '../services/message/messageService';
 
 export function Provider({ children }) {
     const [dataUser, setDataUser] = useState({});

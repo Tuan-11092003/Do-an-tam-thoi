@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { requestGetFavouriteByUserId } from '../../../config/FavouriteRequest';
-import CardBody from '../../../components/CardBody';
+import { requestGetFavouriteByUserId } from '../../../services/favourite/favouriteService';
+import CardBody from '../../../components/product/CardBody';
 
 function Favourite() {
     const [favourite, setFavourite] = useState([]);

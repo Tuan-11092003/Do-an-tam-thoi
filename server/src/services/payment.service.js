@@ -3,6 +3,7 @@ const Payment = require('../models/payment.model');
 const Warranty = require('../models/warranty.model');
 const PreviewProduct = require('../models/previewProduct.model');
 const Product = require('../models/product.model');
+const Coupon = require('../models/counpon.model');
 const { BadRequestError } = require('../core/error.response');
 const CartService = require('./cart.service');
 
@@ -59,6 +60,26 @@ function formatZaloPayDate() {
     const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
     const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
     return `${year}${month}${day}`;
+}
+
+// Helper function: Đánh dấu coupon đã được user sử dụng khi thanh toán thành công
+async function markCouponAsUsed(couponCode, userId) {
+    if (!couponCode || !userId) return;
+    
+    try {
+        const coupon = await Coupon.findOne({ nameCoupon: couponCode });
+        if (coupon) {
+            // Chỉ thêm userId nếu chưa có trong mảng usedBy
+            if (!coupon.usedBy || !coupon.usedBy.includes(userId)) {
+                coupon.usedBy = coupon.usedBy || [];
+                coupon.usedBy.push(userId);
+                await coupon.save();
+            }
+        }
+    } catch (error) {
+        console.error('Error marking coupon as used:', error);
+        // Không throw error để không ảnh hưởng đến flow thanh toán
+    }
 }
 
 class PaymentService {
@@ -553,20 +574,28 @@ class PaymentService {
                 }
             });
         } else if (paymentMethod === 'cod') {
+            // COD: Tạo payment với status = 'confirmed' ngay lập tức
             const payment = await Payment.create({
-                products: itemsWithDiscount, // Sử dụng itemsWithDiscount thay vì selectedItems
+                products: itemsWithDiscount,
                 totalPrice: selectedTotalPrice,
                 fullName: finalFullName,
                 phone: finalPhone,
                 address: finalAddress,
                 finalPrice: selectedFinalPrice,
-                coupon: couponToApply, // Sử dụng couponToApply thay vì lấy từ cart
+                coupon: couponToApply,
                 userId,
-                paymentMethod,
-                status: 'pending',
+                paymentMethod: 'cod',
+                status: 'confirmed',
             });
-            // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
+            
+            // Đánh dấu coupon đã được user sử dụng (nếu có)
+            if (payment.coupon && payment.coupon.code) {
+                await markCouponAsUsed(payment.coupon.code, userId);
+            }
+            
+            // Xóa sản phẩm đã chọn khỏi giỏ hàng
             await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
+            
             return payment;
         }
     }
@@ -899,6 +928,12 @@ class PaymentService {
             paymentMethod: 'momo',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua MoMo thành công
         });
+        
+        // Đánh dấu coupon đã được user sử dụng (nếu có)
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, id);
+        }
+        
         // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
         await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;
@@ -987,6 +1022,12 @@ class PaymentService {
             paymentMethod: 'zalopay',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua ZaloPay thành công
         });
+        
+        // Đánh dấu coupon đã được user sử dụng (nếu có)
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, id);
+        }
+        
         // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
         await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;
@@ -1075,6 +1116,12 @@ class PaymentService {
             paymentMethod: 'vnpay',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua VNPay thành công
         });
+        
+        // Đánh dấu coupon đã được user sử dụng (nếu có)
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, id);
+        }
+        
         // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
         await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;

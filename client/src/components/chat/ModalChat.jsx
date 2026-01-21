@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import { useStore } from '../../hooks/useStore';
 
-import { requestCreateMessage, requestGetMessageByConversationIdAdmin } from '../../config/MessageRequest';
+import { requestCreateMessage, requestGetMessageByConversationIdAdmin } from '../../services/message/messageService';
 
 const { TextArea } = Input;
 

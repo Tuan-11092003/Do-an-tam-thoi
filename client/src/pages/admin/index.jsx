@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Layout } from 'antd';
 import SidebarAdmin from './components/SidebarAdmin';
-import { requestGetDashboardAdmin } from '../../config/UserRequest';
+import { requestGetDashboardAdmin } from '../../services/user/userService';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 
 const { Content } = Layout;

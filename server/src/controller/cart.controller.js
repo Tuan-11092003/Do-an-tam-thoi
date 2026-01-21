@@ -2,13 +2,14 @@ const { OK } = require('../core/success.response');
 const CartService = require('../services/cart.service');
 
 class CartController {
+    // ✅ TỐI ƯU: Bỏ tham số buyNow - sản phẩm mới luôn được thêm vào đầu giỏ hàng
     async addToCart(req, res) {
-        const { productId, quantity, size, color, buyNow } = req.body;
+        const { productId, quantity, size, color } = req.body;
         const { id } = req.user;
         // Extract ID from object if it's an object, otherwise use the value directly
         const sizeId = typeof size === 'object' && size !== null ? (size._id || size.id || size) : size;
         const colorId = typeof color === 'object' && color !== null ? (color._id || color.id || color) : color;
-        const result = await CartService.addToCart(id, productId, quantity, sizeId, colorId, buyNow || false);
+        const result = await CartService.addToCart(id, productId, quantity, sizeId, colorId);
         new OK({ message: 'success', metadata: result }).send(res);
     }
     async getCart(req, res) {

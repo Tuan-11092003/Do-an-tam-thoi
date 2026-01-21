@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout, ConfigProvider, theme, FloatButton, Badge } from 'antd';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 import UserSidebar from './components/UserSidebar';
 import PersonalInfo from './components/PersonalInfo';
 import OrderHistory from './components/OrderHistory';

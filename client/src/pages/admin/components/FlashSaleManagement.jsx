@@ -25,8 +25,8 @@ import {
     requestGetAllFlashSale, 
     requestDeleteFlashSale, 
     requestUpdateFlashSale 
-} from '../../../config/flashSale';
-import { requestGetAllProduct } from '../../../config/ProductRequest';
+} from '../../../services/flashSale/flashSaleService';
+import { requestGetAllProduct } from '../../../services/product/productService';
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -61,7 +61,7 @@ function FlashSaleManagement() {
         fetchDataFlashSale();
     }, []);
 
-    // Calculate status based on dates (similar to CouponManager)
+    // Tính trạng thái dựa trên ngày (tương tự CouponManager)
     const getFlashSaleStatus = (startDate, endDate) => {
         const now = dayjs();
         const start = dayjs(startDate);
@@ -84,7 +84,7 @@ function FlashSaleManagement() {
         }) || {};
     };
 
-    // Calculate counts based on dates
+    // Tính số lượng dựa trên ngày
     const activeCount = flashSales.filter((fs) => {
         const { status } = getFlashSaleStatus(fs.startDate, fs.endDate);
         return status === 'Đang diễn ra';
@@ -106,10 +106,10 @@ function FlashSaleManagement() {
 
     const handleEdit = (record) => {
         setEditingFlashSale(record);
-        // Handle productId - can be object (populated) or string
+        // Xử lý productId - có thể là object (đã populate) hoặc string
         const productIdValue = record.productId?._id || record.productId;
         form.setFieldsValue({
-            productId: [productIdValue], // Convert single product to array
+            productId: [productIdValue], // Chuyển sản phẩm đơn thành mảng
             discount: record.discount,
             dateRange: [dayjs(record.startDate), dayjs(record.endDate)],
         });
@@ -131,8 +131,8 @@ function FlashSaleManagement() {
         setLoading(true);
         try {
             if (editingFlashSale) {
-                // Edit mode: only update single flash sale
-                const productIdValue = values.productId[0]; // Take first selected product
+                // Chế độ sửa: chỉ cập nhật một flash sale
+                const productIdValue = values.productId[0]; // Lấy sản phẩm đầu tiên được chọn
                 const updatedFlashSale = {
                     _id: editingFlashSale._id,
                     productId: productIdValue,
@@ -144,8 +144,8 @@ function FlashSaleManagement() {
 
                 message.success('Cập nhật flash sale thành công!');
             } else {
-                // Add mode: Server will validate duplicates
-                // Create flash sale for all selected products - server will validate
+                // Chế độ thêm: Server sẽ validate trùng lặp
+                // Tạo flash sale cho tất cả sản phẩm đã chọn - server sẽ validate
                 const newFlashSales = values.productId.map((productId) => ({
                     productId: productId,
                     discount: values.discount,
@@ -158,14 +158,14 @@ function FlashSaleManagement() {
                 message.success(`Thêm ${newFlashSales.length} flash sale thành công!`);
             }
 
-            // Refresh data from server to get updated list with status calculated by server
+            // Làm mới dữ liệu từ server để lấy danh sách đã cập nhật với trạng thái được server tính
             await fetchDataFlashSale();
             setIsModalVisible(false);
             form.resetFields();
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Lỗi:', error);
             
-            // Display error message from server
+            // Hiển thị thông báo lỗi từ server
             const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra!';
             message.error(errorMessage);
         } finally {

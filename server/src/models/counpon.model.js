@@ -10,6 +10,7 @@ const couponSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 0,
+            max: 100,
         },
         quantity: {
             type: Number,
@@ -28,6 +29,14 @@ const couponSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 0,
+        },
+        productUsed: {
+            type: [String],
+            default: ['all'],
+        },
+        usedBy: {
+            type: [String], // Array of userIds đã sử dụng coupon này
+            default: [],
         },
     },
     { timestamps: true },

@@ -11,7 +11,7 @@ import {
     CloseOutlined,
 } from '@ant-design/icons';
 import { useStore } from '../../../hooks/useStore';
-import { requestUpdateUser, requestUploadAvatar } from '../../../config/UserRequest';
+import { requestUpdateUser, requestUploadAvatar } from '../../../services/user/userService';
 
 function PersonalInfo() {
     const { dataUser, fetchAuth } = useStore();

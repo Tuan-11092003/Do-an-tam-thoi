@@ -17,7 +17,7 @@ import {
     requestGetAllUser,
     requestUpdateUserAdmin,
     requestDeleteUserAdmin,
-} from '../../../config/UserRequest';
+} from '../../../services/user/userService';
 import { useStore } from '../../../hooks/useStore';
 import dayjs from 'dayjs';
 

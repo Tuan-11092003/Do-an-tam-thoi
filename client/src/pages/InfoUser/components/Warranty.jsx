@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { requestGetWarrantyByUserId, requestSubmitReturn } from '../../../config/WarrantyRequest';
+import { requestGetWarrantyByUserId, requestSubmitReturn } from '../../../services/warranty/warrantyService';
 import {
     Card,
     Table,
@@ -30,6 +30,7 @@ import {
     Camera,
     FileText,
 } from 'lucide-react';
+import { formatDate } from '../../../utils/formatDate';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -168,15 +169,7 @@ function Warranty() {
         }
     };
 
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    };
-
-    // Use warranty progress from server instead of calculating on client
+    // Sử dụng tiến độ bảo hành từ server thay vì tính toán phía client
     const getWarrantyProgress = (warrantyItem) => {
         // Server đã tính sẵn, chỉ cần lấy từ response
         if (warrantyItem.warrantyProgress) {
