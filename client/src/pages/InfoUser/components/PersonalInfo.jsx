@@ -120,7 +120,7 @@ function PersonalInfo() {
                                 </div>
                             )}
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mt-4 mb-2">Thông tin cá nhân</h2>
+                        <h2 className="text-3xl font-bold text-gray-900 mt-4 mb-2">Tài khoản của tôi</h2>
                         <p className="text-gray-500 text-base">Quản lý thông tin cá nhân của bạn</p>
                     </div>
 

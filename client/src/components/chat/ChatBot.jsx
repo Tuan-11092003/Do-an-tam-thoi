@@ -41,7 +41,7 @@ function Chatbot() {
                         _id: 'welcome',
                         sender: 'bot',
                         content:
-                            '👋 Xin chào! Tôi là AI Assistant của khách sạn. Tôi có thể giúp bạn tư vấn về phòng, dịch vụ, đặt phòng và nhiều thông tin khác. Bạn cần hỗ trợ gì? 😊',
+                            '👋 Xin chào!  Tôi là AI bạn cần hỗ trợ gì? 😊',
                         timestamp: new Date(),
                     },
                 ]);
@@ -82,7 +82,7 @@ function Chatbot() {
         if (!dataUser._id) {
             // Hiển thị thông báo yêu cầu đăng nhập
             const shouldLogin = window.confirm(
-                '🔐 Bạn cần đăng nhập để sử dụng chatbot. Bạn có muốn đăng nhập ngay bây giờ không?',
+                '🔐 Bạn cần đăng nhập để sử dụng chatbot.',
             );
             if (shouldLogin) {
                 navigate('/login');
@@ -90,7 +90,7 @@ function Chatbot() {
             return;
         }
 
-        // Thêm tin nhắn người dùng
+        // Thêm tin nhắn user vào UI ngay lập tức (Optimistic Update)
         const userMessage = {
             _id: Date.now().toString(),
             sender: 'user',

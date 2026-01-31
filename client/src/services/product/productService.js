@@ -48,7 +48,7 @@ export const requestSearchProduct = async (query) => {
 export const requestFilterProduct = async (filters) => {
     const queryParams = new URLSearchParams();
 
-    // Add filters to query params
+    // Thêm bộ lọc vào tham số query
     if (filters.category && filters.category !== 'all') {
         queryParams.append('category', filters.category);
     }

@@ -118,6 +118,7 @@ function CartPage() {
         return subtotal - couponDiscount;
     };
 
+    // Tick/Bỏ tick sản phẩm
     const syncSelectionToServer = async (ids) => {
         try {
             await requestUpdateCartSelection({ selectedItemIds: ids });
@@ -131,8 +132,8 @@ function CartPage() {
         const itemIdStr = String(itemId);
         const isSelected = selectedItemIds.some((id) => String(id) === itemIdStr);
         const newSelected = isSelected
-            ? selectedItemIds.filter((id) => String(id) !== itemIdStr)
-            : [...selectedItemIds, itemIdStr];
+            ? selectedItemIds.filter((id) => String(id) !== itemIdStr) //bỏ tích 
+            : [...selectedItemIds, itemIdStr];   //thêm tích
         setSelectedItemIds(newSelected);
         await syncSelectionToServer(newSelected);
     };
@@ -230,18 +231,6 @@ function CartPage() {
             toast.error(error.response.data.message);
         }
     };
-
-    // if (isLoading) {
-    //     return (
-    //         <div className="min-h-screen bg-gray-50">
-    //             <Header />
-    //             <div className="flex items-center justify-center min-h-[60vh]">
-    //                 <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
-    //             </div>
-    //             <Footer />
-    //         </div>
-    //     );
-    // }
 
     // Kiểm tra cartData - nếu là null/undefined hoặc mảng rỗng thì hiển thị giỏ hàng trống
     if (!safeCartData || safeCartData.length === 0) {

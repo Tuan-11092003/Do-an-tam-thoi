@@ -3,7 +3,7 @@ import { apiClient } from '../api/axiosClient';
 
 const apiFlashSale = '/api/flashSale';
 
-// Admin FlashSale endpoints
+// API FlashSale cho admin
 export const requestCreateFlashSale = async (data) => {
     const res = await apiClient.post(`/api/admin/flashSale/create`, data);
     return res.data;

@@ -134,7 +134,7 @@ function Header() {
             label: (
                 <div className="flex items-center space-x-2 py-1">
                     <UserOutlined className="text-[#ed1d24]" />
-                    <span>Thông tin cá nhân</span>
+                    <span>Tài khoản của tôi</span>
                 </div>
             ), 
             onClick: () => navigateUser('/profile') 
@@ -154,7 +154,7 @@ function Header() {
             label: (
                 <div className="flex items-center space-x-2 py-1">
                     <FileText className="w-4 h-4 text-[#ed1d24]" />
-                    <span>Quản lý bảo hành</span>
+                    <span>Bảo hành sản phẩm</span>
                 </div>
             ), 
             onClick: () => navigateUser('/warranty') 

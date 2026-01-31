@@ -6,7 +6,7 @@ class WarrantyService {
     async getWarrantyByUserId(userId) {
         const warranty = await Warranty.find({ userId }).populate('productId').lean();
         
-        // Calculate warranty progress on server
+        // Tính tiến độ bảo hành trên server
         const now = new Date();
         const warrantyWithProgress = warranty.map((item) => {
             const received = new Date(item.receivedDate);
@@ -86,7 +86,7 @@ class WarrantyService {
                     }
                 }
             } catch (error) {
-                console.error('Error sending warranty approval email:', error);
+                console.error('Lỗi khi gửi email xác nhận bảo hành:', error);
                 emailSent = false;
             }
         }

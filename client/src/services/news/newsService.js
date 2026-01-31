@@ -14,12 +14,12 @@ export const requestGetAllNews = async () => {
 };
 
 export const requestDeleteNews = async (id) => {
-    const res = await apiClient.post(`/api/admin/news/delete`, { id });
+    const res = await apiClient.delete(`/api/admin/news/delete`, { id });
     return res.data;
 };
 
 export const requestUpdateNews = async (id, data) => {
-    const res = await apiClient.post(`/api/admin/news/update`, { id, ...data });
+    const res = await apiClient.put(`/api/admin/news/update`, { id, ...data });
     return res.data;
 };
 

@@ -12,14 +12,20 @@ import { formatPrice } from '../../utils/formatPrice';
 function ProductListPage() {
     const location = useLocation();
     const navigate = useNavigate();
+
+    // URL Params - đồng bộ filter với URL
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // States
+    // Product data
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // UI States
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+
+    // Modal thêm nhanh vào giỏ
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
@@ -124,7 +130,7 @@ function ProductListPage() {
         setFilters((prev) => ({
             ...prev,
             [key]: value,
-            page: 1, // Đặt lại về trang đầu khi bộ lọc thay đổi
+            page: 1, //  Reset về trang 1 khi bộ lọc thay đổi
         }));
     };
 

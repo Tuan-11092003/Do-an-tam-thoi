@@ -135,7 +135,7 @@ function CheckoutPage() {
         });
     }, [dataUser]);
 
-    // Tính tổng tiền tạm từ dữ liệu server (dùng subtotal của mỗi sản phẩm)
+    // Tính tổng từ các sản phẩm đã chọn
     const calculateSubtotal = () => {
         return cartData.reduce((sum, item) => {
             // Dùng subtotal từ server nếu có, nếu không thì dùng priceAfterDiscount * quantity
@@ -143,7 +143,7 @@ function CheckoutPage() {
         }, 0);
     };
 
-    // Tính giảm giá coupon (chỉ xem trước, server sẽ tính cuối cùng khi áp dụng)
+    // Tính giảm giá coupon (chỉ khi user áp dụng trong checkout)
     const calculateCouponDiscount = () => {
         // Chỉ tính giảm giá khi người dùng chủ động áp dụng coupon trong Checkout
         // Không tự động lấy coupon từ cart để tránh áp dụng coupon không mong muốn
@@ -214,13 +214,13 @@ function CheckoutPage() {
         };
 
         try {
-            // Thanh toán: cập nhật thông tin giỏ hàng rồi tạo payment từ Cart trong DB
+            // Thanh toán: cập nhật thông tin giỏ hàng vào cart
             await requestUpdateInfoCart(data);
             
-            // Gửi thông tin về coupon được chọn (nếu có)
+            // Tạo payment với payment method và coupon
             const paymentData = {
                 paymentMethod,
-                useCoupon: selectedCoupon !== null, // Chỉ áp dụng coupon nếu người dùng đã chọn trong checkout
+                useCoupon: selectedCoupon !== null, // Chỉ áp dụng nếu user đã chọn
             };
             
             if (paymentMethod === 'cod') {
@@ -257,7 +257,7 @@ function CheckoutPage() {
                 }
                 
                 await fetchCart();
-                window.location.href = res.metadata.payUrl;
+                window.location.href = res.metadata.payUrl;  // Redirect đến MoMo
             } else if (paymentMethod === 'vnpay') {
                 const res = await requestCreatePayment(paymentData);
                 if (!res?.metadata) {
@@ -265,7 +265,7 @@ function CheckoutPage() {
                     return;
                 }
                 await fetchCart();
-                window.location.href = res.metadata;
+                window.location.href = res.metadata;  // Redirect đến VNPay
             } else if (paymentMethod === 'zalopay') {
                 const res = await requestCreatePayment(paymentData);
                 if (!res?.metadata) {
@@ -280,7 +280,7 @@ function CheckoutPage() {
                 }
                 
                 await fetchCart();
-                window.location.href = res.metadata.order_url;
+                window.location.href = res.metadata.order_url;  // Redirect đến ZaloPay
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Đặt hàng thất bại');

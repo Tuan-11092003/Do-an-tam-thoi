@@ -18,7 +18,7 @@ const SendMailForgotPassword = require('../utils/sendMailForgotPassword');
 class UserService {
     async createUser(data) {
         const { fullName, email, password, phone } = data;
-        // Kiểm tra email đã tồn tại với typeLogin = 'email' (không cho phép trùng email + typeLogin)
+        // Kiểm tra email đã tồn tại
         const findUser = await modelUser.findOne({ email, typeLogin: 'email' });
         if (findUser) {
             throw new ConflictRequestError('Email đã tồn tại');
@@ -95,7 +95,7 @@ class UserService {
         
         // Nếu có search query, tìm kiếm theo fullName, email, phone
         if (search && search.trim()) {
-            const searchRegex = new RegExp(search.trim(), 'i'); // Case-insensitive
+            const searchRegex = new RegExp(search.trim(), 'i'); // Không phân biệt hoa thường
             query = {
                 $or: [
                     { fullName: searchRegex },
@@ -193,7 +193,7 @@ class UserService {
                 email: dataToken.email,
                 typeLogin: 'google',
                 fullName: dataToken.name,
-                password: '', // Google login không cần password
+                password: '', // Đăng nhập Google không cần mật khẩu
             });
             await createApiKey(newUser._id);
             const token = await createToken({ id: newUser._id });
@@ -309,14 +309,6 @@ class UserService {
             const totalCategories = await Category.countDocuments();
             const totalOrders = await Payment.countDocuments();
 
-            // console.log('Basic stats:', { totalProducts, totalUsers, totalCategories, totalOrders });
-
-            // Debug: Check sample payment documents (commented out to reduce console noise)
-            // const samplePayments = await Payment.find()
-            //     .limit(3)
-            //     .select('finalPrice totalPrice status createdAt paymentMethod');
-            // console.log('Sample payments:', samplePayments);
-
             // 2. Doanh thu
             const revenueResult = await Payment.aggregate([
                 { $match: { status: { $ne: 'cancelled' } } },
@@ -341,32 +333,6 @@ class UserService {
             // 3. Doanh thu theo 7 ngày gần đây
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-            // console.log('Seven days ago date:', sevenDaysAgo);
-            // console.log('Current date:', new Date());
-
-            // Simplified query to test data existence first (commented out to reduce console noise)
-            // const allPayments = await Payment.find({
-            //     status: { $ne: 'cancelled' },
-            // })
-            //     .select('finalPrice totalPrice status createdAt')
-            //     .limit(5);
-
-            // console.log('Sample payments for revenue check:', allPayments);
-
-            // Test revenue calculation logic (commented out to reduce console noise)
-            // const testRevenueLogic = allPayments.map((payment) => {
-            //     const shouldUseFinalPrice = payment.finalPrice != null && payment.finalPrice > 0;
-            //     const revenueValue = shouldUseFinalPrice ? payment.finalPrice : payment.totalPrice;
-            //     return {
-            //         id: payment._id,
-            //         finalPrice: payment.finalPrice,
-            //         totalPrice: payment.totalPrice,
-            //         shouldUseFinalPrice,
-            //         revenueValue,
-            //     };
-            // });
-            // console.log('Revenue calculation logic test:', testRevenueLogic);
 
             const revenueByDay = await Payment.aggregate([
                 {
@@ -421,15 +387,6 @@ class UserService {
                 });
             }
 
-            // console.log('Last 7 days with data:', last7Days);
-
-            // Also get all payments within date range to debug (commented out to reduce console noise)
-            // const paymentsInRange = await Payment.find({
-            //     createdAt: { $gte: sevenDaysAgo },
-            //     status: { $ne: 'cancelled' },
-            // }).select('createdAt finalPrice totalPrice status');
-
-            // console.log('Payments in 7 day range:', paymentsInRange);
 
             // 4. Trạng thái đơn hàng
             const orderStatus = await Payment.aggregate([
@@ -698,15 +655,6 @@ class UserService {
                     productCount: cat.productCount,
                 })),
             };
-
-            // console.log('Final dashboard data:', {
-            //     overview: result.overview,
-            //     revenueByDayCount: result.revenueByDay.length,
-            //     orderStatusCount: result.orderStatus.length,
-            //     topProductsCount: result.topProducts.length,
-            //     paymentMethodsCount: result.paymentMethods.length,
-            // });
-
             return result;
         } catch (error) {
             throw new Error(`Error getting dashboard data: ${error.message}`);

@@ -36,7 +36,8 @@ function ProductDetailPage() {
 
     const { fetchCart, dataUser } = useStore();
 
-    const fetchProductById = async () => {
+    const fetchProductById = async (options = {}) => {
+        const { silent = false } = options; // silent: refetch nền, không hiện loading (vd: sau thêm/xóa yêu thích)
         // Kiểm tra id hợp lệ trước khi fetch
         if (!id || id === 'null' || id === 'undefined' || id.includes('[object')) {
             console.error('Invalid product ID:', id);
@@ -45,7 +46,7 @@ function ProductDetailPage() {
         }
         
         try {
-            setIsLoading(true);
+            if (!silent) setIsLoading(true);
             const res = await requestGetProductById(id);
             setProduct(res.metadata);
             setReviews(res.metadata.previewProduct);
@@ -74,7 +75,7 @@ function ProductDetailPage() {
         } catch (error) {
             console.error('Error fetching product:', error);
         } finally {
-            setIsLoading(false);
+            if (!silent) setIsLoading(false);
         }
     };
 
@@ -82,7 +83,7 @@ function ProductDetailPage() {
         fetchProductById();
     }, [id]);
 
-    // Cuộn lên đầu trang khi component mount hoặc product ID thay đổi
+    // Cuộn lên đầu trang chỉ khi chuyển sang sản phẩm khác (id thay đổi), không cuộn khi refetch (vd: sau thêm/xóa yêu thích)
     useEffect(() => {
         window.scrollTo({
             top: 0,
@@ -90,17 +91,6 @@ function ProductDetailPage() {
             behavior: 'instant',
         });
     }, [id]);
-
-    // Cuộn lên đầu sau khi tải dữ liệu xong để đảm bảo trang bắt đầu từ đầu
-    useEffect(() => {
-        if (!isLoading) {
-            window.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: 'instant',
-            });
-        }
-    }, [isLoading]);
 
     const handleColorSelect = (color) => {
         setSelectedColor(color);
@@ -204,16 +194,20 @@ function ProductDetailPage() {
     };
 
     const handleAddToFavourite = async () => {
+        const scrollY = window.scrollY;
+        const scrollX = window.scrollX;
         try {
             const data = {
                 productId: product._id,
             };
             await requestCreateFavourite(data);
-            fetchProductById();
+            await fetchProductById({ silent: true });
             toast.success('Thêm vào yêu thích thành công');
+            setTimeout(() => window.scrollTo(scrollX, scrollY), 0);
         } catch (error) {
-            fetchProductById();
+            await fetchProductById({ silent: true });
             toast.error(error.response.data.message);
+            setTimeout(() => window.scrollTo(scrollX, scrollY), 0);
         }
     };
 

@@ -5,20 +5,20 @@ const modelPayment = require('../models/payment.model');
 
 class FlashSaleService {
     async createFlashSale(data) {
-        // Validate duplicate products (check for active or scheduled flash sales)
+        // Kiểm tra trùng sản phẩm (đã có flash sale đang chạy hoặc sắp diễn ra)
         const now = new Date();
         const productIds = data.map(item => item.productId?.toString() || item.productId);
         
-        // Find existing active or scheduled flash sales for these products
+        // Tìm flash sale đang hoạt động hoặc sắp diễn ra cho các sản phẩm này
         const existingFlashSales = await FlashSale.find({
             productId: { $in: productIds },
             $or: [
-                // Active: startDate <= now <= endDate
+                // Đang chạy: startDate <= now <= endDate
                 {
                     startDate: { $lte: now },
                     endDate: { $gte: now }
                 },
-                // Scheduled: startDate > now
+                // Sắp diễn ra: startDate > now
                 {
                     startDate: { $gt: now }
                 }
@@ -48,7 +48,7 @@ class FlashSaleService {
     async getAllFlashSale() {
         const flashSales = await FlashSale.find().populate('productId');
         
-        // Calculate status for each flash sale (active, scheduled, expired)
+        // Tính trạng thái từng flash sale (đang chạy, sắp diễn ra, hết hạn)
         const now = new Date();
         const flashSalesWithStatus = flashSales.map((sale) => {
             const saleObj = sale.toObject ? sale.toObject() : sale;
@@ -76,15 +76,15 @@ class FlashSaleService {
             endDate: { $gte: today },
         }).populate('productId');
         
-        // Get all product IDs
+        // Lấy tất cả ID sản phẩm
         const productIds = flashSales
             .map(sale => sale.productId?._id || sale.productId)
             .filter(id => id);
         
-        // Convert to strings for previewProduct matching (productId is String in previewProduct model)
+        // Chuyển sang chuỗi để khớp previewProduct (productId trong model PreviewProduct là String)
         const productIdStrings = productIds.map(id => id.toString ? id.toString() : String(id));
 
-        // Calculate totalSold for all products in batch using aggregation
+        // Tính tổng đã bán cho tất cả sản phẩm theo lô bằng aggregation
         const soldResults = await modelPayment.aggregate([
             {
                 $match: {
@@ -107,14 +107,14 @@ class FlashSaleService {
             }
         ]);
 
-        // Create a map of productId -> totalSold
+        // Tạo map productId -> totalSold
         const totalSoldMap = new Map();
         soldResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
             totalSoldMap.set(productIdKey, result.totalSold);
         });
 
-        // Calculate ratings for all products in batch
+        // Tính đánh giá cho tất cả sản phẩm theo lô
         const ratingResults = await modelPreviewProduct.aggregate([
             {
                 $match: {
@@ -130,7 +130,7 @@ class FlashSaleService {
             }
         ]);
 
-        // Create a map of productId -> rating data
+        // Tạo map productId -> dữ liệu đánh giá
         const ratingMap = new Map();
         ratingResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -140,7 +140,7 @@ class FlashSaleService {
             });
         });
         
-        // Calculate priceAfterDiscount, totalStock, averageRating, and totalSold for each flash sale product
+        // Tính priceAfterDiscount, totalStock, averageRating, totalSold cho từng sản phẩm flash sale
         const flashSalesWithPrice = flashSales.map((sale) => {
             const saleObj = sale.toObject ? sale.toObject() : sale;
             if (saleObj.productId && saleObj.productId.price) {
@@ -148,23 +148,23 @@ class FlashSaleService {
                     ? (saleObj.productId._id.toString ? saleObj.productId._id.toString() : String(saleObj.productId._id))
                     : null;
                 
-                // Use flashSale discount, not product discount
+                // Dùng phần trăm giảm của flash sale, không dùng discount sản phẩm
                 const discount = saleObj.discount || 0;
                 saleObj.productId.priceAfterDiscount = saleObj.productId.price * (1 - discount / 100);
-                // Also update discount to match flashSale discount
+                // Cập nhật discount trùng với flash sale
                 saleObj.productId.discount = discount;
                 
-                // Calculate totalStock on server (sum of all variant stocks)
+                // Tính tổng tồn kho trên server (tổng stock các biến thể)
                 if (saleObj.productId.variants && Array.isArray(saleObj.productId.variants)) {
                     saleObj.productId.totalStock = saleObj.productId.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
                 } else {
                     saleObj.productId.totalStock = 0;
                 }
                 
-                // Add totalSold
+                // Thêm tổng đã bán
                 saleObj.productId.totalSold = totalSoldMap.get(productIdKey) || 0;
 
-                // Add rating data
+                // Thêm dữ liệu đánh giá
                 const ratingData = ratingMap.get(productIdKey);
                 saleObj.productId.averageRating = ratingData ? ratingData.averageRating : 0;
                 saleObj.productId.reviewCount = ratingData ? ratingData.reviewCount : 0;

@@ -5,7 +5,6 @@ import Footer from '../../components/layout/Footer';
 import UserSidebar from './components/UserSidebar';
 import PersonalInfo from './components/PersonalInfo';
 import OrderHistory from './components/OrderHistory';
-// import WatchProducts from './components/WatchProducts';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { UserOutlined, ShoppingOutlined, HeartOutlined, ArrowUpOutlined } from '@ant-design/icons';
@@ -94,12 +93,11 @@ function InfoUser() {
                                 onBreakpoint={handleBreakpoint}
                                 className="bg-transparent shadow-none"
                                 style={{
-                                    height: 'calc(100vh - 180px)',
+                                    height: 'calc(100vh - 310px)',
                                     position: 'sticky',
                                     top: '100px',
                                     left: 0,
                                     overflow: 'auto',
-                                    paddingRight: 16,
                                 }}
                             >
                                 <UserSidebar

@@ -1,6 +1,5 @@
 import { ShoppingCart, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { requestCreateFavourite } from '../../services/favourite/favouriteService';
 import { toast } from 'react-toastify';
 import { useStore } from '../../hooks/useStore';
 import { useState } from 'react';

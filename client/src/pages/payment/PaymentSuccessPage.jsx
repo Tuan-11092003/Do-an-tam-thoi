@@ -40,7 +40,7 @@ function PaymentSuccessPage() {
     };
 
     const getCouponDiscount = () => {
-        // Server đã tính discountAmount, chỉ cần lấy từ response
+        // Server đã tính số tiền giảm giá, chỉ cần lấy từ response
         return payment?.coupon?.discountAmount || 0;
     };
 
@@ -206,7 +206,7 @@ function PaymentSuccessPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Đã xác nhận
+                                        Đã xác nhận đơn hàng
                                     </span>
                                 </div>
                                 <div>
@@ -272,11 +272,11 @@ function PaymentSuccessPage() {
                                 <div className="space-y-2 text-sm text-gray-600">
                                     <div className="flex items-center space-x-2">
                                         <Phone className="w-4 h-4" />
-                                        <span>Hotline: 1900 1234</span>
+                                        <span>Hotline: 0963607325</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <Mail className="w-4 h-4" />
-                                        <span>support@example.com</span>
+                                        <span>anhtuan12anbbl@gmail.com</span>
                                     </div>
                                 </div>
                             </div>

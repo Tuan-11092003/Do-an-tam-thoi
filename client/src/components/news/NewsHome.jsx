@@ -7,7 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { requestGetAllNews } from '../../services/news/newsService';
 import { formatDate } from '../../utils/formatDate';
 
-// Custom Arrow Components
+// Nút Previous
 function CustomPrevArrow(props) {
     const { className, style, onClick } = props;
     return (
@@ -19,6 +19,7 @@ function CustomPrevArrow(props) {
     );
 }
 
+// Nút Next
 function CustomNextArrow(props) {
     const { className, style, onClick } = props;
     return (
@@ -57,6 +58,7 @@ function NewsHome() {
         return txt.value;
     };
 
+    //Lấy văn bản từ HTML
     const extractTextFromHTML = (htmlContent, maxLength = 100) => {
         if (!htmlContent) return '';
         // Loại bỏ HTML tags

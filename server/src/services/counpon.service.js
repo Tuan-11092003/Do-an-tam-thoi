@@ -33,10 +33,10 @@ class CouponService {
             quantity: { $gt: 0 },
         };
         
-        // Không filter coupon đã sử dụng, nhưng sẽ đánh dấu trong response
+        // Không lọc coupon đã dùng, nhưng sẽ đánh dấu trong response
         const coupons = await modelCounpon.find(query).lean();
         
-        // Nếu có userId, thêm flag isUsed để frontend biết coupon nào đã được user sử dụng
+        // Nếu có userId, thêm trường isUsed để frontend biết coupon nào user đã dùng
         if (userId) {
             const userIdStr = String(userId); // Convert sang string để so sánh
             return coupons.map(coupon => ({
@@ -45,7 +45,7 @@ class CouponService {
             }));
         }
         
-        // Nếu không có userId, set isUsed = false cho tất cả
+        // Nếu không có userId, gán isUsed = false cho tất cả
         return coupons.map(coupon => ({
             ...coupon,
             isUsed: false

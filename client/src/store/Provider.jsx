@@ -119,7 +119,7 @@ export function Provider({ children }) {
             }}
         >
             {children}
-            <ToastContainer />
+            <ToastContainer autoClose={2000} pauseOnHover={false} />
         </Context.Provider>
     );
 }

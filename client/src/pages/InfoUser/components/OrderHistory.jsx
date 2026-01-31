@@ -318,7 +318,11 @@ function OrderHistory() {
             render: (text, record) => {
                 // Tìm order từ context để check status
                 const currentOrder = orders.find((order) => order.items.some((item) => item._id === record._id));
-                console.log(record);
+
+                // Chỉ cho phép đánh giá khi đơn hàng đã được giao (status = 'delivered')
+                if (currentOrder?.status !== 'delivered') {
+                    return <span className="text-gray-400 text-sm">Chưa giao hàng</span>;
+                }
 
                 if (!record?.previewProduct?._id) {
                     // Kiểm tra xem sản phẩm này có đang được đánh giá không

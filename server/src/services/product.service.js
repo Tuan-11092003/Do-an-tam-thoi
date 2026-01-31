@@ -44,14 +44,14 @@ class ProductService {
     async getAllProduct() {
         const products = await modelProduct.find().populate('category', 'categoryName').lean();
         
-        // Get active Flash Sales and apply discount to products
+        // Lấy Flash Sale đang hoạt động và áp dụng giảm giá cho sản phẩm
         const now = new Date();
         const activeFlashSales = await modelFlashSale.find({
             startDate: { $lte: now },
             endDate: { $gte: now },
         }).lean();
 
-        // Create a map of productId -> flashSale discount
+        // Tạo map productId -> phần trăm giảm flash sale
         const flashSaleMap = new Map();
         activeFlashSales.forEach((flashSale) => {
             if (flashSale.productId) {
@@ -62,12 +62,12 @@ class ProductService {
             }
         });
 
-        // Get all product IDs for batch calculation
+        // Lấy tất cả ID sản phẩm để tính theo lô
         const productIds = products.map(p => p._id);
-        // Convert to strings for previewProduct matching (productId is String in previewProduct model)
+        // Chuyển sang chuỗi để khớp previewProduct (productId trong model là String)
         const productIdStrings = productIds.map(id => id.toString ? id.toString() : String(id));
 
-        // Calculate totalSold for all products in batch using aggregation
+        // Tính tổng đã bán cho tất cả sản phẩm theo lô bằng aggregation
         const soldResults = await modelPayment.aggregate([
             {
                 $match: {
@@ -90,15 +90,15 @@ class ProductService {
             }
         ]);
 
-        // Create a map of productId -> totalSold
+        // Tạo map productId -> totalSold
         const totalSoldMap = new Map();
         soldResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
             totalSoldMap.set(productIdKey, result.totalSold);
         });
 
-        // Calculate ratings for all products in batch
-        // Note: productId in previewProduct is String, so we need to match with strings
+        // Tính đánh giá cho tất cả sản phẩm theo lô
+        // productId trong previewProduct là String nên cần khớp theo chuỗi
         const ratingResults = await modelPreviewProduct.aggregate([
             {
                 $match: {
@@ -114,7 +114,7 @@ class ProductService {
             }
         ]);
 
-        // Create a map of productId -> rating data
+        // Tạo map productId -> dữ liệu đánh giá
         const ratingMap = new Map();
         ratingResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -124,7 +124,7 @@ class ProductService {
             });
         });
 
-        // Apply Flash Sale discount to each product in search results and calculate priceAfterDiscount
+        // Áp dụng giảm giá Flash Sale cho từng sản phẩm trong kết quả tìm kiếm và tính giá sau giảm
         const productsWithFlashSale = products.map((product) => {
             const productObj = product.toObject ? product.toObject() : product;
             const productIdKey = productObj._id ? productObj._id.toString() : null;
@@ -133,21 +133,21 @@ class ProductService {
                 productObj.discount = flashSaleMap.get(productIdKey);
             }
             
-            // Calculate priceAfterDiscount on server
+            // Tính giá sau giảm trên server
             const discount = productObj.discount || 0;
             productObj.priceAfterDiscount = productObj.price * (1 - discount / 100);
             
-            // Calculate totalStock on server (sum of all variant stocks)
+            // Tính tổng tồn kho trên server (tổng stock các biến thể)
             if (productObj.variants && Array.isArray(productObj.variants)) {
                 productObj.totalStock = productObj.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
             } else {
                 productObj.totalStock = 0;
             }
 
-            // Add totalSold
+            // Thêm tổng đã bán
             productObj.totalSold = totalSoldMap.get(productIdKey) || 0;
 
-            // Add rating data
+            // Thêm dữ liệu đánh giá
             const ratingData = ratingMap.get(productIdKey);
             productObj.averageRating = ratingData ? ratingData.averageRating : 0;
             productObj.reviewCount = ratingData ? ratingData.reviewCount : 0;
@@ -204,14 +204,14 @@ class ProductService {
     async getProductByCategory(category) {
         const products = await modelProduct.find({ category }).lean();
         
-        // Get active Flash Sales and apply discount to products
+        // Lấy Flash Sale đang hoạt động và áp dụng giảm giá cho sản phẩm
         const now = new Date();
         const activeFlashSales = await modelFlashSale.find({
             startDate: { $lte: now },
             endDate: { $gte: now },
         }).lean();
 
-        // Create a map of productId -> flashSale discount
+        // Tạo map productId -> phần trăm giảm flash sale
         const flashSaleMap = new Map();
         activeFlashSales.forEach((flashSale) => {
             if (flashSale.productId) {
@@ -222,12 +222,12 @@ class ProductService {
             }
         });
 
-        // Get all product IDs for batch calculation
+        // Lấy tất cả ID sản phẩm để tính theo lô
         const productIds = products.map(p => p._id);
-        // Convert to strings for previewProduct matching (productId is String in previewProduct model)
+        // Chuyển sang chuỗi để khớp previewProduct (productId trong model là String)
         const productIdStrings = productIds.map(id => id.toString ? id.toString() : String(id));
 
-        // Calculate totalSold for all products in batch using aggregation
+        // Tính tổng đã bán cho tất cả sản phẩm theo lô bằng aggregation
         const soldResults = await modelPayment.aggregate([
             {
                 $match: {
@@ -250,15 +250,15 @@ class ProductService {
             }
         ]);
 
-        // Create a map of productId -> totalSold
+        // Tạo map productId -> totalSold
         const totalSoldMap = new Map();
         soldResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
             totalSoldMap.set(productIdKey, result.totalSold);
         });
 
-        // Calculate ratings for all products in batch
-        // Note: productId in previewProduct is String, so we need to match with strings
+        // Tính đánh giá cho tất cả sản phẩm theo lô
+        // productId trong previewProduct là String nên cần khớp theo chuỗi
         const ratingResults = await modelPreviewProduct.aggregate([
             {
                 $match: {
@@ -274,7 +274,7 @@ class ProductService {
             }
         ]);
 
-        // Create a map of productId -> rating data
+        // Tạo map productId -> dữ liệu đánh giá
         const ratingMap = new Map();
         ratingResults.forEach((result) => {
             const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -284,7 +284,7 @@ class ProductService {
             });
         });
 
-        // Apply Flash Sale discount to products and calculate priceAfterDiscount
+        // Áp dụng giảm giá Flash Sale cho sản phẩm và tính giá sau giảm
         const productsWithFlashSale = products.map((product) => {
             const productIdKey = product._id 
                 ? (product._id.toString ? product._id.toString() : String(product._id))
@@ -294,21 +294,21 @@ class ProductService {
                 product.discount = flashSaleMap.get(productIdKey);
             }
             
-            // Calculate priceAfterDiscount on server
+            // Tính giá sau giảm trên server
             const discount = product.discount || 0;
             product.priceAfterDiscount = product.price * (1 - discount / 100);
             
-            // Calculate totalStock on server (sum of all variant stocks)
+            // Tính tổng tồn kho trên server (tổng stock các biến thể)
             if (product.variants && Array.isArray(product.variants)) {
                 product.totalStock = product.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
             } else {
                 product.totalStock = 0;
             }
 
-            // Add totalSold
+            // Thêm tổng đã bán
             product.totalSold = totalSoldMap.get(productIdKey) || 0;
 
-            // Add rating data
+            // Thêm dữ liệu đánh giá
             const ratingData = ratingMap.get(productIdKey);
             product.averageRating = ratingData ? ratingData.averageRating : 0;
             product.reviewCount = ratingData ? ratingData.reviewCount : 0;
@@ -323,7 +323,7 @@ class ProductService {
         const product = await modelProduct.findById(id).populate('category', 'categoryName');
         if (!product) return null;
         
-        // Check for active Flash Sale (only apply if within date range)
+        // Kiểm tra Flash Sale đang hoạt động (chỉ áp dụng nếu trong khoảng thời gian)
         const now = new Date();
         const findFlashSale = await modelFlashSale.findOne({
             productId: id,
@@ -331,7 +331,7 @@ class ProductService {
             endDate: { $gte: now },
         });
         
-        // Convert to plain object to ensure priceAfterDiscount is serialized correctly
+        // Chuyển sang plain object để priceAfterDiscount được serialize đúng
         const productObj = product.toObject ? product.toObject() : product;
         
         // Only override discount if Flash Sale is active
@@ -356,11 +356,11 @@ class ProductService {
         );
 
         if (findProductRelated && findProductRelated.length > 0) {
-            // Get IDs of related products for batch queries
+            // Lấy ID sản phẩm liên quan để truy vấn theo lô
             const relatedProductIds = findProductRelated.map((p) => p._id.toString());
             const relatedProductObjectIds = findProductRelated.map((p) => p._id);
 
-            // Calculate totalSold for all related products in batch
+            // Tính tổng đã bán cho tất cả sản phẩm liên quan theo lô
             const relatedSoldResults = await modelPayment.aggregate([
                 {
                     $match: {
@@ -383,14 +383,14 @@ class ProductService {
                 }
             ]);
 
-            // Create a map of productId -> totalSold
+            // Tạo map productId -> totalSold
             const relatedTotalSoldMap = new Map();
             relatedSoldResults.forEach((result) => {
                 const productIdKey = result._id ? result._id.toString() : String(result._id);
                 relatedTotalSoldMap.set(productIdKey, result.totalSold);
             });
 
-            // Calculate ratings for all related products in batch
+            // Tính đánh giá cho tất cả sản phẩm liên quan theo lô
             const relatedRatingResults = await modelPreviewProduct.aggregate([
                 {
                     $match: {
@@ -406,7 +406,7 @@ class ProductService {
                 }
             ]);
 
-            // Create a map of productId -> rating data
+            // Tạo map productId -> dữ liệu đánh giá
             const relatedRatingMap = new Map();
             relatedRatingResults.forEach((result) => {
                 const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -416,24 +416,24 @@ class ProductService {
                 });
             });
 
-            // Convert related products to plain objects and calculate priceAfterDiscount, totalStock, averageRating, totalSold
+            // Chuyển sản phẩm liên quan sang plain object và tính priceAfterDiscount, totalStock, averageRating, totalSold
             productObj.productRelated = findProductRelated.map((relatedProduct) => {
                 const relatedObj = relatedProduct.toObject ? relatedProduct.toObject() : relatedProduct;
                 const relatedDiscount = relatedObj.discount || 0;
                 relatedObj.priceAfterDiscount = relatedObj.price * (1 - relatedDiscount / 100);
                 
-                // Calculate totalStock for related products
+                // Tính tổng tồn kho cho sản phẩm liên quan
                 if (relatedObj.variants && Array.isArray(relatedObj.variants)) {
                     relatedObj.totalStock = relatedObj.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
                 } else {
                     relatedObj.totalStock = 0;
                 }
 
-                // Add totalSold
+                // Thêm tổng đã bán
                 const productIdKey = relatedObj._id ? relatedObj._id.toString() : String(relatedObj._id);
                 relatedObj.totalSold = relatedTotalSoldMap.get(productIdKey) || 0;
 
-                // Add rating data
+                // Thêm dữ liệu đánh giá
                 const ratingData = relatedRatingMap.get(productIdKey);
                 relatedObj.averageRating = ratingData ? ratingData.averageRating : 0;
                 relatedObj.reviewCount = ratingData ? ratingData.reviewCount : 0;
@@ -448,7 +448,7 @@ class ProductService {
             productObj.previewProduct = findPreviewProduct;
         }
 
-        // Calculate totalSold from payments (only confirmed, shipped, or delivered orders)
+        // Tính tổng đã bán từ payment (chỉ đơn confirmed, shipped hoặc delivered)
         const productObjectId = typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id;
         
         const soldResult = await modelPayment.aggregate([
@@ -483,7 +483,7 @@ class ProductService {
         // Escape các ký tự đặc biệt trong regex để tránh lỗi
         const escapedQuery = decodedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const products = await modelProduct.find({ name: { $regex: escapedQuery, $options: 'i' } });
-        // Apply Flash Sale discount to search results
+        // Áp dụng giảm giá Flash Sale cho kết quả tìm kiếm
         const now = new Date();
         const activeFlashSales = await modelFlashSale.find({
             startDate: { $lte: now },
@@ -497,7 +497,7 @@ class ProductService {
             }
         });
         
-        // Apply Flash Sale discount to each product in search results and calculate priceAfterDiscount
+        // Áp dụng giảm giá Flash Sale cho từng sản phẩm trong kết quả tìm kiếm và tính giá sau giảm
         const productsWithFlashSale = products.map((product) => {
             const productObj = product.toObject ? product.toObject() : product;
             const productIdKey = productObj._id ? productObj._id.toString() : null;
@@ -506,7 +506,7 @@ class ProductService {
                 productObj.discount = flashSaleMap.get(productIdKey);
             }
             
-            // Calculate priceAfterDiscount on server
+            // Tính giá sau giảm trên server
             const discount = productObj.discount || 0;
             productObj.priceAfterDiscount = productObj.price * (1 - discount / 100);
             
@@ -535,32 +535,32 @@ class ProductService {
         limit = 12,
     ) {
         try {
-            // Build filter query
+            // Xây dựng query lọc
             let filterQuery = { status: 'active' };
 
-            // Category filter
+            // Lọc theo danh mục
             if (category && category !== 'all') {
                 filterQuery.category = category;
             }
 
-            // Price filter
+            // Lọc theo giá
             if (priceMin || priceMax) {
                 filterQuery.price = {};
                 if (priceMin) filterQuery.price.$gte = Number(priceMin);
                 if (priceMax) filterQuery.price.$lte = Number(priceMax);
             }
 
-            // Size filter
+            // Lọc theo size
             if (size && size !== 'all') {
                 filterQuery['variants.size'] = size;
             }
 
-            // Color filter
+            // Lọc theo màu
             if (color && color !== 'all') {
                 filterQuery['colors.name'] = { $regex: color, $options: 'i' };
             }
 
-            // Build sort query
+            // Xây dựng query sắp xếp
             let sortQuery = {};
             switch (sortBy) {
                 case 'price_asc':
@@ -582,10 +582,10 @@ class ProductService {
                     sortQuery.createdAt = -1;
             }
 
-            // Calculate pagination
+            // Tính phân trang
             const skip = (page - 1) * limit;
 
-            // Execute query with pagination
+            // Thực thi query có phân trang
             const products = await modelProduct
                 .find(filterQuery)
                 .populate('category', 'categoryName')
@@ -593,15 +593,15 @@ class ProductService {
                 .skip(skip)
                 .limit(limit);
 
-            // Get active Flash Sales and apply discount to products
-            // Flash Sale discount will override product's original discount
+            // Lấy Flash Sale đang hoạt động và áp dụng giảm giá cho sản phẩm
+            // Giảm giá Flash Sale sẽ ghi đè discount gốc của sản phẩm
             const now = new Date();
             const activeFlashSales = await modelFlashSale.find({
                 startDate: { $lte: now },
                 endDate: { $gte: now },
             });
 
-            // Create a map of productId -> flashSale discount for quick lookup
+            // Tạo map productId -> phần trăm giảm flash sale để tra cứu nhanh
             const flashSaleMap = new Map();
             activeFlashSales.forEach((flashSale) => {
                 if (flashSale.productId) {
@@ -610,12 +610,12 @@ class ProductService {
                 }
             });
 
-            // Get all product IDs for batch calculation
+            // Lấy tất cả ID sản phẩm để tính theo lô
             const productIds = products.map(p => p._id);
-            // Convert to strings for previewProduct matching (productId is String in previewProduct model)
+            // Chuyển sang chuỗi để khớp previewProduct (productId trong model là String)
             const productIdStrings = productIds.map(id => id.toString ? id.toString() : String(id));
 
-            // Calculate totalSold for all products in batch using aggregation
+            // Tính tổng đã bán cho tất cả sản phẩm theo lô bằng aggregation
             const soldResults = await modelPayment.aggregate([
                 {
                     $match: {
@@ -638,7 +638,7 @@ class ProductService {
                 }
             ]);
 
-            // Create a map of productId -> totalSold
+            // Tạo map productId -> totalSold
             const totalSoldMap = new Map();
             soldResults.forEach((result) => {
                 const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -662,7 +662,7 @@ class ProductService {
                 }
             ]);
 
-            // Create a map of productId -> rating data
+            // Tạo map productId -> dữ liệu đánh giá
             const ratingMap = new Map();
             ratingResults.forEach((result) => {
                 const productIdKey = result._id ? result._id.toString() : String(result._id);
@@ -672,33 +672,33 @@ class ProductService {
                 });
             });
 
-            // Apply Flash Sale discount to products (override original discount if Flash Sale exists)
+            // Áp dụng giảm giá Flash Sale cho sản phẩm (ghi đè discount gốc nếu có Flash Sale)
             const productsWithFlashSale = products.map((product) => {
                 const productObj = product.toObject ? product.toObject() : product;
                 const productIdKey = productObj._id ? productObj._id.toString() : null;
                 
-                // If product has active Flash Sale, override discount
-                // Otherwise, keep the original product discount
+                // Nếu sản phẩm có Flash Sale đang chạy thì ghi đè discount
+                // Nếu không thì giữ discount gốc của sản phẩm
                 if (productIdKey && flashSaleMap.has(productIdKey)) {
                     productObj.discount = flashSaleMap.get(productIdKey);
                 }
-                // If no Flash Sale, productObj.discount remains as original from database
+                // Nếu không có Flash Sale thì productObj.discount giữ nguyên từ database
                 
-                // Calculate priceAfterDiscount on server
+                // Tính giá sau giảm trên server
                 const discount = productObj.discount || 0;
                 productObj.priceAfterDiscount = productObj.price * (1 - discount / 100);
                 
-                // Calculate totalStock on server (sum of all variant stocks)
+                // Tính tổng tồn kho trên server (tổng stock các biến thể)
                 if (productObj.variants && Array.isArray(productObj.variants)) {
                     productObj.totalStock = productObj.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
                 } else {
                     productObj.totalStock = 0;
                 }
 
-                // Add totalSold
+                // Thêm tổng đã bán
                 productObj.totalSold = totalSoldMap.get(productIdKey) || 0;
 
-                // Add rating data
+                // Thêm dữ liệu đánh giá
                 const ratingData = ratingMap.get(productIdKey);
                 productObj.averageRating = ratingData ? ratingData.averageRating : 0;
                 productObj.reviewCount = ratingData ? ratingData.reviewCount : 0;
@@ -706,36 +706,36 @@ class ProductService {
                 return productObj;
             });
 
-            // Get total count for pagination
+            // Lấy tổng số bản ghi cho phân trang
             const totalProducts = await modelProduct.countDocuments(filterQuery);
             const totalPages = Math.ceil(totalProducts / limit);
 
             // Get filter options for UI
             const categories = await modelCategory.find();
 
-            // Get unique sizes and colors for filters
+            // Lấy size và màu duy nhất cho bộ lọc
             const allProducts = await modelProduct.find({ status: 'active' });
             const uniqueSizes = [...new Set(allProducts.flatMap((p) => p.variants?.map((v) => v.size) || []))].sort();
 
-            // Get unique colors and normalize them (group similar names)
+            // Lấy màu duy nhất và chuẩn hóa (gộp tên tương tự)
             const allColors = allProducts.flatMap((p) => p.colors?.map((c) => c.name) || []);
             const colorMap = new Map();
             const colorCountMap = new Map();
 
-            // Group colors by normalized name (lowercase, trimmed)
+            // Gộp màu theo tên đã chuẩn hóa (chữ thường, bỏ khoảng trắng thừa)
             allColors.forEach((color) => {
                 if (!color) return;
                 const normalized = color.toLowerCase().trim();
 
                 if (!colorMap.has(normalized)) {
-                    // Store the first occurrence (original case) as the display name
+                    // Lưu lần xuất hiện đầu (đúng chữ hoa/thường) làm tên hiển thị
                     colorMap.set(normalized, color);
                     colorCountMap.set(normalized, 0);
                 }
                 colorCountMap.set(normalized, colorCountMap.get(normalized) + 1);
             });
 
-            // Get unique colors with counts, sorted alphabetically
+            // Lấy màu duy nhất kèm số lượng, sắp xếp theo bảng chữ cái
             const uniqueColors = Array.from(colorMap.entries())
                 .map(([normalized, displayName]) => ({
                     name: displayName,

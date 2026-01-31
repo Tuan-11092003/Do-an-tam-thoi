@@ -13,6 +13,7 @@ import {
     FileTextOutlined,
     NotificationOutlined,
     UserOutlined,
+    HomeOutlined,
 } from '@ant-design/icons';
 
 function SidebarAdmin() {
@@ -26,7 +27,14 @@ function SidebarAdmin() {
         return match ? match[1] : 'dashboard';
     };
 
+    const isUserSiteKey = (key) => key === 'trang-nguoi-dung';
+
     const menuItems = [
+        {
+            key: 'trang-nguoi-dung',
+            icon: <HomeOutlined />,
+            label: <span className="font-medium">Trang người dùng</span>,
+        },
         {
             key: 'dashboard',
             icon: <DashboardOutlined />,
@@ -36,16 +44,6 @@ function SidebarAdmin() {
             key: 'user',
             icon: <UserOutlined />,
             label: <span className="font-medium">Quản lý người dùng</span>,
-        },
-        {
-            key: 'coupon',
-            icon: <TagOutlined />,
-            label: <span className="font-medium">Quản lý mã giảm giá</span>,
-        },
-        {
-            key: 'flashSale',
-            icon: <ThunderboltFilled />,
-            label: <span className="font-medium">Quản lý khuyến mãi</span>,
         },
         {
             key: 'category',
@@ -58,28 +56,42 @@ function SidebarAdmin() {
             label: <span className="font-medium">Quản lý sản phẩm</span>,
         },
         {
-            key: 'news',
-            icon: <NotificationOutlined />,
-            label: <span className="font-medium">Quản lý tin tức</span>,
-        },
-        {
             key: 'order',
             icon: <ShoppingCartOutlined />,
             label: <span className="font-medium">Quản lý đơn hàng</span>,
         },
         {
-            key: 'message',
-            icon: <MessageOutlined />,
-            label: <span className="font-medium">Quản lý tin nhắn</span>,
+            key: 'coupon',
+            icon: <TagOutlined />,
+            label: <span className="font-medium">Quản lý mã giảm giá</span>,
+        },
+        {
+            key: 'flashSale',
+            icon: <ThunderboltFilled />,
+            label: <span className="font-medium">Quản lý khuyến mãi</span>,
+        },     
+        {
+            key: 'news',
+            icon: <NotificationOutlined />,
+            label: <span className="font-medium">Quản lý tin tức</span>,
         },
         {
             key: 'warranty',
             icon: <SafetyOutlined />,
             label: <span className="font-medium">Quản lý bảo hành</span>,
         },
+        {
+            key: 'message',
+            icon: <MessageOutlined />,
+            label: <span className="font-medium">Quản lý tin nhắn</span>,
+        },
     ];
 
     const handleMenuClick = ({ key }) => {
+        if (isUserSiteKey(key)) {
+            navigate('/');
+            return;
+        }
         navigate(`/admin/${key}`);
     };
 
@@ -115,7 +127,7 @@ function SidebarAdmin() {
             `}</style>
             <Menu
                 mode="inline"
-                selectedKeys={[getSelectedKey()]}
+                selectedKeys={[getSelectedKey()].filter((k) => !isUserSiteKey(k))}
                 onClick={handleMenuClick}
                 items={menuItems}
                 className="admin-menu border-0"

@@ -172,7 +172,7 @@ class CartService {
 
                 const priceAfterDiscount = product.price * (1 - discount / 100);
 
-                // Helper function to get first image from color (supports both array and string for backward compatibility)
+                // Hàm lấy ảnh đầu tiên từ color (hỗ trợ cả mảng và chuỗi để tương thích ngược)
                 const getFirstImage = (color) => {
                     if (!color?.images) return null;
                     if (Array.isArray(color.images)) {
@@ -309,6 +309,11 @@ class CartService {
 
         const newCoupon = await Coupon.findOne({ nameCoupon });
         if (!newCoupon) throw new BadRequestError('Mã giảm giá không tồn tại');
+
+        // ✅ THÊM: Kiểm tra user đã sử dụng coupon này chưa
+        if (newCoupon.usedBy && newCoupon.usedBy.includes(userId.toString())) {
+            throw new BadRequestError('Bạn đã sử dụng mã giảm giá này rồi');
+        }
 
         const now = new Date();
         if (now < newCoupon.startDate || now > newCoupon.endDate) {

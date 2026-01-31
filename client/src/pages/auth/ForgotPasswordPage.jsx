@@ -37,7 +37,7 @@ function ForgotPasswordPage() {
             setIsEmailSent(true);
             message.success('Mã xác thực đã được gửi đến email của bạn!');
         } catch (error) {
-            message.error('Có lỗi xảy ra. Vui lòng thử lại sau!');
+            message.error('Email không tồn tại!');
             console.error(error);
         } finally {
             setLoading(false);
@@ -56,7 +56,7 @@ function ForgotPasswordPage() {
             message.success('Đặt lại mật khẩu thành công!');
             setTimeout(() => {
                 window.location.href = '/login';
-            }, 2000);
+            }, 1000);
         } catch (error) {
             message.error('Có lỗi xảy ra. Vui lòng thử lại sau!');
             console.error(error);

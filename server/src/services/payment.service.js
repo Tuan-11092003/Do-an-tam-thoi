@@ -10,11 +10,11 @@ const CartService = require('./cart.service');
 const crypto = require('crypto');
 const https = require('https');
 const axios = require('axios');
-const CryptoJS = require('crypto-js');
 
 const { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } = require('vnpay');
 
 const dayjs = require('dayjs');
+const { generatePayID, createZaloPayMac, formatZaloPayDate } = require('./payment/payment.utils');
 
 function generateWarrantyProduct(products, userId, orderId) {
     const date = new Date();
@@ -30,36 +30,6 @@ function generateWarrantyProduct(products, userId, orderId) {
         });
     });
     return warrantyProduct;
-}
-
-function generatePayID() {
-    // Tạo ID thanh toán bao gồm cả giây để tránh trùng lặp
-    const now = new Date();
-    const timestamp = now.getTime();
-    const seconds = now.getSeconds().toString().padStart(2, '0');
-    const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
-    return `PAY${timestamp}${seconds}${milliseconds}`;
-}
-
-function createZaloPayMac(appId, appTransId, appUser, amount, appTime, embedData, item, key) {
-    // Format MAC theo ZaloPay: app_id + | + app_trans_id + | + app_user + | + amount + | + app_time + | + embed_data + | + item
-    const hmacInput = `${appId}|${appTransId}|${appUser}|${amount}|${appTime}|${embedData}|${item}`;
-    
-    // Tạo MAC bằng HMAC SHA256
-    const mac = CryptoJS.HmacSHA256(hmacInput, key).toString();
-    
-    return mac;
-}
-
-function formatZaloPayDate() {
-    // Tạo yymmdd theo timezone Vietnam (GMT+7)
-    const now = new Date();
-    // Convert sang Vietnam timezone (GMT+7)
-    const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-    const year = vietnamTime.getUTCFullYear().toString().slice(-2); // 2 số cuối của năm
-    const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
 }
 
 // Helper function: Đánh dấu coupon đã được user sử dụng khi thanh toán thành công
@@ -136,12 +106,12 @@ class PaymentService {
                     endDate: { $gte: now },
                 }).lean();
             } catch (flashSaleQueryError) {
-                console.error('Error querying flash sales:', flashSaleQueryError);
-                // Nếu có lỗi khi query flash sale, tiếp tục với empty array
+                console.error('Lỗi truy vấn flash sale:', flashSaleQueryError);
+                // Nếu lỗi khi truy vấn flash sale thì tiếp tục với mảng rỗng
                 activeFlashSales = [];
             }
             
-            // Tạo map để lookup nhanh: productId -> discount
+            // Tạo map để tra cứu nhanh: productId -> discount
             const flashSaleMap = new Map();
             activeFlashSales.forEach((flashSale) => {
                 if (flashSale && flashSale.productId) {
@@ -149,12 +119,12 @@ class PaymentService {
                 }
             });
             
-            // Lưu discount và priceAfterDiscount vào từng item để có thể hiển thị lại sau
+            // Lưu discount và priceAfterDiscount vào từng item để hiển thị lại sau
             itemsWithDiscount = selectedItems.map((item) => {
                 let discount = 0;
                 const product = productsData.find((p) => p._id.toString() === item.productId.toString());
                 
-                // Kiểm tra flash sale từ map (đã query trước đó)
+                // Kiểm tra flash sale từ map (đã truy vấn trước đó)
                 if (product) {
                     const productIdStr = item.productId.toString();
                     if (flashSaleMap.has(productIdStr)) {
@@ -176,8 +146,8 @@ class PaymentService {
                 return item;
             });
             
-            // Tính finalPrice dựa trên coupon nếu có
-            // CHỈ áp dụng coupon nếu frontend gửi useCoupon: true (người dùng đã chọn coupon trong checkout)
+            // Tính finalPrice theo coupon nếu có
+            // CHỈ áp dụng coupon khi frontend gửi useCoupon: true (người dùng đã chọn coupon ở trang thanh toán)
             selectedFinalPrice = selectedTotalPrice;
             
             if (useCoupon === true && findCart.coupon && findCart.coupon.code) {
@@ -185,13 +155,13 @@ class PaymentService {
                 couponToApply = findCart.coupon;
             }
             
-            // Lưu thông tin useCoupon vào cart để callback có thể sử dụng
-            // Nếu useCoupon = false, xóa coupon khỏi cart để callback không áp dụng
+            // Lưu thông tin useCoupon vào cart để callback dùng
+            // Nếu useCoupon = false thì xóa coupon khỏi cart để callback không áp dụng
             if (useCoupon === false) {
                 findCart.coupon = null;
                 await findCart.save();
             } else if (useCoupon === true && findCart.coupon) {
-                // Đảm bảo coupon được lưu trong cart để callback sử dụng
+                // Đảm bảo coupon được lưu trong cart để callback dùng
                 await findCart.save();
             }
         } catch (calculationError) {
@@ -201,13 +171,13 @@ class PaymentService {
 
         if (paymentMethod === 'momo') {
             return new Promise(async (resolve, reject) => {
-                // Kiểm tra amount hợp lệ
+                // Kiểm tra số tiền hợp lệ
                 if (!selectedFinalPrice || selectedFinalPrice <= 0) {
                     reject(new BadRequestError('Số tiền thanh toán không hợp lệ'));
                     return;
                 }
 
-                // Tạo payment record trước khi redirect
+                // Tạo bản ghi payment trước khi chuyển hướng
                 const payment = await Payment.create({
                     products: itemsWithDiscount,
                     totalPrice: selectedTotalPrice,
@@ -218,26 +188,26 @@ class PaymentService {
                     coupon: couponToApply,
                     userId,
                     paymentMethod: 'momo',
-                    status: 'pending', // Sẽ được cập nhật thành 'confirmed' khi callback thành công
+                    status: 'pending', // Sẽ cập nhật thành 'confirmed' khi callback thành công
                 });
 
-                // Sử dụng environment variables nếu có, nếu không thì dùng giá trị mặc định (test)
+                // Dùng biến môi trường nếu có, không thì dùng giá trị mặc định (test)
                 const accessKey = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
                 const secretKey = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
                 const partnerCode = process.env.MOMO_PARTNER_CODE || 'MOMO';
                 const orderId = partnerCode + new Date().getTime();
                 const requestId = orderId;
-                // Lưu orderId vào payment để callback có thể tìm
+                // Lưu orderId vào payment để callback tìm
                 payment.orderId = orderId;
                 await payment.save();
                 
-                // orderInfo chứa cả orderId và userId để callback có thể parse
+                // orderInfo chứa orderId và userId để callback parse
                 const orderInfo = `Thanh toan don hang ${orderId} ${userId}`;
                 const redirectUrl = 'http://localhost:3000/api/payment/momo';
                 const ipnUrl = 'http://localhost:3000/api/payment/momo';
                 const requestType = 'payWithMethod';
-                // MoMo yêu cầu amount là số nguyên (không có phần thập phân)
-                const amount = Math.round(selectedFinalPrice); // Sử dụng giá đã tính lại cho selectedItems và làm tròn
+                // MoMo yêu cầu amount là số nguyên (không thập phân)
+                const amount = Math.round(selectedFinalPrice); // Dùng giá đã tính lại cho selectedItems và làm tròn
                 const extraData = '';
 
                 // Tạo rawSignature theo đúng thứ tự yêu cầu của MoMo
@@ -293,7 +263,7 @@ class PaymentService {
                         'Content-Type': 'application/json',
                         'Content-Length': Buffer.byteLength(requestBody),
                     },
-                    timeout: 10000, // 10 giây timeout
+                    timeout: 10000, // Hết hạn 10 giây
                 };
 
                 const req = https.request(options, (momoRes) => {
@@ -303,7 +273,7 @@ class PaymentService {
                     });
                     momoRes.on('end', () => {
                         try {
-                            // Kiểm tra HTTP status code
+                            // Kiểm tra mã trạng thái HTTP
                             if (momoRes.statusCode !== 200) {
                                 // Xử lý các HTTP status code cụ thể
                                 let errorMessage = 'MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
@@ -317,7 +287,7 @@ class PaymentService {
                                 return;
                             }
                             
-                            // Kiểm tra xem response có phải là HTML không (thường là trang lỗi khi API không khả dụng)
+                            // Kiểm tra response có phải HTML không (thường là trang lỗi khi API không khả dụng)
                             if (data.trim().startsWith('<')) {
                                 reject(new BadRequestError('MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).'));
                                 return;
@@ -325,7 +295,7 @@ class PaymentService {
                             
                             const response = JSON.parse(data);
                             
-                            // Kiểm tra nếu MoMo API trả về lỗi
+                            // Kiểm tra MoMo API trả về lỗi
                             if (response.resultCode && response.resultCode !== 0) {
                                 const errorMessage = response.message || `Lỗi từ MoMo API (code: ${response.resultCode})`;
                                 reject(new BadRequestError(errorMessage));
@@ -350,7 +320,7 @@ class PaymentService {
                     reject(new BadRequestError('MoMo API không phản hồi. Vui lòng thử lại sau.'));
                 });
                 
-                req.setTimeout(3000); // 3 giây timeout
+                req.setTimeout(3000); // Hết hạn 3 giây
                 req.write(requestBody);
                 req.end();
             });
@@ -373,9 +343,9 @@ class PaymentService {
                 tmnCode: 'DH2F13SW',
                 secureSecret: '7VJPG70RGPOWFO47VSBT29WPDYND0EJG',
                 vnpayHost: 'https://sandbox.vnpayment.vn',
-                testMode: true, // tùy chọn
-                hashAlgorithm: 'SHA512', // tùy chọn
-                loggerFn: ignoreLogger, // tùy chọn
+                testMode: true, // Chế độ test
+                hashAlgorithm: 'SHA512',
+                loggerFn: ignoreLogger,
             });
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -388,25 +358,25 @@ class PaymentService {
             const vnpayResponse = await vnpay.buildPaymentUrl({
                 vnp_Amount: selectedFinalPrice, // Sử dụng giá đã tính lại cho selectedItems
                 vnp_IpAddr: '127.0.0.1', //
-                vnp_TxnRef: orderId, // Sử dụng orderId đã lưu
-                vnp_OrderInfo: `Thanh toan don hang ${orderId} ${userId}`, // Chứa cả orderId và userId
+                vnp_TxnRef: orderId, // Dùng orderId đã lưu
+                vnp_OrderInfo: `Thanh toan don hang ${orderId} ${userId}`, // Chứa orderId và userId
                 vnp_OrderType: ProductCode.Other,
-                vnp_ReturnUrl: `http://localhost:3000/api/payment/vnpay`, //
+                vnp_ReturnUrl: `http://localhost:3000/api/payment/vnpay`,
                 vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
-                vnp_CreateDate: dateFormat(new Date()), // tùy chọn, mặc định là thời gian hiện tại
-                vnp_ExpireDate: dateFormat(tomorrow), // tùy chọn
+                vnp_CreateDate: dateFormat(new Date()),
+                vnp_ExpireDate: dateFormat(tomorrow),
             });
 
             return vnpayResponse;
         } else if (paymentMethod === 'zalopay') {
             return new Promise(async (resolve, reject) => {
-                // Kiểm tra amount hợp lệ
+                // Kiểm tra số tiền hợp lệ
                 if (!selectedFinalPrice || selectedFinalPrice <= 0) {
                     reject(new BadRequestError('Số tiền thanh toán không hợp lệ'));
                     return;
                 }
 
-                // Tạo payment record trước khi redirect
+                // Tạo bản ghi payment trước khi chuyển hướng
                 const payment = await Payment.create({
                     products: itemsWithDiscount,
                     totalPrice: selectedTotalPrice,
@@ -420,7 +390,7 @@ class PaymentService {
                     status: 'pending',
                 });
 
-                // Lấy thông tin từ environment variables
+                // Lấy thông tin từ biến môi trường
                 const appId = process.env.ZALOPAY_APP_ID || '553';
                 const key1 = process.env.ZALOPAY_KEY1 || '9phuAOYhan4urywHTh0ndEXiV3pKHr5Q';
                 const key2 = process.env.ZALOPAY_KEY2 || 'Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3';
@@ -430,11 +400,11 @@ class PaymentService {
                 // ZaloPay yêu cầu amount là số nguyên (VND)
                 const amount = Math.round(selectedFinalPrice);
                 
-                // Tạo timestamp (milliseconds)
+                // Tạo timestamp (mili giây)
                 const timestamp = Date.now();
                 
-                // Tạo app_trans_id theo format: yymmdd_OrderID
-                const datePrefix = formatZaloPayDate(); // Format: yymmdd (Vietnam timezone)
+                // Tạo app_trans_id theo định dạng: yymmdd_OrderID
+                const datePrefix = formatZaloPayDate(); // Định dạng: yymmdd (múi giờ Việt Nam)
                 const uniqueId = `ZLP${timestamp}`;
                 const appTransId = `${datePrefix}_${uniqueId}`;
                 
@@ -445,9 +415,9 @@ class PaymentService {
                 payment.orderId = orderId;
                 await payment.save();
 
-                // item: JSON Array String, dùng "[]" nếu rỗng
-                // Format: [{"name": "Product 1", "quantity": 1, "price": 100000}, ...]
-                // Query lại productsData vì nó nằm trong scope khác
+                // item: chuỗi JSON mảng, dùng "[]" nếu rỗng
+                // Định dạng: [{"name": "Product 1", "quantity": 1, "price": 100000}, ...]
+                // Truy vấn lại productsData vì nằm ở scope khác
                 let itemData = [];
                 try {
                     const Product = require('../models/product.model');
@@ -467,30 +437,28 @@ class PaymentService {
                 }
                 const item = itemData.length > 0 ? JSON.stringify(itemData) : '[]'; // JSON Array String
 
-                // embed_data: JSON String với redirecturl
-                // Redirect về callback endpoint để xử lý cả thành công và hủy (giống VNPay/MoMo)
+                // embed_data: chuỗi JSON có redirecturl
+                // Chuyển về endpoint callback để xử lý cả thành công và hủy (giống VNPay/MoMo)
                 const embedDataObj = {
-                    redirecturl: callbackUrl, // Redirect về callback endpoint để xử lý
-                    // Có thể thêm preferred_payment_method nếu muốn
-                    // preferred_payment_method: ["zalopay_wallet", "vietqr"]
+                    redirecturl: callbackUrl, // Chuyển về callback để xử lý
                 };
-                const embedData = JSON.stringify(embedDataObj); // JSON String
+                const embedData = JSON.stringify(embedDataObj); // Chuỗi JSON
 
-                // app_user: thông tin user (string, max 50 chars)
+                // app_user: thông tin user (chuỗi, tối đa 50 ký tự)
                 const appUser = userId.toString().substring(0, 50);
 
-                // Tạo dữ liệu request theo format ZaloPay API (chưa có mac)
+                // Tạo dữ liệu request theo định dạng API ZaloPay (chưa có mac)
                 const requestData = {
-                    app_id: parseInt(appId), // int32 required
-                    app_user: appUser, // string(50) required
-                    app_trans_id: appTransId, // string(40) required - format: yymmdd_OrderID
-                    app_time: timestamp, // int64 required - unix timestamp in milliseconds
-                    amount: amount, // int64 required - VND
-                    description: `Thanh toan don hang ${orderId} ${userId}`, // string(256) required - Chứa cả orderId và userId
-                    item: item, // string(2048) required - JSON Array String
-                    embed_data: embedData, // string required - JSON String
-                    callback_url: callbackUrl, // string optional
-                    bank_code: '', // string optional - để rỗng để hiển thị tất cả phương thức
+                    app_id: parseInt(appId), // int32 bắt buộc
+                    app_user: appUser, // string(50) bắt buộc
+                    app_trans_id: appTransId, // string(40) bắt buộc - định dạng: yymmdd_OrderID
+                    app_time: timestamp, // int64 bắt buộc - unix timestamp mili giây
+                    amount: amount, // int64 bắt buộc - VND
+                    description: `Thanh toan don hang ${orderId} ${userId}`, // string(256) bắt buộc - Chứa orderId và userId
+                    item: item, // string(2048) bắt buộc - chuỗi JSON mảng
+                    embed_data: embedData, // string bắt buộc - chuỗi JSON
+                    callback_url: callbackUrl, // string tùy chọn
+                    bank_code: '', // string tùy chọn - rỗng để hiển thị tất cả phương thức
                 };
 
                 // Tạo MAC (Message Authentication Code) theo format ZaloPay
@@ -507,7 +475,7 @@ class PaymentService {
                 );
                 requestData.mac = mac;
 
-                // Gọi ZaloPay API bằng axios
+                // Gọi API ZaloPay bằng axios
                 
                 try {
                     const response = await axios({
@@ -518,21 +486,21 @@ class PaymentService {
                             'Accept': 'application/json'
                         },
                         data: requestData,
-                        timeout: 10000, // 10 giây timeout
+                        timeout: 10000, // Hết hạn 10 giây
                     });
 
                     // Kiểm tra response
-                    // ZaloPay trả về return_code: 1 là thành công (theo thực tế từ API)
+                    // ZaloPay trả về return_code: 1 là thành công (theo tài liệu API)
                     const returnCode = response.data.return_code;
                     const returnMessage = response.data.return_message || '';
                     const subReturnCode = response.data.sub_return_code;
                     const subReturnMessage = response.data.sub_return_message || '';
                     const orderUrl = response.data.order_url;
                     
-                    // Kiểm tra return_code: 1 là thành công (theo thực tế từ ZaloPay API)
+                    // Kiểm tra return_code: 1 là thành công (theo API ZaloPay)
                     if (returnCode !== undefined && returnCode !== 1) {
                         // return_code khác 1 → có lỗi
-                        // Hiển thị thông báo lỗi chi tiết hơn nếu có
+                        // Hiển thị thông báo lỗi chi tiết nếu có
                         const detailedError = subReturnMessage 
                             ? `${returnMessage} (Chi tiết: ${subReturnMessage})`
                             : returnMessage || `Lỗi từ ZaloPay API (code: ${returnCode})`;
@@ -543,7 +511,7 @@ class PaymentService {
                         reject(new BadRequestError(errorMsg));
                     } else {
                         // return_code = 1 và có order_url → thành công
-                        // Trả về cả order_url và orderId để controller có thể lưu vào cookie
+                        // Trả về order_url và orderId để controller lưu vào cookie
                         resolve({ 
                             order_url: orderUrl,
                             orderId: orderId,
@@ -553,7 +521,7 @@ class PaymentService {
                 } catch (error) {
                     // Xử lý lỗi từ axios
                     if (error.response) {
-                        // Server trả về response với status code ngoài 2xx
+                        // Server trả về mã trạng thái ngoài 2xx
                         let errorMessage = 'ZaloPay API hiện không khả dụng. Vui lòng thử lại sau.';
                         if (error.response.status === 503) {
                             errorMessage = 'ZaloPay API đang bảo trì. Vui lòng thử lại sau.';
@@ -565,10 +533,10 @@ class PaymentService {
                         
                         reject(new BadRequestError(errorMessage));
                     } else if (error.request) {
-                        // Request đã được gửi nhưng không nhận được response
+                        // Request đã gửi nhưng không nhận được response
                         reject(new BadRequestError('Không thể kết nối đến ZaloPay API. Vui lòng thử lại sau.'));
                     } else {
-                        // Lỗi khi setup request
+                        // Lỗi khi thiết lập request
                         reject(new BadRequestError('Lỗi khi tạo request đến ZaloPay API: ' + error.message));
                     }
                 }
@@ -585,7 +553,7 @@ class PaymentService {
                 coupon: couponToApply,
                 userId,
                 paymentMethod: 'cod',
-                status: 'confirmed',
+                status: 'pending',
             });
             
             // Đánh dấu coupon đã được user sử dụng (nếu có)
@@ -600,12 +568,12 @@ class PaymentService {
         }
     }
 
-    // Helper function: Xóa các sản phẩm đã chọn khỏi giỏ hàng
+    // Hàm trợ giúp: Xóa các sản phẩm đã chọn khỏi giỏ hàng
     async removeSelectedItemsFromCart(cartId, selectedItems) {
         const cart = await Cart.findById(cartId);
         if (!cart) return;
 
-        // Lấy danh sách ID của các sản phẩm đã chọn
+        // Lấy danh sách ID sản phẩm đã chọn
         const selectedItemIds = selectedItems.map((item) => item._id.toString());
 
         // Xóa các sản phẩm đã chọn khỏi giỏ hàng

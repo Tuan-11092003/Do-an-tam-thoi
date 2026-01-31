@@ -40,7 +40,7 @@ function UserSidebar({ activeKey, onSelect, setActiveKey }) {
         {
             key: 'profile',
             icon: <UserOutlined />,
-            label: 'Thông tin cá nhân',
+            label: 'Tài khoản của tôi',
             path: '/profile',
         },
         {
@@ -52,7 +52,7 @@ function UserSidebar({ activeKey, onSelect, setActiveKey }) {
         {
             key: 'warranty',
             icon: <FileText className="w-4 h-4" />,
-            label: 'Quản lý bảo hành',
+            label: 'Bảo hành sản phẩm',
             path: '/warranty',
         },
         {

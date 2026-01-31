@@ -11,7 +11,7 @@ class CategoryService {
         
         // Nếu có search query, tìm kiếm theo categoryName
         if (search && search.trim()) {
-            const searchRegex = new RegExp(search.trim(), 'i'); // Case-insensitive
+            const searchRegex = new RegExp(search.trim(), 'i'); // Không phân biệt hoa thường
             query.categoryName = searchRegex;
         }
         

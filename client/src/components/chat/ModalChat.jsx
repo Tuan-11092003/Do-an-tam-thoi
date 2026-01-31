@@ -59,6 +59,7 @@ function ModalChat() {
     const handleSendMessage = async () => {
         if (!inputMessage.trim()) return;
 
+        // Optimistic Update - hiển thị ngay
         const newMessage = {
             id: Date.now(),
             text: inputMessage,
