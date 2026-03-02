@@ -4,7 +4,7 @@ const { BadRequestError } = require('../../core/error.response');
 const axios = require('axios');
 const CryptoJS = require('crypto-js');
 const { createZaloPayMac, formatZaloPayDate } = require('./payment.utils');
-const { calculatePriceForSelectedItems, removeSelectedItemsFromCart } = require('./payment.helpers');
+const { calculatePriceForSelectedItems, removeSelectedItemsFromCart, markCouponAsUsed } = require('./payment.helpers');
 
 class ZalopayPaymentService {
     /**
@@ -238,8 +238,11 @@ class ZalopayPaymentService {
             paymentMethod: 'zalopay',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua ZaloPay thành công
         });
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
+
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, userId);
+        }
+
         await removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;
     }

@@ -3,18 +3,17 @@ const Payment = require('../models/payment.model');
 const Warranty = require('../models/warranty.model');
 const PreviewProduct = require('../models/previewProduct.model');
 const Product = require('../models/product.model');
-const Coupon = require('../models/counpon.model');
 const { BadRequestError } = require('../core/error.response');
 const CartService = require('./cart.service');
+const momoPaymentService = require('./payment/momoPayment.service');
+const vnpayPaymentService = require('./payment/vnpayPayment.service');
+const zalopayPaymentService = require('./payment/zalopayPayment.service');
+const { markCouponAsUsed } = require('./payment/payment.helpers');
 
 const crypto = require('crypto');
 const https = require('https');
-const axios = require('axios');
-
-const { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } = require('vnpay');
 
 const dayjs = require('dayjs');
-const { generatePayID, createZaloPayMac, formatZaloPayDate } = require('./payment/payment.utils');
 
 function generateWarrantyProduct(products, userId, orderId) {
     const date = new Date();
@@ -30,26 +29,6 @@ function generateWarrantyProduct(products, userId, orderId) {
         });
     });
     return warrantyProduct;
-}
-
-// Helper function: Đánh dấu coupon đã được user sử dụng khi thanh toán thành công
-async function markCouponAsUsed(couponCode, userId) {
-    if (!couponCode || !userId) return;
-    
-    try {
-        const coupon = await Coupon.findOne({ nameCoupon: couponCode });
-        if (coupon) {
-            // Chỉ thêm userId nếu chưa có trong mảng usedBy
-            if (!coupon.usedBy || !coupon.usedBy.includes(userId)) {
-                coupon.usedBy = coupon.usedBy || [];
-                coupon.usedBy.push(userId);
-                await coupon.save();
-            }
-        }
-    } catch (error) {
-        console.error('Error marking coupon as used:', error);
-        // Không throw error để không ảnh hưởng đến flow thanh toán
-    }
 }
 
 class PaymentService {
@@ -170,378 +149,42 @@ class PaymentService {
         }
 
         if (paymentMethod === 'momo') {
-            return new Promise(async (resolve, reject) => {
-                // Kiểm tra số tiền hợp lệ
-                if (!selectedFinalPrice || selectedFinalPrice <= 0) {
-                    reject(new BadRequestError('Số tiền thanh toán không hợp lệ'));
-                    return;
-                }
-
-                // Tạo bản ghi payment trước khi chuyển hướng
-                const payment = await Payment.create({
-                    products: itemsWithDiscount,
-                    totalPrice: selectedTotalPrice,
-                    fullName: finalFullName,
-                    phone: finalPhone,
-                    address: finalAddress,
-                    finalPrice: selectedFinalPrice,
-                    coupon: couponToApply,
-                    userId,
-                    paymentMethod: 'momo',
-                    status: 'pending', // Sẽ cập nhật thành 'confirmed' khi callback thành công
-                });
-
-                // Dùng biến môi trường nếu có, không thì dùng giá trị mặc định (test)
-                const accessKey = process.env.MOMO_ACCESS_KEY || 'F8BBA842ECF85';
-                const secretKey = process.env.MOMO_SECRET_KEY || 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
-                const partnerCode = process.env.MOMO_PARTNER_CODE || 'MOMO';
-                const orderId = partnerCode + new Date().getTime();
-                const requestId = orderId;
-                // Lưu orderId vào payment để callback tìm
-                payment.orderId = orderId;
-                await payment.save();
-                
-                // orderInfo chứa orderId và userId để callback parse
-                const orderInfo = `Thanh toan don hang ${orderId} ${userId}`;
-                const redirectUrl = 'http://localhost:3000/api/payment/momo';
-                const ipnUrl = 'http://localhost:3000/api/payment/momo';
-                const requestType = 'payWithMethod';
-                // MoMo yêu cầu amount là số nguyên (không thập phân)
-                const amount = Math.round(selectedFinalPrice); // Dùng giá đã tính lại cho selectedItems và làm tròn
-                const extraData = '';
-
-                // Tạo rawSignature theo đúng thứ tự yêu cầu của MoMo
-                // Thứ tự: accessKey, amount, extraData, ipnUrl, orderId, orderInfo, partnerCode, redirectUrl, requestId, requestType
-                // Lưu ý: Không URL encode trong rawSignature, chỉ dùng giá trị gốc
-                const rawSignature =
-                    'accessKey=' +
-                    accessKey +
-                    '&amount=' +
-                    amount +
-                    '&extraData=' +
-                    extraData +
-                    '&ipnUrl=' +
-                    ipnUrl +
-                    '&orderId=' +
-                    orderId +
-                    '&orderInfo=' +
-                    orderInfo +
-                    '&partnerCode=' +
-                    partnerCode +
-                    '&redirectUrl=' +
-                    redirectUrl +
-                    '&requestId=' +
-                    requestId +
-                    '&requestType=' +
-                    requestType;
-
-                const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
-
-                const requestBody = JSON.stringify({
-                    partnerCode,
-                    partnerName: 'Test',
-                    storeId: 'MomoTestStore',
-                    requestId,
-                    amount,
-                    orderId,
-                    orderInfo,
-                    redirectUrl,
-                    ipnUrl,
-                    lang: 'vi',
-                    requestType,
-                    autoCapture: true,
-                    extraData,
-                    signature,
-                });
-
-                const options = {
-                    hostname: 'test-payment.momo.vn',
-                    port: 443,
-                    path: '/v2/gateway/api/create',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Content-Length': Buffer.byteLength(requestBody),
-                    },
-                    timeout: 10000, // Hết hạn 10 giây
-                };
-
-                const req = https.request(options, (momoRes) => {
-                    let data = '';
-                    momoRes.on('data', (chunk) => {
-                        data += chunk;
-                    });
-                    momoRes.on('end', () => {
-                        try {
-                            // Kiểm tra mã trạng thái HTTP
-                            if (momoRes.statusCode !== 200) {
-                                // Xử lý các HTTP status code cụ thể
-                                let errorMessage = 'MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
-                                if (momoRes.statusCode === 503) {
-                                    errorMessage = 'MoMo API đang bảo trì. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
-                                } else if (momoRes.statusCode === 504) {
-                                    errorMessage = 'MoMo API không phản hồi. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
-                                }
-                                
-                                reject(new BadRequestError(errorMessage));
-                                return;
-                            }
-                            
-                            // Kiểm tra response có phải HTML không (thường là trang lỗi khi API không khả dụng)
-                            if (data.trim().startsWith('<')) {
-                                reject(new BadRequestError('MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).'));
-                                return;
-                            }
-                            
-                            const response = JSON.parse(data);
-                            
-                            // Kiểm tra MoMo API trả về lỗi
-                            if (response.resultCode && response.resultCode !== 0) {
-                                const errorMessage = response.message || `Lỗi từ MoMo API (code: ${response.resultCode})`;
-                                reject(new BadRequestError(errorMessage));
-                            } else if (!response.payUrl) {
-                                reject(new BadRequestError('MoMo API không trả về link thanh toán. Vui lòng thử lại.'));
-                            } else {
-                                resolve(response);
-                            }
-                        } catch (err) {
-                            reject(new BadRequestError('Lỗi xử lý phản hồi từ MoMo API: ' + (err.message || 'Unknown error')));
-                        }
-                    });
-                });
-
-                req.on('error', (e) => {
-                    reject(new BadRequestError('Lỗi kết nối đến MoMo API: ' + (e.message || 'Unknown error')));
-                });
-                
-                // Xử lý timeout
-                req.on('timeout', () => {
-                    req.destroy();
-                    reject(new BadRequestError('MoMo API không phản hồi. Vui lòng thử lại sau.'));
-                });
-                
-                req.setTimeout(3000); // Hết hạn 3 giây
-                req.write(requestBody);
-                req.end();
-            });
-        } else if (paymentMethod === 'vnpay') {
-            // Tạo payment record trước khi redirect
-            const payment = await Payment.create({
-                products: itemsWithDiscount,
-                totalPrice: selectedTotalPrice,
-                fullName: finalFullName,
-                phone: finalPhone,
-                address: finalAddress,
-                finalPrice: selectedFinalPrice,
-                coupon: couponToApply,
+            return momoPaymentService.createPayment({
+                itemsWithDiscount,
+                selectedTotalPrice,
+                selectedFinalPrice,
+                finalFullName,
+                finalPhone,
+                finalAddress,
+                couponToApply,
                 userId,
-                paymentMethod: 'vnpay',
-                status: 'pending', // Sẽ được cập nhật thành 'confirmed' khi callback thành công
             });
-
-            const vnpay = new VNPay({
-                tmnCode: 'DH2F13SW',
-                secureSecret: '7VJPG70RGPOWFO47VSBT29WPDYND0EJG',
-                vnpayHost: 'https://sandbox.vnpayment.vn',
-                testMode: true, // Chế độ test
-                hashAlgorithm: 'SHA512',
-                loggerFn: ignoreLogger,
+        }
+        if (paymentMethod === 'vnpay') {
+            return vnpayPaymentService.createPayment({
+                itemsWithDiscount,
+                selectedTotalPrice,
+                selectedFinalPrice,
+                finalFullName,
+                finalPhone,
+                finalAddress,
+                couponToApply,
+                userId,
             });
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            
-            // Tạo orderId (vnp_TxnRef) và lưu vào payment
-            const orderId = `${userId}_${generatePayID()}`;
-            payment.orderId = orderId;
-            await payment.save();
-            
-            const vnpayResponse = await vnpay.buildPaymentUrl({
-                vnp_Amount: selectedFinalPrice, // Sử dụng giá đã tính lại cho selectedItems
-                vnp_IpAddr: '127.0.0.1', //
-                vnp_TxnRef: orderId, // Dùng orderId đã lưu
-                vnp_OrderInfo: `Thanh toan don hang ${orderId} ${userId}`, // Chứa orderId và userId
-                vnp_OrderType: ProductCode.Other,
-                vnp_ReturnUrl: `http://localhost:3000/api/payment/vnpay`,
-                vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
-                vnp_CreateDate: dateFormat(new Date()),
-                vnp_ExpireDate: dateFormat(tomorrow),
+        }
+        if (paymentMethod === 'zalopay') {
+            return zalopayPaymentService.createPayment({
+                itemsWithDiscount,
+                selectedTotalPrice,
+                selectedFinalPrice,
+                finalFullName,
+                finalPhone,
+                finalAddress,
+                couponToApply,
+                userId,
             });
-
-            return vnpayResponse;
-        } else if (paymentMethod === 'zalopay') {
-            return new Promise(async (resolve, reject) => {
-                // Kiểm tra số tiền hợp lệ
-                if (!selectedFinalPrice || selectedFinalPrice <= 0) {
-                    reject(new BadRequestError('Số tiền thanh toán không hợp lệ'));
-                    return;
-                }
-
-                // Tạo bản ghi payment trước khi chuyển hướng
-                const payment = await Payment.create({
-                    products: itemsWithDiscount,
-                    totalPrice: selectedTotalPrice,
-                    fullName: finalFullName,
-                    phone: finalPhone,
-                    address: finalAddress,
-                    finalPrice: selectedFinalPrice,
-                    coupon: couponToApply,
-                    userId,
-                    paymentMethod: 'zalopay',
-                    status: 'pending',
-                });
-
-                // Lấy thông tin từ biến môi trường
-                const appId = process.env.ZALOPAY_APP_ID || '553';
-                const key1 = process.env.ZALOPAY_KEY1 || '9phuAOYhan4urywHTh0ndEXiV3pKHr5Q';
-                const key2 = process.env.ZALOPAY_KEY2 || 'Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3';
-                const sandboxUrl = process.env.ZALOPAY_SANDBOX_URL || 'https://sb-openapi.zalopay.vn/v2/create';
-                const callbackUrl = process.env.ZALOPAY_CALLBACK_URL || 'http://localhost:3000/api/payment/zalopay';
-
-                // ZaloPay yêu cầu amount là số nguyên (VND)
-                const amount = Math.round(selectedFinalPrice);
-                
-                // Tạo timestamp (mili giây)
-                const timestamp = Date.now();
-                
-                // Tạo app_trans_id theo định dạng: yymmdd_OrderID
-                const datePrefix = formatZaloPayDate(); // Định dạng: yymmdd (múi giờ Việt Nam)
-                const uniqueId = `ZLP${timestamp}`;
-                const appTransId = `${datePrefix}_${uniqueId}`;
-                
-                // Tạo orderId để lưu vào database (dùng app_trans_id)
-                const orderId = appTransId;
-                
-                // Lưu orderId vào payment
-                payment.orderId = orderId;
-                await payment.save();
-
-                // item: chuỗi JSON mảng, dùng "[]" nếu rỗng
-                // Định dạng: [{"name": "Product 1", "quantity": 1, "price": 100000}, ...]
-                // Truy vấn lại productsData vì nằm ở scope khác
-                let itemData = [];
-                try {
-                    const Product = require('../models/product.model');
-                    const selectedProductIds = itemsWithDiscount.map(i => i.productId);
-                    const products = await Product.find({ _id: { $in: selectedProductIds } }).lean();
-                    
-                    itemData = itemsWithDiscount.map(cartItem => {
-                        const product = products.find(p => p._id.toString() === cartItem.productId.toString());
-                        return {
-                            name: product?.name || 'Sản phẩm',
-                            quantity: cartItem.quantity || 1,
-                            price: cartItem.priceAfterDiscount || product?.price || 0
-                        };
-                    });
-                } catch (error) {
-                    itemData = [];
-                }
-                const item = itemData.length > 0 ? JSON.stringify(itemData) : '[]'; // JSON Array String
-
-                // embed_data: chuỗi JSON có redirecturl
-                // Chuyển về endpoint callback để xử lý cả thành công và hủy (giống VNPay/MoMo)
-                const embedDataObj = {
-                    redirecturl: callbackUrl, // Chuyển về callback để xử lý
-                };
-                const embedData = JSON.stringify(embedDataObj); // Chuỗi JSON
-
-                // app_user: thông tin user (chuỗi, tối đa 50 ký tự)
-                const appUser = userId.toString().substring(0, 50);
-
-                // Tạo dữ liệu request theo định dạng API ZaloPay (chưa có mac)
-                const requestData = {
-                    app_id: parseInt(appId), // int32 bắt buộc
-                    app_user: appUser, // string(50) bắt buộc
-                    app_trans_id: appTransId, // string(40) bắt buộc - định dạng: yymmdd_OrderID
-                    app_time: timestamp, // int64 bắt buộc - unix timestamp mili giây
-                    amount: amount, // int64 bắt buộc - VND
-                    description: `Thanh toan don hang ${orderId} ${userId}`, // string(256) bắt buộc - Chứa orderId và userId
-                    item: item, // string(2048) bắt buộc - chuỗi JSON mảng
-                    embed_data: embedData, // string bắt buộc - chuỗi JSON
-                    callback_url: callbackUrl, // string tùy chọn
-                    bank_code: '', // string tùy chọn - rỗng để hiển thị tất cả phương thức
-                };
-
-                // Tạo MAC (Message Authentication Code) theo format ZaloPay
-                // hmac_input = app_id + | + app_trans_id + | + app_user + | + amount + | + app_time + | + embed_data + | + item
-                const mac = createZaloPayMac(
-                    parseInt(appId),
-                    appTransId,
-                    appUser,
-                    amount,
-                    timestamp,
-                    embedData,
-                    item,
-                    key1
-                );
-                requestData.mac = mac;
-
-                // Gọi API ZaloPay bằng axios
-                
-                try {
-                    const response = await axios({
-                        method: 'post',
-                        url: sandboxUrl,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        data: requestData,
-                        timeout: 10000, // Hết hạn 10 giây
-                    });
-
-                    // Kiểm tra response
-                    // ZaloPay trả về return_code: 1 là thành công (theo tài liệu API)
-                    const returnCode = response.data.return_code;
-                    const returnMessage = response.data.return_message || '';
-                    const subReturnCode = response.data.sub_return_code;
-                    const subReturnMessage = response.data.sub_return_message || '';
-                    const orderUrl = response.data.order_url;
-                    
-                    // Kiểm tra return_code: 1 là thành công (theo API ZaloPay)
-                    if (returnCode !== undefined && returnCode !== 1) {
-                        // return_code khác 1 → có lỗi
-                        // Hiển thị thông báo lỗi chi tiết nếu có
-                        const detailedError = subReturnMessage 
-                            ? `${returnMessage} (Chi tiết: ${subReturnMessage})`
-                            : returnMessage || `Lỗi từ ZaloPay API (code: ${returnCode})`;
-                        reject(new BadRequestError(detailedError));
-                    } else if (!orderUrl) {
-                        // return_code = 1 nhưng không có order_url → lỗi
-                        const errorMsg = returnMessage || 'ZaloPay API không trả về link thanh toán. Vui lòng thử lại.';
-                        reject(new BadRequestError(errorMsg));
-                    } else {
-                        // return_code = 1 và có order_url → thành công
-                        // Trả về order_url và orderId để controller lưu vào cookie
-                        resolve({ 
-                            order_url: orderUrl,
-                            orderId: orderId,
-                            paymentId: payment._id
-                        });
-                    }
-                } catch (error) {
-                    // Xử lý lỗi từ axios
-                    if (error.response) {
-                        // Server trả về mã trạng thái ngoài 2xx
-                        let errorMessage = 'ZaloPay API hiện không khả dụng. Vui lòng thử lại sau.';
-                        if (error.response.status === 503) {
-                            errorMessage = 'ZaloPay API đang bảo trì. Vui lòng thử lại sau.';
-                        } else if (error.response.status === 504) {
-                            errorMessage = 'ZaloPay API không phản hồi. Vui lòng thử lại sau.';
-                        } else if (error.response.data && error.response.data.return_message) {
-                            errorMessage = error.response.data.return_message;
-                        }
-                        
-                        reject(new BadRequestError(errorMessage));
-                    } else if (error.request) {
-                        // Request đã gửi nhưng không nhận được response
-                        reject(new BadRequestError('Không thể kết nối đến ZaloPay API. Vui lòng thử lại sau.'));
-                    } else {
-                        // Lỗi khi thiết lập request
-                        reject(new BadRequestError('Lỗi khi tạo request đến ZaloPay API: ' + error.message));
-                    }
-                }
-            });
-        } else if (paymentMethod === 'cod') {
+        }
+        if (paymentMethod === 'cod') {
             // COD: Tạo payment với status = 'confirmed' ngay lập tức
             const payment = await Payment.create({
                 products: itemsWithDiscount,
@@ -667,91 +310,20 @@ class PaymentService {
 
     // Tìm payment ZaloPay gần đây (trong vòng 10 phút) để fallback
     async findRecentZaloPayPayment(appTransId) {
-        const Payment = require('../models/payment.model');
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-        
-        // Tìm payment pending gần đây với paymentMethod = 'zalopay'
-        const payments = await Payment.find({
-            paymentMethod: 'zalopay',
-            status: 'pending',
-            createdAt: { $gte: tenMinutesAgo }
-        }).sort({ createdAt: -1 }).limit(5);
-        
-        // Thử match với appTransId (có thể format khác một chút)
-        for (const payment of payments) {
-            if (payment.orderId) {
-                // So sánh exact match
-                if (payment.orderId === appTransId) {
-                    return await this.findPaymentByOrderId(payment.orderId);
-                }
-                // So sánh phần sau dấu gạch dưới (format: yymmdd_OrderID)
-                const orderIdParts = payment.orderId.split('_');
-                const appTransIdParts = appTransId.split('_');
-                if (orderIdParts.length >= 2 && appTransIdParts.length >= 2) {
-                    if (orderIdParts[1] === appTransIdParts[1]) {
-                        return await this.findPaymentByOrderId(payment.orderId);
-                    }
-                }
-            }
-        }
-        
-        return null;
+        return zalopayPaymentService.findRecentPayment(appTransId, this.findPaymentByOrderId.bind(this));
     }
 
     // Lấy tất cả payments ZaloPay pending để debug
     async getAllPendingZaloPayPayments() {
-        const Payment = require('../models/payment.model');
-        const payments = await Payment.find({
-            paymentMethod: 'zalopay',
-            status: 'pending'
-        }).sort({ createdAt: -1 }).limit(10).lean();
-        
-        return payments.map(p => ({
-            _id: p._id,
-            orderId: p.orderId,
-            createdAt: p.createdAt,
-            finalPrice: p.finalPrice
-        }));
+        return zalopayPaymentService.getAllPendingPayments();
     }
 
     // Tìm payment ZaloPay pending gần đây nhất (trong 10 phút)
     async findMostRecentPendingZaloPayPayment() {
-        const Payment = require('../models/payment.model');
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-        
-        // Tìm payment pending gần đây nhất với paymentMethod = 'zalopay'
-        const payment = await Payment.findOne({
-            paymentMethod: 'zalopay',
-            status: 'pending',
-            createdAt: { $gte: tenMinutesAgo }
-        }).sort({ createdAt: -1 });
-        
-        if (payment && payment.status === 'pending') {
-            // Cập nhật status thành confirmed
-            payment.status = 'confirmed';
-            await payment.save();
-            
-            // Xóa sản phẩm đã chọn khỏi giỏ hàng
-            const Cart = require('../models/cart.model');
-            const cart = await Cart.findOne({ userId: payment.userId });
-            if (cart && cart.products && cart.products.length > 0) {
-                // Tạo map để so sánh: productId + colorId + sizeId
-                const paymentItemsMap = new Map();
-                payment.products.forEach(p => {
-                    const key = `${p.productId.toString()}_${p.colorId.toString()}_${p.sizeId.toString()}`;
-                    paymentItemsMap.set(key, p.quantity);
-                });
-                
-                // Xóa các item khớp với payment
-                cart.products = cart.products.filter(item => {
-                    const key = `${item.productId.toString()}_${item.colorId.toString()}_${item.sizeId.toString()}`;
-                    return !paymentItemsMap.has(key);
-                });
-                await cart.save();
-            }
-        }
-        
-        return payment;
+        return zalopayPaymentService.findMostRecentPendingPayment(async (paymentId) => {
+            const payment = await Payment.findById(paymentId);
+            return payment ? await this.findPaymentByOrderId(payment.orderId) : null;
+        });
     }
 
     async getPaymentById(id) {
@@ -820,279 +392,17 @@ class PaymentService {
 
     // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
     async momoCallback(id) {
-        const findCart = await Cart.findOne({ userId: id });
-        if (!findCart) {
-            throw new BadRequestError('Cart not found');
-        }
-
-        const selectedItems = (findCart.products || []).filter((item) => item.isSelected === true);
-        if (!selectedItems.length) {
-            throw new BadRequestError('No selected items in cart');
-        }
-
-        // Tính lại totalPrice và finalPrice chỉ dựa trên selectedItems
-        const Product = require('../models/product.model');
-        const modelFlashSale = require('../models/flashSale.model');
-        const selectedProductIds = selectedItems.map((item) => item.productId);
-        const productsData = await Product.find({ _id: { $in: selectedProductIds } });
-        
-        // Query active flash sales
-        const now = new Date();
-        const activeFlashSales = await modelFlashSale.find({
-            productId: { $in: selectedProductIds },
-            startDate: { $lte: now },
-            endDate: { $gte: now },
-        }).lean();
-        
-        const flashSaleMap = new Map();
-        activeFlashSales.forEach((flashSale) => {
-            if (flashSale.productId) {
-                flashSaleMap.set(flashSale.productId.toString(), flashSale.discount);
-            }
-        });
-        
-        let selectedTotalPrice = 0;
-        const itemsWithDiscount = selectedItems.map((item) => {
-            let discount = 0;
-            const product = productsData.find((p) => p._id.toString() === item.productId.toString());
-            
-            // Kiểm tra flash sale từ map
-            if (product) {
-                const productIdStr = item.productId.toString();
-                if (flashSaleMap.has(productIdStr)) {
-                    discount = flashSaleMap.get(productIdStr);
-                } else {
-                    discount = product?.discount || 0;
-                }
-                
-                const priceAfterDiscount = product.price * (1 - discount / 100);
-                selectedTotalPrice += priceAfterDiscount * item.quantity;
-                
-                // Lưu discount và priceAfterDiscount vào item
-                return {
-                    ...item.toObject ? item.toObject() : item,
-                    discount,
-                    priceAfterDiscount,
-                };
-            }
-            return item;
-        });
-        
-        // Tính finalPrice dựa trên coupon nếu có
-        let selectedFinalPrice = selectedTotalPrice;
-        if (findCart.coupon && findCart.coupon.code) {
-            selectedFinalPrice = selectedTotalPrice - (selectedTotalPrice * findCart.coupon.discount) / 100;
-        }
-
-        const payment = await Payment.create({
-            products: itemsWithDiscount,
-            totalPrice: selectedTotalPrice,
-            fullName: findCart.fullName,
-            phone: findCart.phone,
-            address: findCart.address,
-            finalPrice: selectedFinalPrice,
-            coupon: findCart.coupon && findCart.coupon.code ? findCart.coupon : null,
-            userId: id,
-            paymentMethod: 'momo',
-            status: 'confirmed', // Tự động xác nhận khi thanh toán qua MoMo thành công
-        });
-        
-        // Đánh dấu coupon đã được user sử dụng (nếu có)
-        if (payment.coupon && payment.coupon.code) {
-            await markCouponAsUsed(payment.coupon.code, id);
-        }
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
-        await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
-        return payment;
+        return momoPaymentService.callback(id);
     }
 
     // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
     async zalopayCallback(id) {
-        const findCart = await Cart.findOne({ userId: id });
-        if (!findCart) {
-            throw new BadRequestError('Cart not found');
-        }
-
-        const selectedItems = (findCart.products || []).filter((item) => item.isSelected === true);
-        if (!selectedItems.length) {
-            throw new BadRequestError('No selected items in cart');
-        }
-
-        // Tính lại totalPrice và finalPrice chỉ dựa trên selectedItems
-        const Product = require('../models/product.model');
-        const modelFlashSale = require('../models/flashSale.model');
-        const selectedProductIds = selectedItems.map((item) => item.productId);
-        const productsData = await Product.find({ _id: { $in: selectedProductIds } });
-        
-        // Tối ưu: Query tất cả flash sales một lần thay vì query từng cái một trong vòng lặp
-        const now = new Date();
-        const activeFlashSales = await modelFlashSale.find({
-            productId: { $in: selectedProductIds },
-            startDate: { $lte: now },
-            endDate: { $gte: now },
-        }).lean();
-        
-        // Tạo map để lookup nhanh: productId -> discount
-        const flashSaleMap = new Map();
-        activeFlashSales.forEach((flashSale) => {
-            if (flashSale.productId) {
-                flashSaleMap.set(flashSale.productId.toString(), flashSale.discount);
-            }
-        });
-        
-        let selectedTotalPrice = 0;
-        const itemsWithDiscount = selectedItems.map((item) => {
-            let discount = 0;
-            const product = productsData.find((p) => p._id.toString() === item.productId.toString());
-            
-            // Kiểm tra flash sale từ map (đã query trước đó)
-            if (product) {
-                const productIdStr = item.productId.toString();
-                if (flashSaleMap.has(productIdStr)) {
-                    discount = flashSaleMap.get(productIdStr);
-                } else {
-                    discount = product?.discount || 0;
-                }
-                
-                const priceAfterDiscount = product.price * (1 - discount / 100);
-                selectedTotalPrice += priceAfterDiscount * item.quantity;
-                
-                // Lưu discount và priceAfterDiscount vào item
-                return {
-                    ...item.toObject ? item.toObject() : item,
-                    discount,
-                    priceAfterDiscount,
-                };
-            }
-            return item;
-        });
-        
-        // Tính finalPrice dựa trên coupon nếu có
-        // Trong callback, chỉ áp dụng coupon nếu cart vẫn còn coupon (đã được lưu từ createPayment)
-        let selectedFinalPrice = selectedTotalPrice;
-        let couponToApply = null;
-        
-        if (findCart.coupon && findCart.coupon.code) {
-            selectedFinalPrice = selectedTotalPrice - (selectedTotalPrice * findCart.coupon.discount) / 100;
-            couponToApply = findCart.coupon;
-        }
-
-        const payment = await Payment.create({
-            products: itemsWithDiscount,
-            totalPrice: selectedTotalPrice,
-            fullName: findCart.fullName,
-            phone: findCart.phone,
-            address: findCart.address,
-            finalPrice: selectedFinalPrice,
-            coupon: couponToApply, // Sử dụng couponToApply
-            userId: id,
-            paymentMethod: 'zalopay',
-            status: 'confirmed', // Tự động xác nhận khi thanh toán qua ZaloPay thành công
-        });
-        
-        // Đánh dấu coupon đã được user sử dụng (nếu có)
-        if (payment.coupon && payment.coupon.code) {
-            await markCouponAsUsed(payment.coupon.code, id);
-        }
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
-        await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
-        return payment;
+        return zalopayPaymentService.callback(id);
     }
 
     // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
     async vnpayCallback(id) {
-        const findCart = await Cart.findOne({ userId: id });
-        if (!findCart) {
-            throw new BadRequestError('Cart not found');
-        }
-
-        const selectedItems = (findCart.products || []).filter((item) => item.isSelected === true);
-        if (!selectedItems.length) {
-            throw new BadRequestError('No selected items in cart');
-        }
-
-        // Tính lại totalPrice và finalPrice chỉ dựa trên selectedItems
-        const Product = require('../models/product.model');
-        const modelFlashSale = require('../models/flashSale.model');
-        const selectedProductIds = selectedItems.map((item) => item.productId);
-        const productsData = await Product.find({ _id: { $in: selectedProductIds } });
-        
-        // Tối ưu: Query tất cả flash sales một lần thay vì query từng cái một trong vòng lặp
-        const now = new Date();
-        const activeFlashSales = await modelFlashSale.find({
-            productId: { $in: selectedProductIds },
-            startDate: { $lte: now },
-            endDate: { $gte: now },
-        }).lean();
-        
-        // Tạo map để lookup nhanh: productId -> discount
-        const flashSaleMap = new Map();
-        activeFlashSales.forEach((flashSale) => {
-            if (flashSale.productId) {
-                flashSaleMap.set(flashSale.productId.toString(), flashSale.discount);
-            }
-        });
-        
-        let selectedTotalPrice = 0;
-        const itemsWithDiscount = selectedItems.map((item) => {
-            let discount = 0;
-            const product = productsData.find((p) => p._id.toString() === item.productId.toString());
-            
-            // Kiểm tra flash sale từ map (đã query trước đó)
-            if (product) {
-                const productIdStr = item.productId.toString();
-                if (flashSaleMap.has(productIdStr)) {
-                    discount = flashSaleMap.get(productIdStr);
-                } else {
-                    discount = product?.discount || 0;
-                }
-                
-                const priceAfterDiscount = product.price * (1 - discount / 100);
-                selectedTotalPrice += priceAfterDiscount * item.quantity;
-                
-                // Lưu discount và priceAfterDiscount vào item
-                return {
-                    ...item.toObject ? item.toObject() : item,
-                    discount,
-                    priceAfterDiscount,
-                };
-            }
-            return item;
-        });
-        
-        // Tính finalPrice dựa trên coupon nếu có
-        // Trong callback, chỉ áp dụng coupon nếu cart vẫn còn coupon (đã được lưu từ createPayment)
-        let selectedFinalPrice = selectedTotalPrice;
-        let couponToApply = null;
-        
-        if (findCart.coupon && findCart.coupon.code) {
-            selectedFinalPrice = selectedTotalPrice - (selectedTotalPrice * findCart.coupon.discount) / 100;
-            couponToApply = findCart.coupon;
-        }
-
-        const payment = await Payment.create({
-            products: itemsWithDiscount,
-            totalPrice: selectedTotalPrice,
-            fullName: findCart.fullName,
-            phone: findCart.phone,
-            address: findCart.address,
-            finalPrice: selectedFinalPrice,
-            coupon: couponToApply, // Sử dụng couponToApply
-            userId: id,
-            paymentMethod: 'vnpay',
-            status: 'confirmed', // Tự động xác nhận khi thanh toán qua VNPay thành công
-        });
-        
-        // Đánh dấu coupon đã được user sử dụng (nếu có)
-        if (payment.coupon && payment.coupon.code) {
-            await markCouponAsUsed(payment.coupon.code, id);
-        }
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
-        await this.removeSelectedItemsFromCart(findCart._id, selectedItems);
-        return payment;
+        return vnpayPaymentService.callback(id);
     }
 
     async getAllOrder(search = '', status = '') {

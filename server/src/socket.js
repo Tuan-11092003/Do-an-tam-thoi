@@ -19,7 +19,7 @@ async function initSocket(server) {
     io = new Server(server, {
         cors: {
             origin: allowedOrigins,
-            credentials: true,
+            credentials: true, //để gửi kèm cookies
         },
     });
 

@@ -1,7 +1,29 @@
 const Cart = require('../../models/cart.model');
 const Payment = require('../../models/payment.model');
 const Product = require('../../models/product.model');
+const Coupon = require('../../models/counpon.model');
 const { BadRequestError } = require('../../core/error.response');
+
+/**
+ * Đánh dấu coupon đã được user sử dụng khi thanh toán thành công
+ * @param {String} couponCode - Mã coupon
+ * @param {String} userId - User ID
+ */
+async function markCouponAsUsed(couponCode, userId) {
+    if (!couponCode || !userId) return;
+    try {
+        const coupon = await Coupon.findOne({ nameCoupon: couponCode });
+        if (coupon) {
+            if (!coupon.usedBy || !coupon.usedBy.includes(userId)) {
+                coupon.usedBy = coupon.usedBy || [];
+                coupon.usedBy.push(userId);
+                await coupon.save();
+            }
+        }
+    } catch (error) {
+        console.error('Lỗi đánh dấu coupon đã dùng:', error);
+    }
+}
 
 /**
  * Tính toán giá cho selected items từ cart
@@ -139,5 +161,6 @@ async function removeSelectedItemsFromCart(cartId, selectedItems) {
 module.exports = {
     calculatePriceForSelectedItems,
     removeSelectedItemsFromCart,
+    markCouponAsUsed,
 };
 

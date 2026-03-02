@@ -97,7 +97,7 @@ class PaymentController {
                 payment = await PaymentService.findPaymentByOrderId(orderId);
             }
             
-            // Nếu không tìm thấy bằng orderId, thử parse từ orderInfo
+            // Nếu không tìm thấy bằng orderId từ query, thử parse từ orderInfo
             if (!payment && orderInfo) {
                 const orderInfoParts = orderInfo.split(' ');
                 // Format mới: "Thanh toan don hang {orderId} {userId}"

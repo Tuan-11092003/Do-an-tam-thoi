@@ -41,7 +41,7 @@ function Chatbot() {
                         _id: 'welcome',
                         sender: 'bot',
                         content:
-                            '👋 Xin chào!  Tôi là AI bạn cần hỗ trợ gì? 😊',
+                            '👋 Xin chào!  Tôi là trợ lý AI bạn cần hỗ trợ gì? 😊',
                         timestamp: new Date(),
                     },
                 ]);

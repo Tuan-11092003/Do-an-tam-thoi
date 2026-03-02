@@ -2,7 +2,7 @@ const Payment = require('../../models/payment.model');
 const Cart = require('../../models/cart.model');
 const { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } = require('vnpay');
 const { generatePayID } = require('./payment.utils');
-const { calculatePriceForSelectedItems, removeSelectedItemsFromCart } = require('./payment.helpers');
+const { calculatePriceForSelectedItems, removeSelectedItemsFromCart, markCouponAsUsed } = require('./payment.helpers');
 const { BadRequestError } = require('../../core/error.response');
 
 class VnpayPaymentService {
@@ -106,8 +106,11 @@ class VnpayPaymentService {
             paymentMethod: 'vnpay',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua VNPay thành công
         });
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
+
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, userId);
+        }
+
         await removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;
     }

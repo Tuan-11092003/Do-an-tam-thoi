@@ -3,7 +3,7 @@ const Cart = require('../../models/cart.model');
 const { BadRequestError } = require('../../core/error.response');
 const crypto = require('crypto');
 const https = require('https');
-const { calculatePriceForSelectedItems, removeSelectedItemsFromCart } = require('./payment.helpers');
+const { calculatePriceForSelectedItems, removeSelectedItemsFromCart, markCouponAsUsed } = require('./payment.helpers');
 
 class MomoPaymentService {
     /**
@@ -56,7 +56,7 @@ class MomoPaymentService {
             const partnerCode = process.env.MOMO_PARTNER_CODE || 'MOMO';
             const orderId = partnerCode + new Date().getTime();
             const requestId = orderId;
-            // Lưu orderId vào payment để callback có thể tìm
+            // Lưu orderId vào payment để MoMo trả về khi callback
             payment.orderId = orderId;
             await payment.save();
             
@@ -113,6 +113,7 @@ class MomoPaymentService {
                 signature,
             });
 
+            //Gửi HTTPS POST request đến MoMo API để tạo link thanh toán
             const options = {
                 hostname: 'test-payment.momo.vn',
                 port: 443,
@@ -185,11 +186,8 @@ class MomoPaymentService {
         });
     }
 
-    /**
-     * Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
-     * @param {String} userId - User ID
-     * @returns {Promise} Payment object
-     */
+
+    // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
     async callback(userId) {
         const findCart = await Cart.findOne({ userId: userId });
         if (!findCart) {
@@ -217,8 +215,11 @@ class MomoPaymentService {
             paymentMethod: 'momo',
             status: 'confirmed', // Tự động xác nhận khi thanh toán qua MoMo thành công
         });
-        
-        // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng, không xóa toàn bộ
+
+        if (payment.coupon && payment.coupon.code) {
+            await markCouponAsUsed(payment.coupon.code, userId);
+        }
+
         await removeSelectedItemsFromCart(findCart._id, selectedItems);
         return payment;
     }
