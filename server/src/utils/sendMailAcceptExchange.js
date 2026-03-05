@@ -15,7 +15,7 @@ const SendMailAcceptExchange = async (email, orderCode) => {
         });
 
         const storeName = 'KCONS VIỆT NAM';
-        const returnAddress = 'Đền Lừ, Hoàng Mai, Hà Nội';
+        const returnAddress = 'Cổ Nhuế, Bắc Từ Liêm, Hà Nội';
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleString('vi-VN', {
             day: '2-digit',

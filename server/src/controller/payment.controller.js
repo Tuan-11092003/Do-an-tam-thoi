@@ -187,7 +187,7 @@ class PaymentController {
     // User redirect callback (GET) - Sau khi thanh toán, user được redirect về đây
     async zalopayCallback(req, res, next) {
         try {
-            // ZaloPay trả về apptransid (lowercase) và status trong redirect URL
+            // Đọc query ZaloPay trả về apptransid (lowercase) và status trong redirect URL
             const { apptransid, app_trans_id, status } = req.query;
             
             // Log để debug
@@ -234,14 +234,6 @@ class PaymentController {
                 return res.redirect(`${process.env.URL_CLIENT}/?payment=error`);
             }
             
-            // Kiểm tra status của payment - chỉ redirect success nếu payment đã được confirmed
-            // Nếu payment vẫn pending, có thể là user đã hủy hoặc chưa thanh toán thành công
-            if (payment.status !== 'confirmed') {
-                console.log('ZaloPay callback: Payment found but status is not confirmed:', payment.status);
-                res.clearCookie('zalopay_app_trans_id');
-                return res.redirect(`${process.env.URL_CLIENT}/?payment=failed`);
-            }
-            
             console.log('ZaloPay callback: Payment found and confirmed, redirecting to success:', payment._id);
             
             // Xóa cookie sau khi tìm thấy payment
@@ -267,7 +259,7 @@ class PaymentController {
                 return res.json({ return_code: -1, return_message: 'Missing data or mac' });
             }
             
-            // Parse data (là JSON string)
+            // Parse data (JSON string --> Object)
             let callbackData;
             try {
                 callbackData = JSON.parse(data);
@@ -276,7 +268,7 @@ class PaymentController {
                 return res.json({ return_code: -1, return_message: 'Invalid data format' });
             }
             
-            // Verify MAC signature
+            // Verify MAC signature(đảm bảo request đến từ ZaloPay không bị giả mạo)
             const key2 = process.env.ZALOPAY_KEY2 || 'Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3';
             const expectedMac = CryptoJS.HmacSHA256(data, key2).toString();
             
@@ -295,7 +287,7 @@ class PaymentController {
                 type
             });
             
-            // Tìm payment bằng app_trans_id
+            // Tìm payment bằng app_trans_id(orderId)
             let payment = await PaymentService.findPaymentByOrderId(app_trans_id);
             
             if (!payment) {
@@ -303,7 +295,7 @@ class PaymentController {
                 return res.json({ return_code: -1, return_message: 'Payment not found' });
             }
             
-            // Kiểm tra amount có khớp không (bảo mật)
+            // Kiểm tra amount(số tiền) có khớp không (bảo mật)
             if (payment.finalPrice !== amount) {
                 console.error('ZaloPay server callback: Amount mismatch', {
                     expected: payment.finalPrice,
@@ -317,7 +309,7 @@ class PaymentController {
                 payment.status = 'confirmed';
                 await payment.save();
                 
-                // Xóa sản phẩm đã chọn khỏi giỏ hàng
+                // Xóa sản phẩm đã thanh toán khỏi giỏ hàng
                 const Cart = require('../models/cart.model');
                 const cart = await Cart.findOne({ userId: payment.userId });
                 if (cart && cart.products && cart.products.length > 0) {
@@ -335,7 +327,7 @@ class PaymentController {
                 }
             }
             
-            // Trả về response cho ZaloPay server (theo format ZaloPay yêu cầu)
+            // Trả về response cho ZaloPay server biết đã xử lý xong(theo format ZaloPay yêu cầu)
             res.json({ return_code: 1, return_message: 'Success' });
         } catch (error) {
             console.error('ZaloPay server callback error:', error);

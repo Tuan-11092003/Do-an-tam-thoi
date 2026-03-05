@@ -189,6 +189,7 @@ function Warranty() {
         };
     };
 
+    //mở modal “Yêu cầu đổi trả”
     const openReturnModal = (warrantyItem) => {
         setSelectedWarranty(warrantyItem);
         setReturnModalVisible(true);

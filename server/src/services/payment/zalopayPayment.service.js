@@ -58,7 +58,7 @@ class ZalopayPaymentService {
             const sandboxUrl = process.env.ZALOPAY_SANDBOX_URL || 'https://sb-openapi.zalopay.vn/v2/create';
             const callbackUrl = process.env.ZALOPAY_CALLBACK_URL || 'http://localhost:3000/api/payment/zalopay';
 
-            // ZaloPay yêu cầu amount là số nguyên (VND)
+            // ZaloPay yêu cầu amount(số tiền) là số nguyên (VND)
             const amount = Math.round(selectedFinalPrice);
             
             // Tạo timestamp (milliseconds)
@@ -101,9 +101,7 @@ class ZalopayPaymentService {
             // embed_data: JSON String với redirecturl
             // Redirect về callback endpoint để xử lý cả thành công và hủy (giống VNPay/MoMo)
             const embedDataObj = {
-                redirecturl: callbackUrl, // Redirect về callback endpoint để xử lý
-                // Có thể thêm preferred_payment_method nếu muốn
-                // preferred_payment_method: ["zalopay_wallet", "vietqr"]
+                redirecturl: callbackUrl,
             };
             const embedData = JSON.stringify(embedDataObj); // JSON String
 
@@ -138,8 +136,7 @@ class ZalopayPaymentService {
             );
             requestData.mac = mac;
 
-            // Gọi ZaloPay API bằng axios
-            
+            // Gọi ZaloPay API bằng axios        
             try {
                 const response = await axios({
                     method: 'post',
