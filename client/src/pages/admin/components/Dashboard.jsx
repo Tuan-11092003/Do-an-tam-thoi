@@ -67,7 +67,7 @@ function Dashboard() {
         recentReviews: [],
         recentOrders: [],
         paymentMethods: [],
-        revenueByCategory: [],
+        revenueByMonth: [],
     });
 
     useEffect(() => {
@@ -141,6 +141,20 @@ function Dashboard() {
                         { method: 'vnpay', count: 234, revenue: 12200000 },
                         { method: 'cod', count: 189, revenue: 8900000 },
                     ],
+                    revenueByMonth: [
+                        { monthLabel: 'T4/2024', revenue: 3200000, orderCount: 15 },
+                        { monthLabel: 'T5/2024', revenue: 4100000, orderCount: 22 },
+                        { monthLabel: 'T6/2024', revenue: 3800000, orderCount: 19 },
+                        { monthLabel: 'T7/2024', revenue: 5200000, orderCount: 28 },
+                        { monthLabel: 'T8/2024', revenue: 4800000, orderCount: 25 },
+                        { monthLabel: 'T9/2024', revenue: 6100000, orderCount: 32 },
+                        { monthLabel: 'T10/2024', revenue: 5500000, orderCount: 30 },
+                        { monthLabel: 'T11/2024', revenue: 7200000, orderCount: 38 },
+                        { monthLabel: 'T12/2024', revenue: 8900000, orderCount: 45 },
+                        { monthLabel: 'T1/2025', revenue: 6800000, orderCount: 35 },
+                        { monthLabel: 'T2/2025', revenue: 7500000, orderCount: 40 },
+                        { monthLabel: 'T3/2025', revenue: 8200000, orderCount: 42 },
+                    ],
                 });
             }
         } catch (error) {
@@ -161,7 +175,7 @@ function Dashboard() {
                 recentReviews: [],
                     recentOrders: [],
                     paymentMethods: [],
-                    revenueByCategory: [],
+                    revenueByMonth: [],
                 });
         } finally {
             setLoading(false);
@@ -552,32 +566,32 @@ function Dashboard() {
                 </Col>
             </Row>
 
-            {/* Phân tích doanh thu theo danh mục và trạng thái đơn hàng */}
+            {/* Doanh thu theo tháng - full width cho 12 tháng */}
             <Row gutter={[16, 16]} className="mb-8">
-                <Col xs={24} lg={16}>
+                <Col xs={24}>
                     <Card
                         title={
                             <Space>
-                                <Package className="text-blue-500" size={20} />
-                                <Text strong>Phân Tích Doanh Thu Theo Danh Mục</Text>
+                                <Calendar className="text-blue-500" size={20} />
+                                <Text strong>Doanh Thu Theo Tháng</Text>
                             </Space>
                         }
-                        className="h-full shadow-sm border-0"
+                        className="shadow-sm border-0"
                     >
-                        {dashboardData.revenueByCategory && dashboardData.revenueByCategory.length > 0 ? (
+                        {dashboardData.revenueByMonth && dashboardData.revenueByMonth.length > 0 ? (
                             <ResponsiveContainer width="100%" height={320}>
                                 <BarChart
-                                    data={dashboardData.revenueByCategory}
+                                    data={dashboardData.revenueByMonth}
                                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                                 >
                                     <defs>
-                                        <linearGradient id="colorBarCategory" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="colorBarMonth" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
                                             <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.6} />
                                         </linearGradient>
                                     </defs>
                                     <XAxis 
-                                        dataKey="categoryName" 
+                                        dataKey="monthLabel" 
                                         tick={{ fontSize: 11 }} 
                                         axisLine={false} 
                                         tickLine={false}
@@ -595,9 +609,9 @@ function Dashboard() {
                                     <Tooltip
                                         formatter={(value, name) => [
                                             name === 'revenue' ? formatCurrency(value) : value,
-                                            name === 'revenue' ? 'Doanh thu' : name === 'orderCount' ? 'Số đơn hàng' : name === 'productCount' ? 'Số sản phẩm' : name,
+                                            name === 'revenue' ? 'Doanh thu' : name === 'orderCount' ? 'Số đơn hàng' : name,
                                         ]}
-                                        labelFormatter={(label) => `Danh mục: ${label}`}
+                                        labelFormatter={(label) => `Tháng: ${label}`}
                                         contentStyle={{
                                             backgroundColor: 'white',
                                             border: '1px solid #e8e8e8',
@@ -607,7 +621,7 @@ function Dashboard() {
                                     />
                                     <Bar
                                         dataKey="revenue"
-                                        fill="url(#colorBarCategory)"
+                                        fill="url(#colorBarMonth)"
                                         radius={[4, 4, 0, 0]}
                                         name="revenue"
                                     />
@@ -617,7 +631,7 @@ function Dashboard() {
                             <div className="flex flex-col items-center justify-center h-80">
                                 <div className="text-gray-400 text-6xl mb-4">📊</div>
                                 <Text type="secondary" className="text-center">
-                                    Chưa có dữ liệu doanh thu theo danh mục
+                                    Chưa có dữ liệu doanh thu theo tháng
                                     <br />
                                     <Text type="secondary" className="text-xs">
                                         Dữ liệu sẽ hiển thị khi có đơn hàng thành công
@@ -627,55 +641,11 @@ function Dashboard() {
                         )}
                     </Card>
                 </Col>
-
-                <Col xs={24} lg={8}>
-                    <Card
-                        title={
-                            <Space>
-                                <ShoppingCart className="text-green-500" size={20} />
-                                <Text strong>Trạng Thái Đơn Hàng</Text>
-                            </Space>
-                        }
-                        className="h-full shadow-sm border-0"
-                        styles={{ body: { padding: '24px', overflow: 'visible' } }}
-                    >
-                        <ResponsiveContainer width="100%" height={360}>
-                            <PieChart>
-                                <Pie
-                                    data={dashboardData.orderStatus || []}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={true}
-                                    label={({ status, percent }) =>
-                                        percent > 0 ? `${getStatusText(status)} (${(percent * 100).toFixed(0)}%)` : ''
-                                    }
-                                    outerRadius={65}
-                                    innerRadius={30}
-                                    fill="#8884d8"
-                                    dataKey="count"
-                                    style={{ fontSize: '12px' }}
-                                >
-                                    {(dashboardData.orderStatus || []).map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: 'white',
-                                        border: '1px solid #e8e8e8',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                    }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
             </Row>
 
-            {/* Phương thức thanh toán */}
+            {/* Phương thức thanh toán và Trạng thái đơn hàng - cùng một hàng */}
             <Row gutter={[16, 16]} className="mb-8">
-                <Col xs={24} lg={{ span: 12, offset: 6 }}>
+                <Col xs={24} lg={12}>
                     <Card
                         title={
                             <Space>
@@ -683,7 +653,7 @@ function Dashboard() {
                                 <Text strong>Phương Thức Thanh Toán</Text>
                             </Space>
                         }
-                        className="shadow-sm border-0"
+                        className="shadow-sm border-0 h-full"
                     >
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={dashboardData.paymentMethods || []}>
@@ -718,6 +688,49 @@ function Dashboard() {
                                     </defs>
                                 </Bar>
                             </BarChart>
+                        </ResponsiveContainer>
+                    </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                    <Card
+                        title={
+                            <Space>
+                                <ShoppingCart className="text-green-500" size={20} />
+                                <Text strong>Trạng Thái Đơn Hàng</Text>
+                            </Space>
+                        }
+                        className="h-full shadow-sm border-0"
+                        styles={{ body: { padding: '24px', overflow: 'visible' } }}
+                    >
+                        <ResponsiveContainer width="100%" height={280}>
+                            <PieChart>
+                                <Pie
+                                    data={dashboardData.orderStatus || []}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={true}
+                                    label={({ status, percent }) =>
+                                        percent > 0 ? `${getStatusText(status)} (${(percent * 100).toFixed(0)}%)` : ''
+                                    }
+                                    outerRadius={65}
+                                    innerRadius={30}
+                                    fill="#8884d8"
+                                    dataKey="count"
+                                    style={{ fontSize: '12px' }}
+                                >
+                                    {(dashboardData.orderStatus || []).map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: 'white',
+                                        border: '1px solid #e8e8e8',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    }}
+                                />
+                            </PieChart>
                         </ResponsiveContainer>
                     </Card>
                 </Col>

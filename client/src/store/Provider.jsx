@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 
 import { useEffect, useState, useRef } from 'react';
 import { requestAuth } from '../services/user/userService';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { requestGetCart } from '../services/cart/cartService';
 import { requestGetConversationByUserId } from '../services/message/messageService';
 
@@ -44,9 +44,58 @@ export function Provider({ children }) {
             setNewMessage(data);
         });
 
+        socket.on('warranty_status_updated', (data) => {
+            showWarrantyToast(data);
+            saveWarrantyNotification(data);
+        });
+
         return () => {
             socket.disconnect();
         };
+    }, [dataUser._id]);
+
+    const warrantyMessages = {
+        'Đã chấp nhận': '✅ Yêu cầu bảo hành của bạn đã được chấp nhận! Vui lòng kiểm tra email.',
+        'Hoàn thành': '🎉 Yêu cầu bảo hành của bạn đã hoàn thành!',
+        'Từ chối': '❌ Yêu cầu bảo hành của bạn đã bị từ chối.',
+    };
+
+    const showWarrantyToast = (data) => {
+        const msg = warrantyMessages[data.statusLabel];
+        if (msg) {
+            toast.info(msg, {
+                autoClose: false,
+                closeOnClick: false,
+                toastId: `warranty-${data.warrantyId}`,
+                onClose: () => removeWarrantyNotification(data.warrantyId),
+            });
+        }
+    };
+
+    const saveWarrantyNotification = (data) => {
+        try {
+            const pending = JSON.parse(localStorage.getItem('warranty-pending-notifications') || '[]');
+            if (!pending.find((n) => n.warrantyId === data.warrantyId)) {
+                pending.push(data);
+                localStorage.setItem('warranty-pending-notifications', JSON.stringify(pending));
+            }
+        } catch {}
+    };
+
+    const removeWarrantyNotification = (warrantyId) => {
+        try {
+            const pending = JSON.parse(localStorage.getItem('warranty-pending-notifications') || '[]');
+            const updated = pending.filter((n) => n.warrantyId !== warrantyId);
+            localStorage.setItem('warranty-pending-notifications', JSON.stringify(updated));
+        } catch {}
+    };
+
+    useEffect(() => {
+        if (!dataUser._id || dataUser.isAdmin) return;
+        try {
+            const pending = JSON.parse(localStorage.getItem('warranty-pending-notifications') || '[]');
+            pending.forEach((data) => showWarrantyToast(data));
+        } catch {}
     }, [dataUser._id]);
 
     const fetchAuth = async () => {
@@ -73,6 +122,12 @@ export function Provider({ children }) {
                 cookies.remove('refreshToken');
             }
         }
+    };
+
+    const clearAuth = () => {
+        setDataUser({});
+        setCartData([]);
+        setCouponData([]);
     };
 
     const fetchCart = async () => {
@@ -111,6 +166,7 @@ export function Provider({ children }) {
             value={{
                 dataUser,
                 fetchAuth,
+                clearAuth,
                 cartData,
                 fetchCart,
                 couponData,

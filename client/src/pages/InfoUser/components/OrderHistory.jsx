@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { requestGetOrderHistory, requestCancelOrder } from '../../../services/payment/paymentService';
 import {
-    Card,
     Table,
     Tag,
     Image,
     Collapse,
-    Descriptions,
     Empty,
     Spin,
     Modal,
@@ -20,17 +19,12 @@ import {
 } from 'antd';
 import {
     ShoppingBag,
-    CreditCard,
     Clock,
     CheckCircle,
     XCircle,
     Truck,
     Package,
     Calendar,
-    User,
-    Phone,
-    Mail,
-    Ticket,
     Star,
     Camera,
     MessageSquare,
@@ -248,7 +242,10 @@ function OrderHistory() {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <div className="flex items-center space-x-3">
+                <Link
+                    to={record.idProduct ? `/product/${record.idProduct}` : '#'}
+                    className="flex items-center space-x-3 hover:opacity-90 transition-opacity cursor-pointer"
+                >
                     <Image
                         width={60}
                         height={60}
@@ -272,7 +269,7 @@ function OrderHistory() {
                             </Tag>
                         )}
                     </div>
-                </div>
+                </Link>
             ),
             width: 300,
         },
@@ -280,6 +277,7 @@ function OrderHistory() {
             title: 'Đơn giá',
             dataIndex: 'price',
             key: 'price',
+            align: 'right',
             render: (price, record) => (
                 <div className="text-right">
                     {record.discount > 0 ? (
@@ -307,6 +305,7 @@ function OrderHistory() {
             title: 'Thành tiền',
             dataIndex: 'subtotal',
             key: 'subtotal',
+            align: 'right',
             render: (subtotal) => (
                 <div className="text-right font-semibold text-blue-600">{formatPrice(subtotal)}</div>
             ),
@@ -352,14 +351,33 @@ function OrderHistory() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
+            <div className="flex flex-col justify-center items-center min-h-[320px] rounded-2xl border border-gray-200 bg-gray-50/50">
                 <Spin size="large" />
+                <p className="mt-4 text-sm text-gray-500">Đang tải đơn hàng...</p>
             </div>
         );
     }
 
     if (orders.length === 0) {
-        return <Empty description="Bạn chưa có đơn hàng nào" className="py-16" />;
+        return (
+            <div className="rounded-2xl border border-gray-200 bg-white py-16 shadow-sm">
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description={
+                        <span className="text-gray-500">Bạn chưa có đơn hàng nào</span>
+                    }
+                    className="py-8"
+                >
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 transition-colors"
+                    >
+                        <ArrowRight className="h-4 w-4" />
+                        Mua sắm ngay
+                    </Link>
+                </Empty>
+            </div>
+        );
     }
 
     const getStatusBadgeStyle = (status) => {
@@ -380,86 +398,113 @@ function OrderHistory() {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
+            <style>{`
+                .order-history-table .ant-table-thead > tr > th {
+                    background: #f8fafc !important;
+                    font-weight: 600;
+                    color: #475569;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                .order-history-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #f1f5f9;
+                }
+                .order-history-table .ant-table-tbody > tr:hover > td {
+                    background: #f8fafc !important;
+                }
+                .order-history-table .ant-table {
+                    border-radius: 0.75rem;
+                    overflow: hidden;
+                }
+            `}</style>
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                    <ShoppingBag className="w-6 h-6 text-red-600" />
-                    <h2 className="text-2xl font-bold text-gray-900">Lịch sử đơn hàng</h2>
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {orders.length} đơn hàng
-                    </span>
+            <div className="rounded-2xl bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-100 p-6">
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-100 text-red-500">
+                        <ShoppingBag className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Lịch sử đơn hàng</h1>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            Theo dõi và quản lý các đơn hàng của bạn
+                        </p>
+                    </div>
+                    <div className="ml-auto">
+                        <span className="inline-flex items-center rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 ring-1 ring-red-100">
+                            {orders.length} đơn hàng
+                        </span>
+                    </div>
                 </div>
             </div>
 
             {/* Orders List */}
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {orders.map((order) => (
-                    <Card
+                    <div
                         key={order._id}
-                        className="hover:shadow-md transition-shadow cursor-pointer bg-gray-50"
-                        onClick={() => {
-                            const newExpanded = new Set(expandedOrders);
-                            if (newExpanded.has(order._id)) {
-                                newExpanded.delete(order._id);
-                            } else {
-                                newExpanded.add(order._id);
-                            }
-                            setExpandedOrders(newExpanded);
-                        }}
+                        className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-300"
                     >
-                        <div className="flex items-center justify-between">
-                            {/* Left side - Order info */}
-                            <div className="flex items-center space-x-4 flex-1">
-                                <ChevronRight 
-                                    className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${
-                                        expandedOrders.has(order._id) ? 'rotate-90' : ''
-                                    }`} 
-                                />
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-2 mb-1">
+                        <div
+                            className="flex flex-wrap items-center justify-between gap-4 p-5 cursor-pointer sm:p-6"
+                            onClick={() => {
+                                const newExpanded = new Set(expandedOrders);
+                                if (newExpanded.has(order._id)) {
+                                    newExpanded.delete(order._id);
+                                } else {
+                                    newExpanded.add(order._id);
+                                }
+                                setExpandedOrders(newExpanded);
+                            }}
+                        >
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500 transition-transform duration-200 group-hover:bg-gray-200">
+                                    <ChevronRight
+                                        className={`h-5 w-5 transition-transform duration-200 ${
+                                            expandedOrders.has(order._id) ? 'rotate-90' : ''
+                                        }`}
+                                    />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
                                         <span className="font-semibold text-gray-900">
-                                            Đơn hàng #{order._id.slice(-8)}
+                                            Mã đơn hàng <span className="font-mono text-red-600">#{order._id.slice(-8)}</span>
                                         </span>
                                     </div>
-                                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                        <Calendar className="w-4 h-4" />
+                                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                                        <Calendar className="h-4 w-4 flex-shrink-0" />
                                         <span>{formatDate(order.createdAt)}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right side - Status and Price */}
-                            <div className="flex items-center space-x-4">
-                                {/* Status Badge */}
-                                <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border ${getStatusBadgeStyle(order.status)}`}>
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${getStatusBadgeStyle(order.status)}`}>
                                     {getStatusIcon(order.status)}
-                                    <span className="text-sm font-medium">{getStatusText(order.status)}</span>
-                                </div>
+                                    {getStatusText(order.status)}
+                                </span>
 
-                                {/* Cancel Button */}
                                 {canCancelOrder(order.status) && (
                                     <Popconfirm
                                         title="Hủy đơn hàng này?"
                                         description="Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác."
                                         onConfirm={(e) => {
-                                            e.stopPropagation();
+                                            e?.stopPropagation?.();
                                             handleCancelOrder(order._id);
                                         }}
                                         okText="Xác nhận hủy"
                                         cancelText="Không"
-                                        okButtonProps={{ 
+                                        okButtonProps={{
                                             danger: true,
-                                            loading: cancellingOrderId === order._id
+                                            loading: cancellingOrderId === order._id,
                                         }}
                                     >
                                         <Button
                                             danger
                                             size="small"
-                                            icon={<X className="w-4 h-4" />}
+                                            icon={<X className="h-4 w-4" />}
                                             loading={cancellingOrderId === order._id}
                                             disabled={cancellingOrderId === order._id}
-                                            className="flex items-center bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                            className="flex items-center gap-1.5 rounded-lg border-red-200 bg-red-50 text-red-700 hover:!bg-red-100 hover:!border-red-300"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             Hủy đơn
@@ -467,13 +512,12 @@ function OrderHistory() {
                                     </Popconfirm>
                                 )}
 
-                                {/* Price */}
-                                <div className="text-right min-w-[120px]">
-                                    <div className="font-bold text-lg text-blue-600">
+                                <div className="text-right min-w-[100px]">
+                                    <div className="text-lg font-bold text-blue-600">
                                         {formatPrice(order.finalPrice)}
                                     </div>
                                     {order.totalPrice !== order.finalPrice && (
-                                        <div className="text-sm text-gray-400 line-through">
+                                        <div className="text-xs text-gray-400 line-through">
                                             {formatPrice(order.totalPrice)}
                                         </div>
                                     )}
@@ -483,125 +527,32 @@ function OrderHistory() {
 
                         {/* Collapsible Details */}
                         {expandedOrders.has(order._id) && (
-                        <div className="mt-6 pt-6 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
-                        <div className="space-y-6">
-                            {/* Thông tin khách hàng và đơn hàng */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <Card
-                                    title={
-                                        <div className="flex items-center space-x-2">
-                                            <User className="w-5 h-5" />
-                                            <span>Thông tin khách hàng</span>
-                                        </div>
-                                    }
-                                    size="small"
-                                >
-                                    <Descriptions column={1} size="small">
-                                        <Descriptions.Item
-                                            label={
-                                                <span className="flex items-center space-x-1">
-                                                    <User className="w-4 h-4" />
-                                                    <span>Tên</span>
-                                                </span>
-                                            }
-                                        >
-                                            {order.user.fullName}
-                                        </Descriptions.Item>
-                                        <Descriptions.Item
-                                            label={
-                                                <span className="flex items-center space-x-1">
-                                                    <Mail className="w-4 h-4" />
-                                                    <span>Email</span>
-                                                </span>
-                                            }
-                                        >
-                                            {order.user.email}
-                                        </Descriptions.Item>
-                                        <Descriptions.Item
-                                            label={
-                                                <span className="flex items-center space-x-1">
-                                                    <Phone className="w-4 h-4" />
-                                                    <span>Điện thoại</span>
-                                                </span>
-                                            }
-                                        >
-                                            {order.user.phone}
-                                        </Descriptions.Item>
-                                    </Descriptions>
-                                </Card>
-
-                                <Card
-                                    title={
-                                        <div className="flex items-center space-x-2">
-                                            <CreditCard className="w-5 h-5" />
-                                            <span>Thông tin thanh toán</span>
-                                        </div>
-                                    }
-                                    size="small"
-                                >
-                                    <Descriptions column={1} size="small">
-                                        <Descriptions.Item label="Phương thức">
-                                            <Tag color={order.paymentMethod === 'cod' ? 'orange' : 'blue'}>
-                                                {order.paymentMethod === 'cod'
-                                                    ? 'Thanh toán khi nhận hàng'
-                                                    : 'Chuyển khoản'}
-                                            </Tag>
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="Tổng tiền hàng">
-                                            {formatPrice(order.totalPrice)}
-                                        </Descriptions.Item>
-                                        {order.coupon && (
-                                            <Descriptions.Item
-                                                label={
-                                                    <span className="flex items-center space-x-1">
-                                                        <Ticket className="w-4 h-4" />
-                                                        <span>Mã giảm giá</span>
-                                                    </span>
-                                                }
-                                            >
-                                                <div>
-                                                    <Tag color="red">{order.coupon.code}</Tag>
-                                                    <span className="text-red-500">
-                                                        -{formatPrice(order.coupon.discountAmount)} (
-                                                        {order.coupon.discount}%)
-                                                    </span>
-                                                </div>
-                                            </Descriptions.Item>
-                                        )}
-                                        <Descriptions.Item label="Thành tiền">
-                                            <span className="text-lg font-bold text-blue-600">
-                                                {formatPrice(order.finalPrice)}
-                                            </span>
-                                        </Descriptions.Item>
-                                    </Descriptions>
-                                </Card>
-                            </div>
-
-                            {/* Chi tiết sản phẩm */}
-                            <Card
-                                title={
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <Package className="w-5 h-5" />
-                                            <span>Chi tiết sản phẩm</span>
-                                        </div>
-                                        <Tag color="blue">{order.items.length} sản phẩm</Tag>
-                                    </div>
-                                }
-                                className="overflow-hidden"
+                            <div
+                                className="border-t border-gray-100 bg-gray-50/50 px-5 pb-5 sm:px-6 sm:pb-6 pt-4"
+                                onClick={(e) => e.stopPropagation()}
                             >
-                                <Table
-                                    columns={itemColumns}
-                                    dataSource={order.items}
-                                    pagination={false}
-                                    rowKey="_id"
-                                    size="small"
-                                />
-                            </Card>
-                        </div>
-                        </div>
+                                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <Package className="h-5 w-5 text-gray-600" />
+                                            <span className="font-semibold text-gray-900">Chi tiết sản phẩm</span>
+                                        </div>
+                                        <Tag className="rounded-full" color="blue">
+                                            {order.items.length} sản phẩm
+                                        </Tag>
+                                    </div>
+                                    <Table
+                                        columns={itemColumns}
+                                        dataSource={order.items}
+                                        pagination={false}
+                                        rowKey="_id"
+                                        size="middle"
+                                        className="order-history-table"
+                                    />
+                                </div>
+                            </div>
                         )}
-                    </Card>
+                    </div>
                 ))}
             </div>
 

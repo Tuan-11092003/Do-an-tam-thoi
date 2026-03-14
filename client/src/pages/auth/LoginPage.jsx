@@ -1,38 +1,35 @@
 import { useState } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Form, Input, Button } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined, MailOutlined } from '@ant-design/icons';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 import { Link, useNavigate } from 'react-router-dom';
 import { requestLogin, requestLoginGoogle } from '../../services/user/userService';
 import { toast } from 'react-toastify';
+import { useStore } from '../../hooks/useStore';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-
-const { Title, Text } = Typography;
+import logo from '../../assets/logo.png';
 
 function LoginPage() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
+    const { fetchAuth, fetchCart } = useStore();
 
     const onFinish = async (values) => {
         setLoading(true);
         try {
-            await requestLogin(values);
+            const res = await requestLogin(values);
             toast.success('Đăng nhập thành công!');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-            navigate('/');
+            await fetchAuth();
+            await fetchCart();
+            const isAdmin = res?.metadata?.isAdmin === true;
+            navigate(isAdmin ? '/admin/dashboard' : '/');
         } catch (error) {
-            // Xử lý lỗi CORS hoặc network error
-            if (error.response && error.response.data) {
+            if (error.response?.data) {
                 toast.error(error.response.data.message || 'Đăng nhập thất bại');
-            } else if (error.message) {
-                toast.error(error.message);
             } else {
-                toast.error('Không thể kết nối đến server. Vui lòng kiểm tra lại!');
+                toast.error(error.message || 'Không thể kết nối đến server');
             }
         } finally {
             setLoading(false);
@@ -40,162 +37,124 @@ function LoginPage() {
     };
 
     const handleSuccess = async (response) => {
-        const { credential } = response; // Nhận ID Token từ Google
         try {
-            const data = {
-                credential,
-            };
-            const res = await requestLoginGoogle(data);
+            const res = await requestLoginGoogle({ credential: response.credential });
             toast.success(res.message);
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-            navigate('/');
+            await fetchAuth();
+            await fetchCart();
+            const isAdmin = res?.metadata?.isAdmin === true;
+            navigate(isAdmin ? '/admin/dashboard' : '/');
         } catch (error) {
-            console.error('Login failed', error);
-            if (error.response && error.response.data) {
-                toast.error(error.response.data.message || 'Đăng nhập Google thất bại');
-            } else {
-                toast.error('Không thể kết nối đến server. Vui lòng kiểm tra lại!');
-            }
+            toast.error(error.response?.data?.message || 'Đăng nhập Google thất bại');
         }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
     return (
-        <div className="min-h-screen bg-gray-50">
-            <header>
-                <Header />
-            </header>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            <Header />
 
-            <main className="flex items-center justify-center py-12 pt-24 px-4 sm:px-6 lg:px-8">
-                <div className=" w-[50%] space-y-8">
-                    <div className="bg-white rounded-lg shadow-lg p-8">
+            <main className="flex items-center justify-center py-12 pt-28 px-4">
+                <div className="w-full max-w-md">
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                         {/* Header */}
-                        <div className="text-center mb-8">
-                            <Title level={2} className="text-gray-900 font-bold mb-2">
-                                ĐĂNG NHẬP TÀI KHOẢN
-                            </Title>
-                            <Text className="text-gray-600">
-                                Bạn chưa có tài khoản ?{' '}
-                                <Link to="/register" className="text-blue-500 hover:text-blue-600">
-                                    Đăng ký tại đây
-                                </Link>
-                            </Text>
+                        <div className="bg-gradient-to-r from-red-500 to-red-600 px-8 py-8 text-center">
+                            <Link to="/">
+                                <img src={logo} alt="logo" className="h-12 mx-auto mb-4 drop-shadow-md" />
+                            </Link>
+                            <h1 className="text-2xl font-bold text-white">Chào mừng trở lại</h1>
+                            <p className="text-red-100 text-sm mt-1">Đăng nhập để tiếp tục mua sắm</p>
                         </div>
 
-                        {/* Login Form */}
-                        <Form
-                            form={form}
-                            name="login"
-                            layout="vertical"
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            autoComplete="off"
-                            size="large"
-                        >
-                            {/* Email Field */}
-                            <Form.Item
-                                label={
-                                    <span className="text-gray-700 font-medium">
-                                        Email <span className="text-red-500">*</span>
-                                    </span>
-                                }
-                                name="email"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập email!',
-                                    },
-                                    {
-                                        type: 'email',
-                                        message: 'Email không hợp lệ!',
-                                    },
-                                ]}
-                                className="mb-4"
+                        {/* Form */}
+                        <div className="p-8">
+                            <Form
+                                form={form}
+                                name="login"
+                                layout="vertical"
+                                onFinish={onFinish}
+                                autoComplete="off"
+                                size="large"
                             >
-                                <Input
-                                    placeholder="anhtuan123@gmail.com"
-                                    className="h-12 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                />
-                            </Form.Item>
+                                <Form.Item
+                                    name="email"
+                                    rules={[
+                                        { required: true, message: 'Vui lòng nhập email!' },
+                                        { type: 'email', message: 'Email không hợp lệ!' },
+                                    ]}
+                                >
+                                    <Input
+                                        prefix={<MailOutlined className="text-gray-400" />}
+                                        placeholder="Email của bạn"
+                                        className="!h-12 !rounded-xl"
+                                    />
+                                </Form.Item>
 
-                            {/* Password Field */}
-                            <Form.Item
-                                label={
-                                    <span className="text-gray-700 font-medium">
-                                        Mật khẩu <span className="text-red-500">*</span>
-                                    </span>
-                                }
-                                name="password"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập mật khẩu!',
-                                    },
-                                    {
-                                        min: 6,
-                                        message: 'Mật khẩu phải có ít nhất 6 ký tự!',
-                                    },
-                                ]}
-                                className="mb-2"
-                            >
-                                <Input.Password
-                                    placeholder="••••••••••"
-                                    iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                                    className="h-12 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                />
-                            </Form.Item>
+                                <Form.Item
+                                    name="password"
+                                    rules={[
+                                        { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                                        { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+                                    ]}
+                                >
+                                    <Input.Password
+                                        prefix={<LockOutlined className="text-gray-400" />}
+                                        placeholder="Mật khẩu"
+                                        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                        className="!h-12 !rounded-xl"
+                                    />
+                                </Form.Item>
 
-                            {/* Forgot Password Link */}
-                            <div className="text-right mb-6">
-                                <Text className="text-gray-600 text-sm">
-                                    Quên mật khẩu? Nhấn vào{' '}
-                                    <Link to="/forgot-password" className="text-blue-500 hover:text-blue-600">
-                                        đây
+                                <div className="flex justify-end mb-5">
+                                    <Link to="/forgot-password" className="text-sm text-red-500 hover:text-red-600 font-medium">
+                                        Quên mật khẩu?
                                     </Link>
-                                </Text>
-                            </div>
+                                </div>
 
-                            {/* Submit Button */}
-                            <Form.Item className="mb-4">
                                 <Button
                                     type="primary"
                                     htmlType="submit"
                                     loading={loading}
-                                    className="!w-full !h-12 !bg-red-500 hover:!bg-red-600 !border-red-500 hover:!border-red-600 !rounded-md !font-medium !text-base !shadow-md hover:!shadow-lg !transition-all !duration-200"
+                                    block
+                                    className="!h-12 !rounded-xl !bg-red-500 hover:!bg-red-600 !border-0 !font-semibold !text-base !shadow-lg hover:!shadow-xl !transition-all"
                                 >
                                     Đăng nhập
                                 </Button>
-                            </Form.Item>
 
-                            {/* Social Login Options */}
-                            <div className="text-center mb-4">
-                                <Text className="text-gray-500 text-sm">Hoặc đăng nhập bằng</Text>
-                            </div>
+                                <div className="relative my-6">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-200" />
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-3 bg-white text-gray-400">hoặc</span>
+                                    </div>
+                                </div>
 
-                            <div className="text-center">
-                                <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
-                                    <GoogleLogin
-                                        onSuccess={handleSuccess}
-                                        onError={() => console.log('Login Failed')}
-                                    />
-                                </GoogleOAuthProvider>
-                            </div>
-                        </Form>
+                                <div className="flex justify-center">
+                                    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
+                                        <GoogleLogin
+                                            onSuccess={handleSuccess}
+                                            onError={() => toast.error('Đăng nhập Google thất bại')}
+                                            shape="pill"
+                                            width="100%"
+                                        />
+                                    </GoogleOAuthProvider>
+                                </div>
+                            </Form>
+
+                            <p className="text-center text-sm text-gray-500 mt-6">
+                                Chưa có tài khoản?{' '}
+                                <Link to="/register" className="text-red-500 hover:text-red-600 font-semibold">
+                                    Đăng ký ngay
+                                </Link>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </main>
 
-            <footer>
-                <Footer />
-            </footer>
+            <Footer />
         </div>
     );
 }
 
 export default LoginPage;
-

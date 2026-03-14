@@ -56,10 +56,10 @@ class UserController {
             email,
             password,
         };
-        const { token, refreshToken } = await UserService.login(data);
+        const { token, refreshToken, isAdmin } = await UserService.login(data);
 
         setCookie(res, token, refreshToken);
-        return new OK({ message: 'success', metadata: { token, refreshToken } }).send(res);
+        return new OK({ message: 'success', metadata: { token, refreshToken, isAdmin } }).send(res);
     }
 
     async auth(req, res) {
@@ -157,9 +157,9 @@ class UserController {
 
     async loginGoogle(req, res) {
         const { credential } = req.body;
-        const { token, refreshToken } = await UserService.loginGoogle(credential);
+        const { token, refreshToken, isAdmin } = await UserService.loginGoogle(credential);
         setCookie(res, token, refreshToken);
-        new OK({ message: 'success', metadata: { token, refreshToken } }).send(res);
+        new OK({ message: 'success', metadata: { token, refreshToken, isAdmin } }).send(res);
     }
 
     async forgotPassword(req, res) {

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import { useStore } from '../../hooks/useStore';
 
-import { requestCreateMessage, requestGetMessageByConversationIdAdmin } from '../../services/message/messageService';
+import { requestCreateMessage, requestGetMessageByConversationIdAdmin, requestUpdateMessageIsRead } from '../../services/message/messageService';
 
 const { TextArea } = Input;
 
@@ -23,7 +23,12 @@ function ModalChat() {
         if (dataConversation) {
             const fetchMessages = async () => {
                 const res = await requestGetMessageByConversationIdAdmin(dataConversation);
-                setMessages(res.metadata.messages);
+                const msgs = res.metadata.messages || [];
+                setMessages(msgs);
+                const unread = msgs.filter((m) => !m.isRead && !isUserMessage(m)).length;
+                if (unread > 0 && !isOpen) {
+                    setUnreadCount(unread);
+                }
             };
             fetchMessages();
         }
@@ -46,6 +51,12 @@ function ModalChat() {
         scrollToBottom();
     }, [messages]);
 
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => scrollToBottom(), 100);
+        }
+    }, [isOpen]);
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -53,6 +64,9 @@ function ModalChat() {
     useEffect(() => {
         if (newMessage) {
             setMessages((prev) => [...prev, newMessage]);
+            if (!isOpen) {
+                setUnreadCount((prev) => prev + 1);
+            }
         }
     }, [newMessage]);
 
@@ -86,10 +100,20 @@ function ModalChat() {
         }
     };
 
-    const toggleChat = () => {
-        setIsOpen(!isOpen);
-        if (!isOpen) {
+    const toggleChat = async () => {
+        const willOpen = !isOpen;
+        setIsOpen(willOpen);
+        if (willOpen) {
             setUnreadCount(0);
+            if (dataConversation && dataUser?._id) {
+                try {
+                    const conversation = await requestGetMessageByConversationIdAdmin(dataConversation);
+                    const adminId = conversation.metadata.conversation?.admin?._id;
+                    if (adminId) {
+                        await requestUpdateMessageIsRead({ conversationId: dataConversation, sender: adminId });
+                    }
+                } catch {}
+            }
         }
     };
 
@@ -106,7 +130,7 @@ function ModalChat() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="fixed bottom-6 right-6 z-50"
+                        className="fixed bottom-6 right-6 z-[60]"
                     >
                         <Tooltip title="Chat với chúng tôi" placement="left">
                             <Badge count={unreadCount} offset={[-5, 5]}>
@@ -130,7 +154,7 @@ function ModalChat() {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="fixed bottom-6 right-6 z-50 w-[380px] md:w-[420px] shadow-2xl rounded-2xl overflow-hidden"
+                        className="fixed bottom-6 right-6 z-[60] w-[380px] md:w-[420px] shadow-2xl rounded-2xl overflow-hidden"
                     >
                         <div className="bg-white rounded-2xl border border-gray-200">
                             <div className="bg-gradient-to-r from-blue-400 to-blue-500 p-4 flex items-center justify-between">

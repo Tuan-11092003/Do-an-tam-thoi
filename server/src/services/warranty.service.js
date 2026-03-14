@@ -1,6 +1,7 @@
 const Warranty = require('../models/warranty.model');
 const User = require('../models/users.model');
 const SendMailAcceptExchange = require('../utils/sendMailAcceptExchange');
+const socketService = require('../utils/socket.service');
 
 class WarrantyService {
     async getWarrantyByUserId(userId) {
@@ -91,7 +92,20 @@ class WarrantyService {
             }
         }
         
-        // Trả về warranty (đã có emailSent nếu email thành công)
+        // Gửi thông báo realtime qua socket đến user
+        const statusLabels = {
+            approved: 'Đã chấp nhận',
+            completed: 'Hoàn thành',
+            rejected: 'Từ chối',
+        };
+        if (statusLabels[status]) {
+            socketService.emitMessage(warranty.userId.toString(), 'warranty_status_updated', {
+                warrantyId: warranty._id,
+                status,
+                statusLabel: statusLabels[status],
+            });
+        }
+
         return warranty;
     }
 }

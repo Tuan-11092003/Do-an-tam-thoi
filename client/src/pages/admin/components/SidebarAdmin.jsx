@@ -1,5 +1,5 @@
-import React from 'react';
-import { Menu } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Menu, Badge } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     DashboardOutlined,
@@ -15,10 +15,25 @@ import {
     UserOutlined,
     HomeOutlined,
 } from '@ant-design/icons';
+import { requestGetAllConversation } from '../../../services/message/messageService';
 
 function SidebarAdmin() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await requestGetAllConversation();
+                const total = (res.metadata || []).reduce((sum, c) => sum + (c.lengthIsRead || 0), 0);
+                setUnreadCount(total);
+            } catch {}
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 2000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Lấy key từ pathname (ví dụ: /admin/dashboard -> dashboard)
     const getSelectedKey = () => {
@@ -83,7 +98,14 @@ function SidebarAdmin() {
         {
             key: 'message',
             icon: <MessageOutlined />,
-            label: <span className="font-medium">Quản lý tin nhắn</span>,
+            label: (
+                <span className="font-medium flex items-center justify-between w-full">
+                    Quản lý tin nhắn
+                    {unreadCount > 0 && (
+                        <Badge count={unreadCount} size="small" style={{ marginLeft: 8 }} />
+                    )}
+                </span>
+            ),
         },
     ];
 

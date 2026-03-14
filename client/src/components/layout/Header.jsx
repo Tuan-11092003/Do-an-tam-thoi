@@ -16,7 +16,7 @@ import { requestSearchProduct } from '../../services/product/productService';
 import { formatPrice } from '../../utils/formatPrice';
 
 function Header() {
-    const { dataUser, cartData } = useStore();
+    const { dataUser, cartData, clearAuth } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [query, setQuery] = useState('');
@@ -34,15 +34,14 @@ function Header() {
         return location.pathname === path || location.pathname.startsWith(path + '/');
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         try {
-            requestLogout();
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            await requestLogout();
+            clearAuth();
             navigate('/login');
+            toast.success('Đăng xuất thành công!');
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error?.response?.data?.message || 'Đăng xuất thất bại');
         }
     };
 
@@ -372,18 +371,11 @@ function Header() {
                             </Link>
                         )}
                         {!dataUser._id ? (
-                            <div className="flex items-center space-x-3">
-                                <Link to={'/login'}>
-                                    <div className="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg transition-all duration-300">
-                                        Đăng nhập
-                                    </div>
-                                </Link>
-                                <Link to={'/register'}>
-                                    <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
-                                        Đăng ký
-                                    </div>
-                                </Link>
-                            </div>
+                            <Link to={'/login'}>
+                                <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
+                                    Mua sắm ngay
+                                </div>
+                            </Link>
                         ) : (
                             <Dropdown
                                 menu={{ items: userMenuItems }}

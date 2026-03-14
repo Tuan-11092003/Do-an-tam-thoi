@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Input, Avatar, Badge, Button, Empty, Tag, Tooltip, Divider } from 'antd';
+import { Input, Avatar, Badge, Button, Empty, Tag } from 'antd';
 import { Search, Send, MessageCircle, User, Clock, CheckCheck, Circle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
@@ -12,8 +12,6 @@ import {
 import { useStore } from '../../../hooks/useStore';
 
 const { TextArea } = Input;
-
-// Mock data - replace with real API later
 
 function MessageManager() {
     const [users, setUsers] = useState([]);
@@ -34,12 +32,9 @@ function MessageManager() {
 
     useEffect(() => {
         fetchConversations();
-        
-        // Refresh conversations mỗi 3 giây để cập nhật online status
         const interval = setInterval(() => {
             fetchConversations();
         }, 3000);
-
         return () => clearInterval(interval);
     }, []);
 
@@ -75,7 +70,6 @@ function MessageManager() {
 
     const handleSelectUser = (user) => {
         setSelectedUser(user);
-        // Mark messages as read
         setUsers((prev) => prev.map((u) => (u._id === user._id ? { ...u, lengthIsRead: 0 } : u)));
     };
 
@@ -94,18 +88,15 @@ function MessageManager() {
 
         if (res) {
             setMessages((prev) => [...prev, res]);
-            // Cập nhật lengthIsRead = 0 khi admin trả lời (cập nhật ngay lập tức)
             setUsers((prev) => prev.map((u) => (u._id === selectedUser._id ? { ...u, lengthIsRead: 0 } : u)));
-            // Refresh conversations sau một chút để đồng bộ với backend (nhưng giữ lengthIsRead = 0)
             setTimeout(() => {
                 fetchConversations().then(() => {
-                    // Đảm bảo lengthIsRead vẫn là 0 sau khi refresh
-                    setUsers((prev) => prev.map((u) => {
-                        if (u._id === selectedUser._id) {
-                            return { ...u, lengthIsRead: 0 };
-                        }
-                        return u;
-                    }));
+                    setUsers((prev) =>
+                        prev.map((u) => {
+                            if (u._id === selectedUser._id) return { ...u, lengthIsRead: 0 };
+                            return u;
+                        }),
+                    );
                 });
             }, 500);
         }
@@ -118,8 +109,6 @@ function MessageManager() {
         }
     };
 
-    // const filteredUsers = users.filter((user) => user.fullName.toLowerCase().includes(searchQuery.toLowerCase()));
-
     const getTimeDisplay = (time) => {
         const now = dayjs();
         const messageTime = dayjs(time);
@@ -128,314 +117,282 @@ function MessageManager() {
         const diffInDays = now.diff(messageTime, 'day');
 
         if (diffInMinutes < 1) return 'Vừa xong';
-        if (diffInMinutes < 60) return `${diffInMinutes} phút`;
-        if (diffInHours < 24) return `${diffInHours} giờ`;
-        if (diffInDays < 7) return `${diffInDays} ngày`;
-        return messageTime.format('DD/MM/YYYY');
+        if (diffInMinutes < 60) return `${diffInMinutes}p`;
+        if (diffInHours < 24) return `${diffInHours}h`;
+        if (diffInDays < 7) return `${diffInDays}d`;
+        return messageTime.format('DD/MM');
     };
 
-    // Xác định tin nhắn này là của admin hay khách
     const isAdminMessage = (message) => {
         return message.sender === 'admin' || message.sender?._id === dataUser._id || message.sender === dataUser._id;
     };
 
+    const totalUnread = users.reduce((sum, u) => sum + (u.lengthIsRead || 0), 0);
+
     return (
-        <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50 p-6">
-            <div className="h-full  mx-auto">
-                {/* Header */}
-                <div className="mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-semibold">Quản lý tin nhắn</h2>
-                            <p className="text-gray-500 mt-1 ">Chat và hỗ trợ khách hàng</p>
+        <div className="space-y-6 h-[calc(100vh-100px)]">
+            {/* Header */}
+            <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-600 shadow-sm">
+                        <MessageCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Quản lý tin nhắn</h1>
+                            <span className="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700">
+                                {users.length} cuộc trò chuyện
+                            </span>
+                            {totalUnread > 0 && (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                                    {totalUnread} chưa đọc
+                                </span>
+                            )}
                         </div>
+                        <p className="text-sm text-gray-500 mt-0.5">Chat và hỗ trợ khách hàng</p>
                     </div>
                 </div>
+            </div>
 
-                {/* Main Content */}
-                <div
-                    className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
-                    style={{ height: 'calc(100% - 120px)' }}
-                >
-                    <div className="flex h-full">
-                        {/* Sidebar - User List */}
-                        <div className="w-80 border-r border-gray-200 flex flex-col bg-gray-50">
-                            {/* Search */}
-                            <div className="p-4 border-b border-gray-200 bg-white">
-                                <Input
-                                    placeholder="Tìm kiếm người dùng..."
-                                    prefix={<Search size={18} className="text-gray-400" />}
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="rounded-lg"
-                                    size="large"
-                                />
+            {/* Chat Container */}
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex" style={{ height: 'calc(100% - 120px)' }}>
+                {/* Sidebar */}
+                <div className="w-80 border-r border-gray-200 flex flex-col flex-shrink-0">
+                    {/* Search */}
+                    <div className="p-3 border-b border-gray-100">
+                        <Input
+                            placeholder="Tìm kiếm..."
+                            prefix={<Search size={16} className="text-gray-400" />}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="rounded-lg"
+                            allowClear
+                        />
+                    </div>
+
+                    {/* User List */}
+                    <div className="flex-1 overflow-y-auto">
+                        {users.length === 0 ? (
+                            <div className="p-8 text-center">
+                                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Chưa có tin nhắn" />
                             </div>
+                        ) : (
+                            users
+                                .filter((c) => !searchQuery.trim() || c.user?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()))
+                                .map((conversation) => {
+                                    const user = conversation.user;
+                                    const lastMessage = conversation.lastMessage;
+                                    const isActive = selectedUser?._id === conversation._id;
+                                    const hasUnread = conversation.lengthIsRead > 0;
 
-                            {/* User List */}
-                            <div className="flex-1 overflow-y-auto">
-                                {users.length === 0 ? (
-                                    <div className="p-8 text-center">
-                                        <Empty description="Không tìm thấy người dùng" />
-                                    </div>
-                                ) : (
-                                    users.map((conversation) => {
-                                        const user = conversation.user;
-                                        const lastMessage = conversation.lastMessage;
-                                        return (
-                                            <motion.div
-                                                key={conversation._id}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                onClick={() => handleSelectUser(conversation)}
-                                                className={`p-4 cursor-pointer transition-all border-b border-gray-100 ${
-                                                    selectedUser?._id === conversation._id
-                                                        ? 'bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-l-[#FF3B2F]'
-                                                        : 'hover:bg-gray-100'
-                                                }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className="relative flex-shrink-0">
-                                                        <Avatar 
-                                                            size={48} 
-                                                            src={user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${user.avatar}` : undefined}
-                                                            icon={!user?.avatar ? <User /> : undefined}
-                                                        >
-                                                            {!user?.avatar && user?.fullName?.[0]}
-                                                        </Avatar>
-                                                        <span
-                                                            className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white rounded-full ${
-                                                                user?.isOnline ? 'bg-green-400' : 'bg-gray-300'
-                                                            }`}
-                                                        ></span>
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <span className="font-semibold text-gray-800 truncate">
-                                                                {user?.fullName}
-                                                            </span>
-                                                            <span className="text-xs text-gray-400 ml-2 flex-shrink-0">
-                                                                {getTimeDisplay(lastMessage?.createdAt)}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <p className="text-sm text-gray-500 truncate flex-1">
-                                                                {lastMessage?.content}
-                                                            </p>
-                                                            {conversation.lengthIsRead > 0 && (
-                                                                <Badge
-                                                                    count={conversation.lengthIsRead}
-                                                                    className="ml-2"
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Chat Area */}
-                        <div className="flex-1 flex flex-col">
-                            {selectedUser ? (
-                                <>
-                                    {/* Chat Header */}
-                                    <div className="p-4 border-b border-gray-200 bg-white">
-                                        <div className="flex items-center justify-between">
+                                    return (
+                                        <div
+                                            key={conversation._id}
+                                            onClick={() => handleSelectUser(conversation)}
+                                            className={`px-3 py-3 cursor-pointer transition-all border-b border-gray-50 ${
+                                                isActive
+                                                    ? 'bg-blue-50 border-l-[3px] border-l-blue-600'
+                                                    : 'hover:bg-gray-50 border-l-[3px] border-l-transparent'
+                                            }`}
+                                        >
                                             <div className="flex items-center gap-3">
-                                                <div className="relative">
-                                                    <Avatar 
-                                                        size={48} 
-                                                        src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
-                                                        icon={!selectedUser.user?.avatar ? <User /> : undefined}
+                                                <div className="relative flex-shrink-0">
+                                                    <Avatar
+                                                        size={44}
+                                                        src={user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${user.avatar}` : undefined}
+                                                        icon={!user?.avatar ? <User size={18} /> : undefined}
+                                                        className={isActive ? '!bg-blue-500' : '!bg-gray-300'}
                                                     >
-                                                        {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
+                                                        {!user?.avatar && user?.fullName?.[0]}
                                                     </Avatar>
                                                     <span
-                                                        className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white rounded-full ${
-                                                            selectedUser.user?.isOnline ? 'bg-green-400' : 'bg-gray-300'
+                                                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full ${
+                                                            user?.isOnline ? 'bg-emerald-400' : 'bg-gray-300'
                                                         }`}
-                                                    ></span>
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-bold text-lg text-gray-800">
-                                                        {selectedUser.user?.fullName}
-                                                    </h3>
-                                                    <div className="flex items-center gap-1">
-                                                        <Circle
-                                                            size={8}
-                                                            className={
-                                                                selectedUser.user?.isOnline
-                                                                    ? 'text-green-400 fill-green-400'
-                                                                    : 'text-gray-300 fill-gray-300'
-                                                            }
-                                                        />
-                                                        <span className="text-xs text-gray-500">
-                                                            {selectedUser.user?.isOnline
-                                                                ? 'Đang hoạt động'
-                                                                : 'Không hoạt động'}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className={`text-sm truncate ${hasUnread ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>
+                                                            {user?.fullName}
                                                         </span>
+                                                        <span className="text-[11px] text-gray-400 flex-shrink-0 ml-2">
+                                                            {getTimeDisplay(lastMessage?.createdAt)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between mt-0.5">
+                                                        <p className={`text-xs truncate flex-1 ${hasUnread ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>
+                                                            {lastMessage?.content}
+                                                        </p>
+                                                        {hasUnread && (
+                                                            <span className="ml-2 flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold">
+                                                                {conversation.lengthIsRead}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Tag color="blue">Khách hàng</Tag>
+                                        </div>
+                                    );
+                                })
+                        )}
+                    </div>
+                </div>
+
+                {/* Chat Area */}
+                <div className="flex-1 flex flex-col min-w-0">
+                    {selectedUser ? (
+                        <>
+                            {/* Chat Header */}
+                            <div className="px-5 py-3 border-b border-gray-200 bg-white flex-shrink-0">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative">
+                                            <Avatar
+                                                size={40}
+                                                src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                                icon={!selectedUser.user?.avatar ? <User size={18} /> : undefined}
+                                            >
+                                                {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
+                                            </Avatar>
+                                            <span
+                                                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white rounded-full ${
+                                                    selectedUser.user?.isOnline ? 'bg-emerald-400' : 'bg-gray-300'
+                                                }`}
+                                            />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900 text-sm">{selectedUser.user?.fullName}</h3>
+                                            <div className="flex items-center gap-1.5">
+                                                <span
+                                                    className={`h-1.5 w-1.5 rounded-full ${selectedUser.user?.isOnline ? 'bg-emerald-400' : 'bg-gray-300'}`}
+                                                />
+                                                <span className="text-xs text-gray-500">
+                                                    {selectedUser.user?.isOnline ? 'Đang hoạt động' : 'Không hoạt động'}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <Tag className="rounded-full border-0 bg-blue-50 text-blue-600 font-medium text-xs px-2.5">
+                                        Khách hàng
+                                    </Tag>
+                                </div>
+                            </div>
 
-                                    {/* Messages */}
-                                    <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white">
-                                        <AnimatePresence>
-                                            {messages.map((message) => (
-                                                <motion.div
-                                                    key={message._id}
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className={`mb-4 flex ${
-                                                        isAdminMessage(message) ? 'justify-end' : 'justify-start'
-                                                    }`}
-                                                >
+                            {/* Messages */}
+                            <div className="flex-1 overflow-y-auto px-5 py-4 bg-gray-50/50">
+                                <AnimatePresence>
+                                    {messages.map((message) => (
+                                        <motion.div
+                                            key={message._id}
+                                            initial={{ opacity: 0, y: 8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.15 }}
+                                            className={`mb-3 flex ${isAdminMessage(message) ? 'justify-end' : 'justify-start'}`}
+                                        >
+                                            <div className={`flex gap-2 max-w-[70%] ${isAdminMessage(message) ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                {!isAdminMessage(message) && (
+                                                    <Avatar
+                                                        size={28}
+                                                        src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                                        icon={!selectedUser.user?.avatar ? <User size={14} /> : undefined}
+                                                        className="flex-shrink-0 mt-auto !bg-gray-300"
+                                                    >
+                                                        {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
+                                                    </Avatar>
+                                                )}
+                                                <div>
                                                     <div
-                                                        className={`flex gap-2 max-w-[70%] ${
-                                                            isAdminMessage(message) ? 'flex-row-reverse' : 'flex-row'
+                                                        className={`px-3.5 py-2.5 rounded-2xl ${
+                                                            isAdminMessage(message)
+                                                                ? 'bg-blue-600 text-white rounded-br-md'
+                                                                : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md shadow-sm'
                                                         }`}
                                                     >
-                                                        {!isAdminMessage(message) && (
-                                                            <Avatar
-                                                                size={32}
-                                                                src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
-                                                                icon={!selectedUser.user?.avatar ? <User /> : undefined}
-                                                                className="flex-shrink-0 mt-auto"
-                                                            >
-                                                                {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
-                                                            </Avatar>
-                                                        )}
-                                                        <div>
-                                                            <div
-                                                                className={`px-4 py-3 rounded-2xl shadow-sm ${
-                                                                    isAdminMessage(message)
-                                                                        ? 'bg-gradient-to-br from-[#FF3B2F] to-[#FF6F4A] text-white'
-                                                                        : 'bg-white border border-gray-200 text-gray-800'
-                                                                }`}
-                                                            >
-                                                                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                                                                    {message.content}
-                                                                </p>
-                                                            </div>
-                                                            <div
-                                                                className={`flex items-center gap-1.5 mt-1 px-2 ${
-                                                                    isAdminMessage(message)
-                                                                        ? 'justify-end'
-                                                                        : 'justify-start'
-                                                                }`}
-                                                            >
-                                                                <Clock size={10} className="text-gray-400" />
-                                                                <span className="text-xs text-gray-400">
-                                                                    {dayjs(message.createdAt).format('HH:mm')}
-                                                                </span>
-                                                                {isAdminMessage(message) && (
-                                                                    <CheckCheck
-                                                                        size={14}
-                                                                        className="text-gray-400"
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        {isAdminMessage(message) && (
-                                                            <Avatar
-                                                                size={32}
-                                                                className="flex-shrink-0 mt-auto"
-                                                                style={{ backgroundColor: '#FF3B2F' }}
-                                                            >
-                                                                <User size={16} />
-                                                            </Avatar>
-                                                        )}
+                                                        <p className="text-[13px] leading-relaxed whitespace-pre-wrap break-words">
+                                                            {message.content}
+                                                        </p>
                                                     </div>
-                                                </motion.div>
-                                            ))}
-                                        </AnimatePresence>
-
-                                        {/* Typing Indicator */}
-                                        {isTyping && (
-                                            <motion.div
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                className="flex gap-2 mb-4"
-                                            >
-                                                <Avatar 
-                                                    size={32} 
-                                                    src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
-                                                    icon={!selectedUser.user?.avatar ? <User /> : undefined}
-                                                >
-                                                    {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
-                                                </Avatar>
-                                                <div className="bg-white border border-gray-200 px-4 py-3 rounded-2xl">
-                                                    <div className="flex gap-1">
-                                                        <span
-                                                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                                            style={{ animationDelay: '0ms' }}
-                                                        ></span>
-                                                        <span
-                                                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                                            style={{ animationDelay: '150ms' }}
-                                                        ></span>
-                                                        <span
-                                                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                                            style={{ animationDelay: '300ms' }}
-                                                        ></span>
+                                                    <div className={`flex items-center gap-1 mt-1 px-1 ${isAdminMessage(message) ? 'justify-end' : 'justify-start'}`}>
+                                                        <span className="text-[10px] text-gray-400">
+                                                            {dayjs(message.createdAt).format('HH:mm')}
+                                                        </span>
+                                                        {isAdminMessage(message) && (
+                                                            <CheckCheck size={12} className="text-gray-400" />
+                                                        )}
                                                     </div>
                                                 </div>
-                                            </motion.div>
-                                        )}
+                                                {isAdminMessage(message) && (
+                                                    <Avatar size={28} className="flex-shrink-0 mt-auto !bg-blue-600">
+                                                        <User size={14} />
+                                                    </Avatar>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
 
-                                        <div ref={messagesEndRef} />
-                                    </div>
+                                {isTyping && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 mb-3">
+                                        <Avatar
+                                            size={28}
+                                            src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                            icon={!selectedUser.user?.avatar ? <User size={14} /> : undefined}
+                                            className="!bg-gray-300"
+                                        >
+                                            {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
+                                        </Avatar>
+                                        <div className="bg-white border border-gray-200 px-4 py-2.5 rounded-2xl rounded-bl-md">
+                                            <div className="flex gap-1">
+                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
 
-                                    {/* Input Area */}
-                                    <div className="p-4 border-t border-gray-200 bg-white">
-                                        <div className="flex gap-3">
-                                            <TextArea
-                                                ref={inputRef}
-                                                value={inputMessage}
-                                                onChange={(e) => setInputMessage(e.target.value)}
-                                                onKeyPress={handleKeyPress}
-                                                placeholder="Nhập tin nhắn..."
-                                                autoSize={{ minRows: 1, maxRows: 4 }}
-                                                className="flex-1 rounded-xl border-gray-300 focus:border-[#FF3B2F] hover:border-[#FF3B2F]"
-                                            />
-                                            <Button
-                                                type="primary"
-                                                size="large"
-                                                icon={<Send size={20} />}
-                                                onClick={handleSendMessage}
-                                                disabled={!inputMessage.trim()}
-                                                className="!bg-gradient-to-br from-[#FF3B2F] to-[#FF6F4A] border-0 hover:shadow-lg transition-all !px-8 disabled:opacity-50"
-                                            >
-                                                Gửi
-                                            </Button>
-                                        </div>
-                                        <p className="text-xs text-gray-400 mt-2 text-center">
-                                            Nhấn Enter để gửi, Shift + Enter để xuống dòng
-                                        </p>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
-                                    <div className="text-center">
-                                        <div className="w-24 h-24 bg-gradient-to-br from-[#FF3B2F] to-[#FF6F4A] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                            <MessageCircle className="text-white" size={48} />
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                                            Chọn một cuộc trò chuyện
-                                        </h3>
-                                        <p className="text-gray-500">Chọn người dùng từ danh sách để bắt đầu chat</p>
-                                    </div>
+                                <div ref={messagesEndRef} />
+                            </div>
+
+                            {/* Input */}
+                            <div className="px-4 py-3 border-t border-gray-200 bg-white flex-shrink-0">
+                                <div className="flex items-end gap-2">
+                                    <TextArea
+                                        ref={inputRef}
+                                        value={inputMessage}
+                                        onChange={(e) => setInputMessage(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        placeholder="Nhập tin nhắn..."
+                                        autoSize={{ minRows: 1, maxRows: 4 }}
+                                        className="flex-1 !rounded-xl !border-gray-200 focus:!border-blue-400 hover:!border-blue-300"
+                                    />
+                                    <Button
+                                        type="primary"
+                                        icon={<Send size={16} />}
+                                        onClick={handleSendMessage}
+                                        disabled={!inputMessage.trim()}
+                                        className="!rounded-xl !bg-blue-600 hover:!bg-blue-700 !border-0 !h-[38px] !px-5 disabled:!opacity-40"
+                                    >
+                                        Gửi
+                                    </Button>
                                 </div>
-                            )}
+                                <p className="text-[10px] text-gray-400 mt-1.5 text-center">
+                                    Enter để gửi · Shift+Enter để xuống dòng
+                                </p>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center bg-gray-50/30">
+                            <div className="text-center">
+                                <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                                    <MessageCircle className="text-blue-500 w-10 h-10" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-800 mb-1">Chọn cuộc trò chuyện</h3>
+                                <p className="text-sm text-gray-400">Chọn người dùng từ danh sách bên trái để bắt đầu</p>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

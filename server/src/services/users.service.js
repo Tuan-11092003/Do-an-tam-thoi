@@ -70,7 +70,7 @@ class UserService {
         await createApiKey(user._id);
         const token = await createToken({ id: user._id });
         const refreshToken = await createRefreshToken({ id: user._id });
-        return { token, refreshToken };
+        return { token, refreshToken, isAdmin: user.isAdmin === true };
     }
 
     async logout(id) {
@@ -186,7 +186,7 @@ class UserService {
             await createApiKey(user._id);
             const token = await createToken({ id: user._id });
             const refreshToken = await createRefreshToken({ id: user._id });
-            return { token, refreshToken };
+            return { token, refreshToken, isAdmin: user.isAdmin === true };
         } else {
             // Tạo tài khoản Google mới (có thể cùng email với tài khoản email/password)
             const newUser = await modelUser.create({
@@ -198,7 +198,7 @@ class UserService {
             await createApiKey(newUser._id);
             const token = await createToken({ id: newUser._id });
             const refreshToken = await createRefreshToken({ id: newUser._id });
-            return { token, refreshToken };
+            return { token, refreshToken, isAdmin: newUser.isAdmin === true };
         }
     }
 
@@ -469,70 +469,72 @@ class UserService {
                 },
             ]);
 
-            // 9. Doanh thu theo danh mục sản phẩm
-            const revenueByCategory = await Payment.aggregate([
-                { $match: { status: { $ne: 'cancelled' } } },
-                { $unwind: '$products' },
+            // 9. Doanh thu theo tháng (12 tháng gần nhất)
+            const startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 12);
+            startDate.setDate(1);
+            startDate.setHours(0, 0, 0, 0);
+
+            const revenueByMonth = await Payment.aggregate([
                 {
-                    $lookup: {
-                        from: 'products',
-                        localField: 'products.productId',
-                        foreignField: '_id',
-                        as: 'product',
+                    $match: {
+                        status: { $ne: 'cancelled' },
+                        createdAt: { $gte: startDate },
                     },
                 },
-                { $unwind: '$product' },
-                {
-                    $lookup: {
-                        from: 'categories',
-                        localField: 'product.category',
-                        foreignField: '_id',
-                        as: 'category',
-                    },
-                },
-                { $unwind: '$category' },
                 {
                     $group: {
-                        _id: '$category._id',
-                        categoryName: { $first: '$category.categoryName' },
+                        _id: {
+                            year: { $year: '$createdAt' },
+                            month: { $month: '$createdAt' },
+                        },
                         revenue: {
                             $sum: {
-                                $multiply: [
-                                    '$products.quantity',
-                                    {
-                                        $multiply: [
-                                            '$product.price',
-                                            {
-                                                $subtract: [
-                                                    1,
-                                                    {
-                                                        $divide: [
-                                                            { $ifNull: ['$product.discount', 0] },
-                                                            100,
-                                                        ],
-                                                    },
-                                                ],
-                                            },
-                                        ],
-                                    },
-                                ],
+                                $cond: {
+                                    if: { $and: [{ $ne: ['$finalPrice', null] }, { $gt: ['$finalPrice', 0] }] },
+                                    then: '$finalPrice',
+                                    else: '$totalPrice',
+                                },
                             },
                         },
-                        orderCount: { $addToSet: '$_id' },
-                        productCount: { $sum: '$products.quantity' },
+                        orderCount: { $sum: 1 },
                     },
                 },
-                {
-                    $project: {
-                        _id: 1,
-                        categoryName: 1,
-                        revenue: 1,
-                        orderCount: { $size: '$orderCount' },
-                        productCount: 1,
-                    },
-                },
-                { $sort: { revenue: -1 } },
+                { $sort: { '_id.year': 1, '_id.month': 1 } },
             ]);
+
+            const monthNames = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+            const revenueMap = new Map();
+            revenueByMonth.forEach((item) => {
+                const key = `${item._id.year}-${item._id.month}`;
+                revenueMap.set(key, {
+                    month: item._id.month,
+                    year: item._id.year,
+                    monthLabel: `${monthNames[item._id.month - 1]}/${item._id.year}`,
+                    revenue: item.revenue,
+                    orderCount: item.orderCount,
+                });
+            });
+            // Điền đủ 12 tháng (tháng không có đơn = doanh thu 0)
+            const revenueByMonthFormatted = [];
+            const now = new Date();
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const year = d.getFullYear();
+                const month = d.getMonth() + 1;
+                const key = `${year}-${month}`;
+                if (revenueMap.has(key)) {
+                    revenueByMonthFormatted.push(revenueMap.get(key));
+                } else {
+                    revenueByMonthFormatted.push({
+                        month,
+                        year,
+                        monthLabel: `${monthNames[month - 1]}/${year}`,
+                        revenue: 0,
+                        orderCount: 0,
+                    });
+                }
+            }
 
             // 9. Tăng trưởng so với tháng trước
             const currentMonth = new Date();
@@ -647,13 +649,7 @@ class UserService {
                     count: method.count,
                     revenue: method.revenue,
                 })),
-                revenueByCategory: revenueByCategory.map((cat) => ({
-                    categoryId: cat._id,
-                    categoryName: cat.categoryName,
-                    revenue: cat.revenue,
-                    orderCount: cat.orderCount,
-                    productCount: cat.productCount,
-                })),
+                revenueByMonth: revenueByMonthFormatted,
             };
             return result;
         } catch (error) {

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { requestGetWarrantyByUserId, requestSubmitReturn } from '../../../services/warranty/warrantyService';
 import {
-    Card,
     Table,
-    Tag,
     Image,
     Button,
     Empty,
@@ -16,7 +14,6 @@ import {
     message,
     Progress,
     Tooltip,
-    notification,
 } from 'antd';
 import {
     Shield,
@@ -63,60 +60,6 @@ function Warranty() {
         fetchWarranty();
     }, []);
 
-    // Hiển thị notification khi có warranty được chấp nhận VÀ email đã gửi thành công
-    // CHỈ hiển thị khi: status = 'approved' + có yêu cầu đổi trả + emailSent = true
-    useEffect(() => {
-        if (warranty.length > 0 && !loading) {
-            // Chỉ lấy warranty có status 'approved', đã có yêu cầu đổi trả, VÀ email đã gửi thành công
-            const approvedWarranties = warranty.filter(
-                item => item.status === 'approved' && 
-                       (item.reason || item.description) &&
-                       item.emailSent === true // Chỉ hiển thị khi email đã gửi thành công
-            );
-            
-            if (approvedWarranties.length > 0) {
-                // Lấy danh sách warranty ID đã được thông báo từ localStorage
-                const notifiedWarranties = JSON.parse(localStorage.getItem('warranty-approved-notified') || '[]');
-                
-                // Tìm warranty mới được chấp nhận và email đã gửi thành công (chưa được thông báo)
-                const newApprovedWarranties = approvedWarranties.filter(
-                    item => !notifiedWarranties.includes(item._id)
-                );
-                
-                if (newApprovedWarranties.length > 0) {
-                    const notificationKey = 'warranty-approved-notification';
-                    const newApprovedIds = newApprovedWarranties.map(item => item._id);
-                    
-                    notification.info({
-                        message: 'Yêu cầu đổi trả đã được chấp nhận',
-                        description: 'Chúng tôi đã chấp nhận yêu cầu đổi trả hàng của bạn. Vui lòng kiểm tra email.',
-                        placement: 'top',
-                        duration: 0, // Không tự đóng
-                        key: notificationKey,
-                        btn: (
-                            <Button
-                                type="primary"
-                                size="small"
-                                onClick={() => {
-                                    // Đóng notification
-                                    notification.destroy(notificationKey);
-                                    // Lưu các warranty mới được chấp nhận vào danh sách đã thông báo
-                                    const currentNotified = JSON.parse(localStorage.getItem('warranty-approved-notified') || '[]');
-                                    const updatedNotified = [...new Set([...currentNotified, ...newApprovedIds])];
-                                    localStorage.setItem('warranty-approved-notified', JSON.stringify(updatedNotified));
-                                }}
-                            >
-                                Đã hiểu
-                            </Button>
-                        ),
-                        style: {
-                            width: 500,
-                        },
-                    });
-                }
-            }
-        }
-    }, [warranty, loading]);
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -232,27 +175,29 @@ function Warranty() {
             dataIndex: 'productId',
             key: 'productId',
             render: (product) => (
-                <div className="flex items-center space-x-3">
-                    <Image
-                        width={60}
-                        height={60}
-                        src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
-                            (() => {
-                                const color = product.colors?.[0];
-                                if (!color?.images) return '';
-                                if (Array.isArray(color.images)) {
-                                    return color.images[0] || '';
-                                }
-                                return color.images;
-                            })()
-                        }`}
-                        alt={product.name}
-                        className="rounded-lg object-cover"
-                        fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="
-                    />
-                    <div>
-                        <div className="font-medium text-gray-900 max-w-xs truncate">{product.name}</div>
-                        <div className="text-sm text-gray-500">ID: #{product._id.slice(-8)}</div>
+                <div className="flex items-center gap-3">
+                    <div className="flex h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                        <Image
+                            width={56}
+                            height={56}
+                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
+                                (() => {
+                                    const color = product.colors?.[0];
+                                    if (!color?.images) return '';
+                                    if (Array.isArray(color.images)) {
+                                        return color.images[0] || '';
+                                    }
+                                    return color.images;
+                                })()
+                            }`}
+                            alt={product.name}
+                            className="object-cover"
+                            fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="
+                        />
+                    </div>
+                    <div className="min-w-0">
+                        <div className="font-medium text-gray-900 truncate">{product.name}</div>
+                        <div className="text-sm text-gray-500 font-mono">ID: #{product._id.slice(-8)}</div>
                     </div>
                 </div>
             ),
@@ -263,21 +208,29 @@ function Warranty() {
             key: 'warranty_period',
             render: (text, record) => {
                 const { progress, isExpired, daysLeft } = getWarrantyProgress(record);
+                const isResolved = record.status === 'approved' || record.status === 'completed';
+                const showExpired = isExpired && !isResolved;
 
                 return (
-                    <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
+                    <div className="space-y-2.5">
+                        <div className="flex justify-between text-sm text-gray-600">
                             <span>Từ: {formatDate(record.receivedDate)}</span>
                             <span>Đến: {formatDate(record.returnDate)}</span>
                         </div>
                         <Progress
-                            percent={progress}
+                            percent={isResolved ? 100 : progress}
                             size="small"
-                            status={isExpired ? 'exception' : progress > 75 ? 'active' : 'normal'}
-                            strokeColor={isExpired ? '#ff4d4f' : progress > 75 ? '#faad14' : '#52c41a'}
+                            showInfo={false}
+                            status={showExpired ? 'exception' : isResolved ? 'success' : progress > 75 ? 'active' : 'normal'}
+                            strokeColor={showExpired ? '#ff4d4f' : isResolved ? '#52c41a' : progress > 75 ? '#faad14' : '#52c41a'}
                         />
                         <div className="text-xs text-center">
-                            {isExpired ? (
+                            {isResolved ? (
+                                <span className="text-green-600 font-medium flex items-center justify-center gap-1">
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    {record.status === 'approved' ? 'Đã chấp nhận' : 'Hoàn thành'}
+                                </span>
+                            ) : showExpired ? (
                                 <span className="text-red-500 flex items-center justify-center space-x-1">
                                     <AlertTriangle className="w-3 h-3" />
                                     <span>Đã hết hạn</span>
@@ -296,24 +249,29 @@ function Warranty() {
             dataIndex: 'status',
             key: 'status',
             render: (status) => (
-                <Tag
-                    color={getStatusColor(status)}
-                    icon={getStatusIcon(status)}
-                    className="flex items-center space-x-1"
-                >
+                <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium bg-opacity-10 ${
+                    status === 'available' ? 'bg-gray-100 text-gray-700' :
+                    status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                    status === 'approved' ? 'bg-blue-100 text-blue-700' :
+                    status === 'completed' ? 'bg-green-100 text-green-700' :
+                    status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
+                }`}>
+                    {getStatusIcon(status)}
                     {getStatusText(status)}
-                </Tag>
+                </span>
             ),
-            width: 150,
+            width: 160,
         },
         {
             title: 'Hành động',
             key: 'action',
             render: (text, record) => {
                 const { isExpired } = getWarrantyProgress(record);
+                const isResolved = record.status === 'approved' || record.status === 'completed';
+                const showExpired = isExpired && !isResolved;
 
-                if (isExpired) {
-                    return <span className="text-gray-400 text-sm">Hết hạn</span>;
+                if (showExpired) {
+                    return <span className="text-gray-400 text-sm font-medium">Hết hạn</span>;
                 }
 
                 // Chỉ hiển thị nút "Đổi trả" khi status là 'available' (chưa có yêu cầu đổi trả)
@@ -325,7 +283,7 @@ function Warranty() {
                                 size="small"
                                 icon={<RefreshCw className="w-4 h-4" />}
                                 onClick={() => openReturnModal(record)}
-                                className="bg-red-500 hover:bg-red-600"
+                                className="rounded-lg bg-red-500 hover:!bg-red-600 border-0"
                             >
                                 Đổi trả
                             </Button>
@@ -342,37 +300,84 @@ function Warranty() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
+            <div className="flex flex-col justify-center items-center min-h-[320px] rounded-2xl border border-gray-200 bg-gray-50/50">
                 <Spin size="large" />
+                <p className="mt-4 text-sm text-gray-500">Đang tải danh sách bảo hành...</p>
             </div>
         );
     }
 
     if (warranty.length === 0) {
-        return <Empty description="Bạn chưa có sản phẩm nào trong bảo hành" className="py-16" />;
+        return (
+            <div className="rounded-2xl border border-gray-200 bg-white py-16 shadow-sm">
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description={
+                        <span className="text-gray-500">Bạn chưa có sản phẩm nào trong bảo hành</span>
+                    }
+                    className="py-8"
+                />
+            </div>
+        );
     }
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center space-x-2 mb-6">
-                <Shield className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Bảo hành sản phẩm</h2>
-                <Tag color="blue">{warranty.length} sản phẩm</Tag>
+            <style>{`
+                .warranty-table .ant-table-thead > tr > th {
+                    background: #f8fafc !important;
+                    font-weight: 600;
+                    color: #475569;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                .warranty-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #f1f5f9;
+                }
+                .warranty-table .ant-table-tbody > tr:hover > td {
+                    background: #f8fafc !important;
+                }
+                .warranty-table .ant-table-container {
+                    border-radius: 0.75rem;
+                    overflow: hidden;
+                }
+            `}</style>
+
+            {/* Header */}
+            <div className="rounded-2xl bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-100 p-6">
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-100 text-blue-600">
+                        <Shield className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Bảo hành sản phẩm</h1>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            Theo dõi thời hạn bảo hành và yêu cầu đổi trả
+                        </p>
+                    </div>
+                    <div className="ml-auto">
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 ring-1 ring-blue-100">
+                            {warranty.length} sản phẩm
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            <Card className="overflow-hidden">
+            {/* Table */}
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
                 <Table
                     columns={columns}
                     dataSource={warranty}
                     rowKey="_id"
+                    className="warranty-table"
                     pagination={{
                         pageSize: 10,
                         showSizeChanger: true,
                         showQuickJumper: true,
                         showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} sản phẩm`,
+                        className: 'px-4 py-3',
                     }}
                 />
-            </Card>
+            </div>
 
             {/* Return Request Modal */}
             <Modal

@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, InputNumber, Popconfirm, Select, Upload, Space } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Table, Button, Modal, Form, Input, InputNumber, Popconfirm, Select, Upload, Space, Empty, Tooltip, Tag } from 'antd';
+import {
+    PlusOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    UploadOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+    ShoppingOutlined,
+    ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { requestGetAllCategory } from '../../../services/category/categoryService';
@@ -20,8 +28,10 @@ function ProductManager() {
     const [editingProduct, setEditingProduct] = useState(null);
     const [dataCategory, setDataCategory] = useState([]);
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [filterCategory, setFilterCategory] = useState('all');
 
-    // Format currency function (same as FlashSale and CardBody)
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -31,10 +41,13 @@ function ProductManager() {
 
     const fetchDataProduct = async () => {
         try {
+            setLoading(true);
             const res = await requestGetAllProduct();
             setProducts(res.metadata || []);
         } catch (e) {
-            console.error(e);
+            toast.error('Không thể tải danh sách sản phẩm');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -50,6 +63,18 @@ function ProductManager() {
         })();
     }, []);
 
+    const filteredProducts = useMemo(() => {
+        let result = products;
+        if (searchText.trim()) {
+            const keyword = searchText.toLowerCase().trim();
+            result = result.filter((p) => p.name?.toLowerCase().includes(keyword));
+        }
+        if (filterCategory !== 'all') {
+            result = result.filter((p) => p.category?._id === filterCategory);
+        }
+        return result;
+    }, [products, searchText, filterCategory]);
+
     const handleAdd = () => {
         setEditingProduct(null);
         form.resetFields();
@@ -58,8 +83,17 @@ function ProductManager() {
 
     const handleEdit = (record) => {
         setEditingProduct(record);
-
-        console.log(record);
+        const firstColor = record.colors?.[0] || {};
+        const colorImages = Array.isArray(firstColor.images) && firstColor.images.length > 0
+            ? firstColor.images.map((img, index) => ({
+                  uid: `-${index}`,
+                  name: img,
+                  status: 'done',
+                  url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${img}`,
+              }))
+            : firstColor.images
+            ? [{ uid: '-1', name: firstColor.images, status: 'done', url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${firstColor.images}` }]
+            : [];
 
         form.setFieldsValue({
             name: record.name,
@@ -67,75 +101,49 @@ function ProductManager() {
             discount: Number(record.discount || 0),
             category: record.category._id,
             description: record.description || '',
-            colors: (record.colors || []).map((c) => ({
-                ...c,
-                images: Array.isArray(c.images) && c.images.length > 0
-                    ? c.images.map((img, index) => ({
-                          uid: `-${index}`,
-                          name: img,
-                          status: 'done',
-                          url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${img}`,
-                      }))
-                    : c.images
-                    ? [
-                          {
-                              uid: '-1',
-                              name: c.images,
-                              status: 'done',
-                              url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${c.images}`,
-                          },
-                      ]
-                    : [],
-            })),
+            colors: [{ name: firstColor.name || '', images: colorImages }],
             variants: (record.variants || []).map((v) => ({
                 ...v,
                 stock: Number(v.stock || 0),
             })),
         });
-
         setModalVisible(true);
     };
 
     const handleDelete = async (id) => {
         try {
+            setLoading(true);
             await requestDeleteProduct(id);
             await fetchDataProduct();
-            toast.success('Xoá thành công');
+            toast.success('Xoá sản phẩm thành công');
         } catch (err) {
             toast.error('Xoá thất bại');
+            setLoading(false);
         }
     };
 
     const handleOk = async () => {
         try {
             const values = await form.validateFields();
+            setLoading(true);
 
-            const uploadedColors = await Promise.all(
-                (values.colors || []).map(async (c) => {
-                    const imageUrls = [];
-                    if (c.images && c.images.length > 0) {
-                        for (const fileItem of c.images) {
-                            let imageUrl = null;
-                            if (fileItem.url) {
-                                imageUrl = fileItem.url.split('/uploads/products/').pop();
-                            } else if (fileItem.originFileObj) {
-                                const fd = new FormData();
-                                fd.append('image', fileItem.originFileObj);
-                                const r = await requestUploadImage(fd);
-                                imageUrl = r?.url;
-                            }
-                            if (imageUrl) {
-                                imageUrls.push(imageUrl);
-                            }
-                        }
+            const colorEntry = values.colors?.[0] || {};
+            const imageUrls = [];
+            if (colorEntry.images && colorEntry.images.length > 0) {
+                for (const fileItem of colorEntry.images) {
+                    let imageUrl = null;
+                    if (fileItem.url) {
+                        imageUrl = fileItem.url.split('/uploads/products/').pop();
+                    } else if (fileItem.originFileObj) {
+                        const fd = new FormData();
+                        fd.append('image', fileItem.originFileObj);
+                        const r = await requestUploadImage(fd);
+                        imageUrl = r?.url;
                     }
-
-                    return {
-                        name: c.name,
-                        images: imageUrls,
-                    };
-                }),
-            );
+                    if (imageUrl) imageUrls.push(imageUrl);
+                }
+            }
+            const uploadedColors = [{ name: colorEntry.name || '', images: imageUrls }];
 
             const processedVariants = (values.variants || []).map((v) => ({
                 size: v.size,
@@ -154,7 +162,7 @@ function ProductManager() {
 
             if (editingProduct) {
                 await requestUpdateProduct(editingProduct._id, payload);
-                toast.success('Cập nhật thành công');
+                toast.success('Cập nhật sản phẩm thành công');
             } else {
                 await requestCreateProduct(payload);
                 toast.success('Tạo sản phẩm thành công');
@@ -167,26 +175,39 @@ function ProductManager() {
         } catch (err) {
             console.error(err);
             toast.error('Lỗi khi lưu sản phẩm');
+        } finally {
+            setLoading(false);
         }
     };
 
     const columns = [
-        { title: 'Tên sản phẩm', dataIndex: 'name', key: 'name' },
         {
-            title: 'Ảnh',
-            dataIndex: 'colors',
-            key: 'colors',
-            render: (colors) => {
-                const firstImage = colors?.[0]?.images;
-                const imageUrl = Array.isArray(firstImage) 
-                    ? firstImage[0] 
-                    : firstImage;
+            title: '#',
+            key: 'index',
+            width: 50,
+            align: 'center',
+            render: (_, __, index) => (
+                <span className="text-gray-400 font-medium text-sm">{index + 1}</span>
+            ),
+        },
+        {
+            title: 'Sản phẩm',
+            key: 'product',
+            render: (_, record) => {
+                const firstImage = record.colors?.[0]?.images;
+                const imageUrl = Array.isArray(firstImage) ? firstImage[0] : firstImage;
                 return (
-                    <img
-                        src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imageUrl}`}
-                        alt=""
-                        className="w-16 h-16 object-cover rounded-lg"
-                    />
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imageUrl}`}
+                            alt=""
+                            className="w-14 h-14 object-cover rounded-xl border border-gray-100 flex-shrink-0"
+                        />
+                        <div className="min-w-0">
+                            <p className="font-semibold text-gray-800 truncate max-w-[280px]">{record.name}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{record.category?.categoryName || '—'}</p>
+                        </div>
+                    </div>
                 );
             },
         },
@@ -194,21 +215,78 @@ function ProductManager() {
             title: 'Giá',
             dataIndex: 'price',
             key: 'price',
+            width: 150,
             render: (p) => (
-                <div className="font-semibold text-green-600">
-                    {formatCurrency(Number(p || 0))}
-                </div>
+                <span className="font-semibold text-gray-800">{formatCurrency(Number(p || 0))}</span>
             ),
         },
-        { title: 'Giảm giá', dataIndex: 'discount', key: 'discount', render: (d) => `${Number(d || 0)} %` },
+        {
+            title: 'Giảm giá',
+            dataIndex: 'discount',
+            key: 'discount',
+            width: 100,
+            align: 'center',
+            render: (d) => {
+                const val = Number(d || 0);
+                return val > 0 ? (
+                    <Tag color="red" className="rounded-full px-2.5 font-medium border-0">-{val}%</Tag>
+                ) : (
+                    <span className="text-gray-400 text-sm">—</span>
+                );
+            },
+        },
+        {
+            title: 'Tồn kho',
+            dataIndex: 'variants',
+            key: 'stock',
+            width: 100,
+            align: 'center',
+            render: (variants) => {
+                const total = (variants || []).reduce((sum, v) => sum + Number(v.stock || 0), 0);
+                return (
+                    <Tag
+                        color={total > 10 ? 'green' : total > 0 ? 'orange' : 'red'}
+                        className="rounded-full px-2.5 font-medium border-0"
+                    >
+                        {total}
+                    </Tag>
+                );
+            },
+        },
         {
             title: 'Hành động',
             key: 'action',
+            width: 160,
+            align: 'center',
             render: (_, record) => (
                 <Space>
-                    <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
-                    <Popconfirm title="Bạn có chắc muốn xoá?" onConfirm={() => handleDelete(record._id)}>
-                        <Button danger icon={<DeleteOutlined />} />
+                    <Tooltip title="Chỉnh sửa">
+                        <Button
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record)}
+                            className="border-blue-200 text-blue-600 hover:!bg-blue-50 hover:!border-blue-300"
+                        >
+                            Sửa
+                        </Button>
+                    </Tooltip>
+                    <Popconfirm
+                        title="Xoá sản phẩm này?"
+                        description="Hành động này không thể hoàn tác."
+                        onConfirm={() => handleDelete(record._id)}
+                        okText="Xoá"
+                        cancelText="Huỷ"
+                        okButtonProps={{ danger: true }}
+                        icon={<ExclamationCircleOutlined style={{ color: '#ef4444' }} />}
+                    >
+                        <Tooltip title="Xoá">
+                            <Button
+                                danger
+                                icon={<DeleteOutlined />}
+                                className="border-red-200 text-red-600 hover:!bg-red-50 hover:!border-red-300"
+                            >
+                                Xoá
+                            </Button>
+                        </Tooltip>
                     </Popconfirm>
                 </Space>
             ),
@@ -216,29 +294,136 @@ function ProductManager() {
     ];
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow-md">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Quản lý sản phẩm</h2>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                    Thêm sản phẩm
-                </Button>
+        <div className="space-y-6">
+            <style>{`
+                .product-table .ant-table-thead > tr > th {
+                    background: #f8fafc !important;
+                    font-weight: 600;
+                    color: #475569;
+                    border-bottom: 2px solid #e2e8f0;
+                    padding: 14px 16px;
+                }
+                .product-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #f1f5f9;
+                    padding: 12px 16px;
+                }
+                .product-table .ant-table-tbody > tr:hover > td {
+                    background: #f8fafc !important;
+                }
+                .product-table .ant-table-container {
+                    border-radius: 0.75rem;
+                    overflow: hidden;
+                }
+            `}</style>
+
+            {/* Header */}
+            <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 shadow-sm">
+                            <ShoppingOutlined className="text-xl" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-xl font-bold text-gray-900 tracking-tight">Quản lý sản phẩm</h1>
+                                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                                    {products.length} sản phẩm
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-500 mt-0.5">Quản lý tất cả sản phẩm trong cửa hàng</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Input
+                            placeholder="Tìm kiếm sản phẩm..."
+                            prefix={<SearchOutlined className="text-gray-400" />}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className="w-56 rounded-lg"
+                            allowClear
+                        />
+                        <Select
+                            value={filterCategory}
+                            onChange={(val) => setFilterCategory(val)}
+                            className="w-44"
+                            popupMatchSelectWidth={false}
+                        >
+                            <Select.Option value="all">Tất cả danh mục</Select.Option>
+                            {dataCategory.map((c) => (
+                                <Select.Option key={c._id} value={c._id}>{c.categoryName}</Select.Option>
+                            ))}
+                        </Select>
+                        <Tooltip title="Tải lại">
+                            <Button
+                                icon={<ReloadOutlined />}
+                                onClick={fetchDataProduct}
+                                loading={loading}
+                                className="rounded-lg"
+                            />
+                        </Tooltip>
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={handleAdd}
+                            className="rounded-lg bg-blue-600 hover:!bg-blue-700 shadow-sm"
+                        >
+                            Thêm sản phẩm
+                        </Button>
+                    </div>
+                </div>
             </div>
 
-            <Table 
-                rowKey="id" 
-                columns={columns} 
-                dataSource={products}
-                pagination={{
-                    total: products.length,
-                    pageSize: 10,
-                    showSizeChanger: false,
-                    showQuickJumper: false,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} sản phẩm`,
-                }}
-            />
+            {/* Table */}
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+                <Table
+                    rowKey="_id"
+                    columns={columns}
+                    dataSource={filteredProducts}
+                    loading={loading}
+                    className="product-table"
+                    pagination={{
+                        total: filteredProducts.length,
+                        pageSize: 10,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} sản phẩm`,
+                        className: 'px-4 py-3',
+                    }}
+                    locale={{
+                        emptyText: (
+                            <Empty
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description={
+                                    <span className="text-gray-500">
+                                        {searchText || filterCategory !== 'all'
+                                            ? 'Không tìm thấy sản phẩm nào'
+                                            : 'Chưa có sản phẩm nào'}
+                                    </span>
+                                }
+                            />
+                        ),
+                    }}
+                />
+            </div>
 
+            {/* Modal */}
             <Modal
-                title={editingProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}
+                title={
+                    <div className="flex items-center gap-2">
+                        {editingProduct ? (
+                            <>
+                                <EditOutlined className="text-blue-500" />
+                                <span>Chỉnh sửa sản phẩm</span>
+                            </>
+                        ) : (
+                            <>
+                                <PlusOutlined className="text-green-500" />
+                                <span>Thêm sản phẩm mới</span>
+                            </>
+                        )}
+                    </div>
+                }
                 open={modalVisible}
                 onOk={handleOk}
                 onCancel={() => {
@@ -246,125 +431,83 @@ function ProductManager() {
                     form.resetFields();
                     setEditingProduct(null);
                 }}
-                width={1000}
+                okText={editingProduct ? 'Cập nhật' : 'Thêm mới'}
+                cancelText="Huỷ"
+                confirmLoading={loading}
+                width={720}
+                centered
+                maskClosable={false}
             >
-                <Form form={form} layout="vertical">
+                <Form form={form} layout="vertical" className="mt-4">
                     <div className="grid grid-cols-2 gap-6">
-                        <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
+                            <Input placeholder="Nhập tên sản phẩm" className="rounded-lg" />
                         </Form.Item>
-                        <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
+                        <Form.Item name="price" label="Giá" rules={[{ required: true, message: 'Vui lòng nhập giá' }]}>
                             <InputNumber
                                 style={{ width: '100%' }}
                                 min={0}
-                                formatter={
-                                    (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') // thêm dấu phẩy
-                                }
-                                parser={(value) => value.replace(/,/g, '')} // bỏ dấu phẩy khi nhập
+                                className="rounded-lg"
+                                placeholder="Nhập giá sản phẩm"
+                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value) => value.replace(/,/g, '')}
                             />
                         </Form.Item>
-
                         <Form.Item name="discount" label="Giảm giá (%)">
-                            <InputNumber style={{ width: '100%' }} min={0} max={100} />
+                            <InputNumber style={{ width: '100%' }} min={0} max={100} className="rounded-lg" placeholder="0" />
                         </Form.Item>
-                        <Form.Item name="category" label="Danh mục" rules={[{ required: true }]}>
-                            <Select>
+                        <Form.Item name="category" label="Danh mục" rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}>
+                            <Select placeholder="Chọn danh mục" className="rounded-lg">
                                 {dataCategory.map((c) => (
-                                    <Select.Option key={c._id} value={c._id}>
-                                        {c.categoryName}
-                                    </Select.Option>
+                                    <Select.Option key={c._id} value={c._id}>{c.categoryName}</Select.Option>
                                 ))}
                             </Select>
                         </Form.Item>
                     </div>
 
                     <Form.Item name="description" label="Mô tả">
-                        <ReactQuill theme="snow" style={{ height: 250 }} />
+                        <ReactQuill theme="snow" style={{ height: 180 }} />
                     </Form.Item>
 
-                    <div className="mt-6">
-                        <h3 className="text-lg font-medium mb-4">Màu sắc</h3>
-                        <Form.List name="colors">
-                            {(colorFields, { add: addColor, remove: removeColor }) => (
+                    <div className="mt-12 rounded-xl border border-gray-200 p-5">
+                        <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 text-xs">🎨</span>
+                            Màu sắc & Ảnh sản phẩm
+                        </h3>
+                        <Form.Item name={['colors', 0, 'name']} label="Tên màu" rules={[{ required: true, message: 'Nhập tên màu' }]}>
+                            <Input placeholder="VD: Đen, Trắng, Xanh" className="rounded-lg" />
+                        </Form.Item>
+                        <Form.Item name={['colors', 0, 'images']} label="Ảnh sản phẩm" valuePropName="fileList" getValueFromEvent={(e) => e && e.fileList}>
+                            <Upload listType="picture-card" multiple beforeUpload={() => false}>
                                 <div>
-                                    {colorFields.map(({ key: cKey, name: cName, ...cRest }) => (
-                                        <div key={cKey} className="p-4 border rounded mb-3">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <Form.Item
-                                                    {...cRest}
-                                                    name={[cName, 'name']}
-                                                    label="Tên màu"
-                                                    rules={[{ required: true }]}
-                                                >
-                                                    <Input placeholder="VD: Đen, Trắng, Xanh" />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    {...cRest}
-                                                    name={[cName, 'images']}
-                                                    label="Ảnh màu"
-                                                    valuePropName="fileList"
-                                                    getValueFromEvent={(e) => e && e.fileList}
-                                                >
-                                                    <Upload
-                                                        listType="picture-card"
-                                                        multiple
-                                                        beforeUpload={() => false}
-                                                    >
-                                                        <div>
-                                                            <UploadOutlined />
-                                                            <div style={{ marginTop: 8 }}>Upload</div>
-                                                        </div>
-                                                    </Upload>
-                                                </Form.Item>
-                                            </div>
-
-                                            <div className="flex justify-end mt-3">
-                                                <Button danger onClick={() => removeColor(cName)}>
-                                                    Xóa màu
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    <Button type="dashed" block onClick={() => addColor()}>
-                                        + Thêm màu
-                                    </Button>
+                                    <UploadOutlined />
+                                    <div style={{ marginTop: 8 }}>Upload</div>
                                 </div>
-                            )}
-                        </Form.List>
+                            </Upload>
+                        </Form.Item>
                     </div>
 
-                    <div className="mt-6">
-                        <h3 className="text-lg font-medium mb-4">Kích thước</h3>
+                    <div className="mt-6 rounded-xl border border-gray-200 p-5">
+                        <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-orange-50 text-orange-600 text-xs">📏</span>
+                            Kích thước
+                        </h3>
                         <Form.List name="variants">
                             {(variantFields, { add: addVariant, remove: removeVariant }) => (
-                                <div>
+                                <div className="space-y-2">
                                     {variantFields.map(({ key: vKey, name: vName, ...vRest }) => (
-                                        <div key={vKey} className="flex gap-2 items-center mb-2 p-3 border rounded">
-                                            <Form.Item
-                                                {...vRest}
-                                                name={[vName, 'size']}
-                                                label="Size"
-                                                rules={[{ required: true }]}
-                                            >
-                                                <Input placeholder="VD: 38, 39, 40" style={{ width: 120 }} />
+                                        <div key={vKey} className="flex gap-3 items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                            <Form.Item {...vRest} name={[vName, 'size']} label="Size" rules={[{ required: true, message: 'Nhập size' }]} className="mb-0 flex-1">
+                                                <Input placeholder="VD: 38, 39, 40" className="rounded-lg" />
                                             </Form.Item>
-                                            <Form.Item
-                                                {...vRest}
-                                                name={[vName, 'stock']}
-                                                label="Tồn kho"
-                                                rules={[{ required: true }]}
-                                            >
-                                                <InputNumber min={0} />
+                                            <Form.Item {...vRest} name={[vName, 'stock']} label="Tồn kho" rules={[{ required: true, message: 'Nhập số lượng' }]} className="mb-0 flex-1">
+                                                <InputNumber min={0} style={{ width: '100%' }} className="rounded-lg" />
                                             </Form.Item>
-                                            <Button danger onClick={() => removeVariant(vName)}>
-                                                Xóa
-                                            </Button>
+                                            <Button danger size="small" onClick={() => removeVariant(vName)} icon={<DeleteOutlined />} className="mt-7" />
                                         </div>
                                     ))}
-                                    <Button type="dashed" block onClick={() => addVariant()}>
-                                        + Thêm size
+                                    <Button type="dashed" block onClick={() => addVariant()} icon={<PlusOutlined />} className="rounded-lg">
+                                        Thêm size
                                     </Button>
                                 </div>
                             )}

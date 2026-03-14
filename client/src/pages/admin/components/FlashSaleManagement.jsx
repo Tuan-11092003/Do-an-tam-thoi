@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     Table,
-    Card,
     Button,
     Modal,
     Form,
@@ -11,24 +10,29 @@ import {
     Space,
     Popconfirm,
     message,
-    Tag,
-    Typography,
-    Row,
-    Col,
-    Statistic,
+    Input,
+    Tooltip,
+    Empty,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, ThunderboltOutlined, EyeOutlined, CalendarOutlined } from '@ant-design/icons';
+import {
+    PlusOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    SearchOutlined,
+    ReloadOutlined,
+    ExclamationCircleOutlined,
+} from '@ant-design/icons';
+import { Zap, Percent, CalendarDays, CheckCircle, Clock, XCircle } from 'lucide-react';
 import dayjs from 'dayjs';
 
-import { 
-    requestCreateFlashSale, 
-    requestGetAllFlashSale, 
-    requestDeleteFlashSale, 
-    requestUpdateFlashSale 
+import {
+    requestCreateFlashSale,
+    requestGetAllFlashSale,
+    requestDeleteFlashSale,
+    requestUpdateFlashSale,
 } from '../../../services/flashSale/flashSaleService';
 import { requestGetAllProduct } from '../../../services/product/productService';
 
-const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 function FlashSaleManagement() {
@@ -37,23 +41,30 @@ function FlashSaleManagement() {
     const [editingFlashSale, setEditingFlashSale] = useState(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-
     const [products, setProducts] = useState([]);
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
-        const fetchDataProduct = async () => {
-            const res = await requestGetAllProduct();
-            setProducts(res.metadata);
+        const fetchProducts = async () => {
+            try {
+                const res = await requestGetAllProduct();
+                setProducts(res.metadata || []);
+            } catch (e) {
+                console.error(e);
+            }
         };
-        fetchDataProduct();
+        fetchProducts();
     }, []);
 
     const fetchDataFlashSale = async () => {
         try {
+            setLoading(true);
             const res = await requestGetAllFlashSale();
             setFlashSales(res?.metadata || []);
         } catch (e) {
-            console.error(e);
+            message.error('Không thể tải danh sách khuyến mãi');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -61,42 +72,24 @@ function FlashSaleManagement() {
         fetchDataFlashSale();
     }, []);
 
-    // Tính trạng thái dựa trên ngày (tương tự CouponManager)
     const getFlashSaleStatus = (startDate, endDate) => {
         const now = dayjs();
-        const start = dayjs(startDate);
-        const end = dayjs(endDate);
-
-        if (now.isAfter(end)) {
-            return { status: 'Đã kết thúc', color: 'default' };
-        } else if (now.isAfter(start) && now.isBefore(end)) {
-            return { status: 'Đang diễn ra', color: 'success' };
-        } else {
-            return { status: 'Sắp diễn ra', color: 'processing' };
-        }
+        if (now.isAfter(dayjs(endDate))) return { label: 'Đã kết thúc', bg: 'bg-gray-100', text: 'text-gray-500', icon: <XCircle className="w-3.5 h-3.5" /> };
+        if (now.isAfter(dayjs(startDate))) return { label: 'Đang diễn ra', bg: 'bg-emerald-50', text: 'text-emerald-700', icon: <CheckCircle className="w-3.5 h-3.5" /> };
+        return { label: 'Sắp diễn ra', bg: 'bg-blue-50', text: 'text-blue-700', icon: <Clock className="w-3.5 h-3.5" /> };
     };
 
-    const getProductInfo = (productId) => {
-        const productIdStr = productId?.toString();
-        return products.find((p) => {
-            const pIdStr = p._id?.toString();
-            return pIdStr === productIdStr;
-        }) || {};
+    const getProductImage = (productId) => {
+        const color = productId?.colors?.[0];
+        if (!color?.images) return '';
+        return Array.isArray(color.images) ? color.images[0] || '' : color.images;
     };
 
-    // Tính số lượng dựa trên ngày
-    const activeCount = flashSales.filter((fs) => {
-        const { status } = getFlashSaleStatus(fs.startDate, fs.endDate);
-        return status === 'Đang diễn ra';
-    }).length;
-    const scheduledCount = flashSales.filter((fs) => {
-        const { status } = getFlashSaleStatus(fs.startDate, fs.endDate);
-        return status === 'Sắp diễn ra';
-    }).length;
-    const expiredCount = flashSales.filter((fs) => {
-        const { status } = getFlashSaleStatus(fs.startDate, fs.endDate);
-        return status === 'Đã kết thúc';
-    }).length;
+    const filteredFlashSales = useMemo(() => {
+        if (!searchText.trim()) return flashSales;
+        const keyword = searchText.toLowerCase().trim();
+        return flashSales.filter((fs) => fs.productId?.name?.toLowerCase().includes(keyword));
+    }, [flashSales, searchText]);
 
     const handleAdd = () => {
         setEditingFlashSale(null);
@@ -106,10 +99,9 @@ function FlashSaleManagement() {
 
     const handleEdit = (record) => {
         setEditingFlashSale(record);
-        // Xử lý productId - có thể là object (đã populate) hoặc string
         const productIdValue = record.productId?._id || record.productId;
         form.setFieldsValue({
-            productId: [productIdValue], // Chuyển sản phẩm đơn thành mảng
+            productId: [productIdValue],
             discount: record.discount,
             dateRange: [dayjs(record.startDate), dayjs(record.endDate)],
         });
@@ -118,12 +110,13 @@ function FlashSaleManagement() {
 
     const handleDelete = async (id) => {
         try {
+            setLoading(true);
             await requestDeleteFlashSale(id);
             await fetchDataFlashSale();
-            message.success('Xóa flash sale thành công!');
+            message.success('Xoá khuyến mãi thành công');
         } catch (err) {
-            console.error(err);
-            message.error('Xóa flash sale thất bại');
+            message.error('Xoá thất bại');
+            setLoading(false);
         }
     };
 
@@ -131,43 +124,30 @@ function FlashSaleManagement() {
         setLoading(true);
         try {
             if (editingFlashSale) {
-                // Chế độ sửa: chỉ cập nhật một flash sale
-                const productIdValue = values.productId[0]; // Lấy sản phẩm đầu tiên được chọn
-                const updatedFlashSale = {
+                const productIdValue = values.productId[0];
+                await requestUpdateFlashSale({
                     _id: editingFlashSale._id,
                     productId: productIdValue,
                     discount: values.discount,
                     startDate: values.dateRange[0].toISOString(),
                     endDate: values.dateRange[1].toISOString(),
-                };
-                await requestUpdateFlashSale(updatedFlashSale);
-
-                message.success('Cập nhật flash sale thành công!');
+                });
+                message.success('Cập nhật khuyến mãi thành công');
             } else {
-                // Chế độ thêm: Server sẽ validate trùng lặp
-                // Tạo flash sale cho tất cả sản phẩm đã chọn - server sẽ validate
                 const newFlashSales = values.productId.map((productId) => ({
-                    productId: productId,
+                    productId,
                     discount: values.discount,
                     startDate: values.dateRange[0].toISOString(),
                     endDate: values.dateRange[1].toISOString(),
                 }));
-
                 await requestCreateFlashSale(newFlashSales);
-
-                message.success(`Thêm ${newFlashSales.length} flash sale thành công!`);
+                message.success(`Thêm ${newFlashSales.length} khuyến mãi thành công`);
             }
-
-            // Làm mới dữ liệu từ server để lấy danh sách đã cập nhật với trạng thái được server tính
             await fetchDataFlashSale();
             setIsModalVisible(false);
             form.resetFields();
         } catch (error) {
-            console.error('Lỗi:', error);
-            
-            // Hiển thị thông báo lỗi từ server
-            const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra!';
-            message.error(errorMessage);
+            message.error(error.response?.data?.message || error.message || 'Có lỗi xảy ra');
         } finally {
             setLoading(false);
         }
@@ -175,46 +155,32 @@ function FlashSaleManagement() {
 
     const columns = [
         {
-            title: 'Hình ảnh',
-            dataIndex: 'productId',
-            key: 'images',
-            width: 80,
-            render: (productId) => {
-                if (!productId) {
-                    return <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-400">No image</div>;
-                }
-                return (
-                    <img
-                        src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
-                            (() => {
-                                const color = productId?.colors?.[0];
-                                if (!color?.images) return '';
-                                if (Array.isArray(color.images)) {
-                                    return color.images[0] || '';
-                                }
-                                return color.images;
-                            })()
-                        }`}
-                        alt={productId?.name || ''}
-                        className="w-16 h-16 object-cover rounded"
-                        onError={(e) => {
-                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="64"%3E%3Crect width="64" height="64" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%239ca3af" font-size="10"%3ENo image%3C/text%3E%3C/svg%3E';
-                        }}
-                    />
-                );
-            },
+            title: '#',
+            key: 'index',
+            width: 50,
+            align: 'center',
+            render: (_, __, index) => <span className="text-gray-400 font-medium text-sm">{index + 1}</span>,
         },
         {
             title: 'Sản phẩm',
             dataIndex: 'productId',
-            key: 'productName',
+            key: 'product',
             render: (productId) => {
-                if (!productId) {
-                    return <div className="text-gray-400 text-sm">Không có sản phẩm</div>;
-                }
+                if (!productId) return <span className="text-gray-400 text-sm">Không có sản phẩm</span>;
+                const imgUrl = getProductImage(productId);
                 return (
-                    <div>
-                        <div className="font-medium text-sm">{productId?.name || 'N/A'}</div>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imgUrl}`}
+                            alt={productId?.name || ''}
+                            className="w-12 h-12 object-cover rounded-xl border border-gray-100 flex-shrink-0"
+                            onError={(e) => {
+                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48"%3E%3Crect width="48" height="48" fill="%23f1f5f9"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%2394a3b8" font-size="8"%3ENo img%3C/text%3E%3C/svg%3E';
+                            }}
+                        />
+                        <div className="min-w-0">
+                            <p className="font-semibold text-gray-800 truncate max-w-[260px]">{productId?.name || 'N/A'}</p>
+                        </div>
                     </div>
                 );
             },
@@ -223,52 +189,77 @@ function FlashSaleManagement() {
             title: 'Giảm giá',
             dataIndex: 'discount',
             key: 'discount',
-            render: (discount) => (
-                <Tag color="volcano" className="font-medium text-xs">
-                    -{discount}%
-                </Tag>
+            width: 100,
+            align: 'center',
+            render: (d) => (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold">
+                    <Percent className="w-3 h-3" />
+                    {d}%
+                </span>
             ),
         },
         {
             title: 'Thời gian',
             key: 'time',
+            width: 210,
             render: (_, record) => (
-                <div className="flex items-center gap-1 text-gray-600">
-                    <CalendarOutlined />
-                    <span>
-                        {dayjs(record.startDate).format('DD/MM/YYYY')} ~ {dayjs(record.endDate).format('DD/MM/YYYY')}
-                    </span>
+                <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <CalendarDays className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                    <span>{dayjs(record.startDate).format('DD/MM/YYYY')}</span>
+                    <span className="text-gray-300">→</span>
+                    <span>{dayjs(record.endDate).format('DD/MM/YYYY')}</span>
                 </div>
             ),
         },
         {
             title: 'Trạng thái',
             key: 'status',
-            width: 150,
+            width: 140,
+            align: 'center',
             render: (_, record) => {
-                const { status, color } = getFlashSaleStatus(record.startDate, record.endDate);
+                const st = getFlashSaleStatus(record.startDate, record.endDate);
                 return (
-                    <Tag color={color} className="font-semibold">
-                        {status}
-                    </Tag>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${st.bg} ${st.text}`}>
+                        {st.icon}
+                        {st.label}
+                    </span>
                 );
             },
         },
         {
-            title: 'Thao tác',
+            title: 'Hành động',
             key: 'actions',
-            fixed: 'right',
-            width: 120,
+            width: 160,
+            align: 'center',
             render: (_, record) => (
                 <Space>
-                    <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+                    <Tooltip title="Chỉnh sửa">
+                        <Button
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record)}
+                            className="border-blue-200 text-blue-600 hover:!bg-blue-50 hover:!border-blue-300"
+                        >
+                            Sửa
+                        </Button>
+                    </Tooltip>
                     <Popconfirm
-                        title="Bạn có chắc muốn xóa?"
+                        title="Xoá khuyến mãi này?"
+                        description="Hành động này không thể hoàn tác."
                         onConfirm={() => handleDelete(record._id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
+                        okText="Xoá"
+                        cancelText="Huỷ"
+                        okButtonProps={{ danger: true }}
+                        icon={<ExclamationCircleOutlined style={{ color: '#ef4444' }} />}
                     >
-                        <Button danger size="small" icon={<DeleteOutlined />} />
+                        <Tooltip title="Xoá">
+                            <Button
+                                danger
+                                icon={<DeleteOutlined />}
+                                className="border-red-200 text-red-600 hover:!bg-red-50 hover:!border-red-300"
+                            >
+                                Xoá
+                            </Button>
+                        </Tooltip>
                     </Popconfirm>
                 </Space>
             ),
@@ -276,143 +267,163 @@ function FlashSaleManagement() {
     ];
 
     return (
-        <div className="p-6">
-            <div className="mb-4">
-                <Title level={4} className="mb-3">
-                    <ThunderboltOutlined className="text-red-500 mr-2" />
-                    Quản Lý Flash Sale
-                </Title>
+        <div className="space-y-6">
+            <style>{`
+                .flashsale-table .ant-table-thead > tr > th {
+                    background: #f8fafc !important;
+                    font-weight: 600;
+                    color: #475569;
+                    border-bottom: 2px solid #e2e8f0;
+                    padding: 14px 16px;
+                }
+                .flashsale-table .ant-table-tbody > tr > td {
+                    border-bottom: 1px solid #f1f5f9;
+                    padding: 12px 16px;
+                }
+                .flashsale-table .ant-table-tbody > tr:hover > td {
+                    background: #f8fafc !important;
+                }
+                .flashsale-table .ant-table-container {
+                    border-radius: 0.75rem;
+                    overflow: hidden;
+                }
+            `}</style>
 
-                <Row gutter={16} className="mb-4">
-                    <Col span={6}>
-                        <Card>
-                            <Statistic
-                                title="Đang diễn ra"
-                                value={activeCount}
-                                valueStyle={{ color: '#3f8600' }}
-                                prefix={<ThunderboltOutlined />}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card>
-                            <Statistic
-                                title="Sắp diễn ra"
-                                value={scheduledCount}
-                                valueStyle={{ color: '#1890ff' }}
-                                prefix={<EyeOutlined />}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card>
-                            <Statistic
-                                title="Đã kết thúc"
-                                value={expiredCount}
-                                valueStyle={{ color: '#cf1322' }}
-                                prefix={<DeleteOutlined />}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card>
-                            <Statistic
-                                title="Tổng Flash Sale"
-                                value={flashSales.length}
-                                valueStyle={{ color: '#722ed1' }}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+            {/* Header */}
+            <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-500 shadow-sm">
+                            <Zap className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-xl font-bold text-gray-900 tracking-tight">Quản lý khuyến mãi</h1>
+                                <span className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700">
+                                    {flashSales.length} khuyến mãi
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-500 mt-0.5">Quản lý tất cả chương trình Flash Sale</p>
+                        </div>
+                    </div>
 
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} size="middle" className="mb-3">
-                    Thêm Flash Sale Mới
-                </Button>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Input
+                            placeholder="Tìm kiếm sản phẩm..."
+                            prefix={<SearchOutlined className="text-gray-400" />}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className="w-52 rounded-lg"
+                            allowClear
+                        />
+                        <Tooltip title="Tải lại">
+                            <Button icon={<ReloadOutlined />} onClick={fetchDataFlashSale} loading={loading} className="rounded-lg" />
+                        </Tooltip>
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={handleAdd}
+                            className="rounded-lg bg-blue-600 hover:!bg-blue-700 shadow-sm"
+                        >
+                            Thêm khuyến mãi
+                        </Button>
+                    </div>
+                </div>
             </div>
 
-            <Card>
-                <div className="overflow-x-auto">
+            {/* Table */}
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
                 <Table
                     columns={columns}
-                    dataSource={flashSales}
+                    dataSource={filteredFlashSales}
                     rowKey="_id"
-                    size="small"
-                        scroll={{ x: 'max-content' }}
+                    loading={loading}
+                    className="flashsale-table"
+                    scroll={{ x: 'max-content' }}
                     pagination={{
-                        total: flashSales.length,
+                        total: filteredFlashSales.length,
                         pageSize: 10,
-                        showSizeChanger: false,
-                        showQuickJumper: false,
-                        showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} flash sale`,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} khuyến mãi`,
+                        className: 'px-4 py-3',
+                    }}
+                    locale={{
+                        emptyText: (
+                            <Empty
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description={<span className="text-gray-500">{searchText ? 'Không tìm thấy khuyến mãi nào' : 'Chưa có khuyến mãi nào'}</span>}
+                            />
+                        ),
                     }}
                 />
-                </div>
-            </Card>
+            </div>
 
+            {/* Modal */}
             <Modal
-                title={editingFlashSale ? 'Chỉnh sửa Flash Sale' : 'Thêm Flash Sale Mới'}
+                title={
+                    <div className="flex items-center gap-2">
+                        {editingFlashSale ? (
+                            <>
+                                <EditOutlined className="text-blue-500" />
+                                <span>Chỉnh sửa khuyến mãi</span>
+                            </>
+                        ) : (
+                            <>
+                                <PlusOutlined className="text-green-500" />
+                                <span>Thêm khuyến mãi mới</span>
+                            </>
+                        )}
+                    </div>
+                }
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 footer={null}
-                width={600}
+                width={560}
+                centered
+                maskClosable={false}
             >
                 <Form form={form} layout="vertical" onFinish={handleSubmit} className="mt-4">
                     <Form.Item
                         name="productId"
                         label="Chọn sản phẩm"
-                        rules={[{ required: true, message: 'Vui lòng chọn ít nhất một sản phẩm!' }]}
-                        tooltip="Bạn có thể chọn nhiều sản phẩm để áp dụng flash sale cùng lúc"
+                        rules={[{ required: true, message: 'Vui lòng chọn ít nhất một sản phẩm' }]}
                     >
                         <Select
                             mode="multiple"
                             placeholder="Chọn một hoặc nhiều sản phẩm"
                             showSearch
-                            size="middle"
                             maxTagCount="responsive"
+                            className="rounded-lg"
+                            filterOption={(input, option) =>
+                                option?.['data-name']?.toLowerCase().includes(input.toLowerCase())
+                            }
                         >
                             {products.map((product) => {
-                                const existingFlashSale = flashSales.find(
-                                    (fs) => {
-                                        const productMatch = (fs.productId?._id?.toString() === product._id?.toString() || 
-                                                             fs.productId?.toString() === product._id?.toString());
-                                        const isNotEditing = fs._id !== editingFlashSale?._id;
-                                        const { status } = getFlashSaleStatus(fs.startDate, fs.endDate);
-                                        const isActiveOrScheduled = status === 'Đang diễn ra' || status === 'Sắp diễn ra';
-                                        return productMatch && isNotEditing && isActiveOrScheduled;
-                                    }
-                                );
-                                const isDisabled = existingFlashSale && !editingFlashSale;
+                                const existingFlashSale = flashSales.find((fs) => {
+                                    const productMatch =
+                                        fs.productId?._id?.toString() === product._id?.toString() ||
+                                        fs.productId?.toString() === product._id?.toString();
+                                    const isNotEditing = fs._id !== editingFlashSale?._id;
+                                    const { label } = getFlashSaleStatus(fs.startDate, fs.endDate);
+                                    return productMatch && isNotEditing && (label === 'Đang diễn ra' || label === 'Sắp diễn ra');
+                                });
+                                const isDisabled = !!existingFlashSale && !editingFlashSale;
+                                const imgUrl = getProductImage(product);
 
                                 return (
-                                    <Select.Option key={product._id || product.id} value={product._id || product.id} disabled={isDisabled}>
-                                        <div className="flex items-center space-x-2">
+                                    <Select.Option key={product._id} value={product._id} disabled={isDisabled} data-name={product.name}>
+                                        <div className="flex items-center gap-2">
                                             <img
-                                                src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
-                                                    (() => {
-                                                        const color = product.colors?.[0];
-                                                        if (!color?.images) return '';
-                                                        if (Array.isArray(color.images)) {
-                                                            return color.images[0] || '';
-                                                        }
-                                                        return color.images;
-                                                    })()
-                                                }`}
-                                                alt={product.name || ''}
-                                                className="w-8 h-8 object-cover rounded"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                }}
+                                                src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imgUrl}`}
+                                                alt=""
+                                                className="w-7 h-7 object-cover rounded"
+                                                onError={(e) => { e.target.style.display = 'none'; }}
                                             />
-                                            <div>
-                                                <div
-                                                    className={`font-medium text-sm ${
-                                                        isDisabled ? 'text-gray-400' : ''
-                                                    }`}
-                                                >
-                                                    {product.name}
-                                                    {isDisabled && ' (Đã có Flash Sale)'}
-                                                </div>
-                                            </div>
+                                            <span className={`text-sm ${isDisabled ? 'text-gray-400' : 'font-medium'}`}>
+                                                {product.name}
+                                                {isDisabled && ' (Đã có Flash Sale)'}
+                                            </span>
                                         </div>
                                     </Select.Option>
                                 );
@@ -422,41 +433,33 @@ function FlashSaleManagement() {
 
                     <Form.Item
                         name="discount"
-                        label="Phần trăm giảm giá (%)"
+                        label="Giảm giá (%)"
                         rules={[
-                            { required: true, message: 'Vui lòng nhập phần trăm giảm giá!' },
-                            { type: 'number', min: 1, max: 99, message: 'Giảm giá phải từ 1% đến 99%!' },
+                            { required: true, message: 'Nhập phần trăm giảm giá' },
+                            { type: 'number', min: 1, max: 99, message: 'Giảm giá từ 1% đến 99%' },
                         ]}
                     >
-                        <InputNumber
-                            min={1}
-                            max={99}
-                            placeholder="Nhập phần trăm giảm giá"
-                            size="middle"
-                            className="w-full"
-                            addonAfter="%"
-                        />
+                        <InputNumber min={1} max={99} placeholder="Nhập phần trăm" className="w-full rounded-lg" addonAfter="%" />
                     </Form.Item>
 
                     <Form.Item
                         name="dateRange"
-                        label="Thời gian Flash Sale"
-                        rules={[{ required: true, message: 'Vui lòng chọn thời gian flash sale!' }]}
+                        label="Thời gian khuyến mãi"
+                        rules={[{ required: true, message: 'Chọn thời gian khuyến mãi' }]}
                     >
                         <RangePicker
                             format="DD/MM/YYYY"
-                            placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
-                            size="middle"
-                            className="w-full"
+                            placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+                            className="w-full rounded-lg"
                         />
                     </Form.Item>
 
                     <Form.Item className="mb-0 text-right">
                         <Space>
-                            <Button onClick={() => setIsModalVisible(false)} size="middle">
-                                Hủy
+                            <Button onClick={() => setIsModalVisible(false)} className="rounded-lg">
+                                Huỷ
                             </Button>
-                            <Button type="primary" htmlType="submit" loading={loading} size="middle">
+                            <Button type="primary" htmlType="submit" loading={loading} className="rounded-lg bg-blue-600 hover:!bg-blue-700">
                                 {editingFlashSale ? 'Cập nhật' : 'Thêm mới'}
                             </Button>
                         </Space>

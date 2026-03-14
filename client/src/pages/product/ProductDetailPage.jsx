@@ -3,8 +3,9 @@ import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 import { useEffect, useState } from 'react';
 import { requestGetProductById } from '../../services/product/productService';
-import { ShoppingCart, Heart, Share2, Star, Minus, Plus, Check, ChevronRight, Home } from 'lucide-react';
+import { ShoppingCart, Heart, Share2, Star, Minus, Plus, Check, ChevronRight, Home, Ticket, Copy } from 'lucide-react';
 import { requestAddToCart, requestUpdateCartSelection, requestGetCart } from '../../services/cart/cartService';
+import { requestGetActiveCoupon } from '../../services/coupon/couponService';
 import { toast } from 'react-toastify';
 import { useStore } from '../../hooks/useStore';
 import CardBody from '../../components/product/CardBody';
@@ -31,6 +32,7 @@ function ProductDetailPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedDiscountPrice, setSelectedDiscountPrice] = useState(null);
+    const [coupons, setCoupons] = useState([]);
 
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
 
@@ -82,6 +84,18 @@ function ProductDetailPage() {
     useEffect(() => {
         fetchProductById();
     }, [id]);
+
+    useEffect(() => {
+        const fetchCoupons = async () => {
+            try {
+                const res = await requestGetActiveCoupon();
+                setCoupons(res?.metadata || []);
+            } catch (error) {
+                setCoupons([]);
+            }
+        };
+        fetchCoupons();
+    }, []);
 
     // Cuộn lên đầu trang chỉ khi chuyển sang sản phẩm khác (id thay đổi), không cuộn khi refetch (vd: sau thêm/xóa yêu thích)
     useEffect(() => {
@@ -647,6 +661,45 @@ function ProductDetailPage() {
                                 </div>
                             </div>
 
+                            {/* Mã giảm giá hiện có */}
+                            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                    <Ticket className="w-4 h-4 text-red-500" />
+                                    Mã giảm giá hiện có
+                                </h3>
+                                {coupons.length > 0 ? (
+                                    <ul className="space-y-2">
+                                        {coupons.map((coupon) => (
+                                            <li
+                                                key={coupon._id}
+                                                className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+                                            >
+                                                <div className="min-w-0 flex-1">
+                                                    <span className="font-semibold text-red-600 tracking-wide">{coupon.nameCoupon}</span>
+                                                    <span className="text-gray-500 ml-2">Giảm {coupon.discount}%</span>
+                                                    <div className="text-xs text-gray-500 mt-0.5">
+                                                        Đơn tối thiểu {formatPrice(coupon.minPrice)} · HSD: {new Date(coupon.endDate).toLocaleDateString('vi-VN')}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        navigator.clipboard?.writeText(coupon.nameCoupon);
+                                                        toast.success('Đã sao chép mã');
+                                                    }}
+                                                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-600 transition-colors"
+                                                    title="Sao chép mã"
+                                                >
+                                                    <Copy className="w-4 h-4" />
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-sm text-gray-500">Hiện chưa có mã giảm giá nào</p>
+                                )}
+                            </div>
+
                             {/* Action Buttons */}
                             <div className="space-y-4">
                                 <div className="flex space-x-3">
@@ -674,29 +727,6 @@ function ProductDetailPage() {
                                 >
                                     Mua ngay
                                 </button>
-                            </div>
-
-                            {/* Product Features */}
-                            <div className="border-t pt-4">
-                                <h3 className="text-base font-semibold text-gray-900 mb-3">Đặc điểm nổi bật</h3>
-                                <ul className="space-y-1 text-xs text-gray-600">
-                                    <li className="flex items-center space-x-2">
-                                        <Check className="w-3 h-3 text-green-500" />
-                                        <span>Chất liệu cao cấp, bền đẹp</span>
-                                    </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Check className="w-3 h-3 text-green-500" />
-                                        <span>Thiết kế thời trang, dễ phối đồ</span>
-                                    </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Check className="w-3 h-3 text-green-500" />
-                                        <span>Đế giày êm ái, chống trượt</span>
-                                    </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Check className="w-3 h-3 text-green-500" />
-                                        <span>Bảo hành 6 tháng</span>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>

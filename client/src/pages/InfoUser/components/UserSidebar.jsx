@@ -2,18 +2,24 @@ import { Menu, Avatar, Badge } from 'antd';
 import { UserOutlined, LogoutOutlined, CrownOutlined } from '@ant-design/icons';
 import { ShoppingCart, FileText, Heart } from 'lucide-react';
 import { useStore } from '../../../hooks/useStore';
-import Cookies from 'js-cookie';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { requestLogout } from '../../../services/user/userService';
+import { toast } from 'react-toastify';
 
 function UserSidebar({ activeKey, onSelect, setActiveKey }) {
-    const { dataUser } = useStore();
+    const { dataUser, clearAuth } = useStore();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        // Remove cookie and redirect to login
-        Cookies.remove('logged');
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await requestLogout();
+            clearAuth();
+            navigate('/login');
+            toast.success('Đăng xuất thành công!');
+        } catch (error) {
+            toast.error(error?.response?.data?.message || 'Đăng xuất thất bại');
+        }
     };
 
     const { pathname } = useLocation();
