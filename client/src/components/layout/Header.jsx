@@ -14,6 +14,7 @@ import useDebounce from '../../hooks/useDebounce';
 import { useEffect, useState } from 'react';
 import { requestSearchProduct } from '../../services/product/productService';
 import { formatPrice } from '../../utils/formatPrice';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function Header() {
     const { dataUser, cartData, clearAuth } = useStore();
@@ -260,16 +261,15 @@ function Header() {
                                                     className="flex items-center p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                                                 >
                                                     <img
-                                                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${
+                                                        src={getImageUrl(
                                                             (() => {
                                                                 const color = product.colors?.[0];
                                                                 if (!color?.images) return '';
-                                                                if (Array.isArray(color.images)) {
-                                                                    return color.images[0] || '';
-                                                                }
+                                                                if (Array.isArray(color.images)) return color.images[0] || '';
                                                                 return color.images;
-                                                            })()
-                                                        }`}
+                                                            })(),
+                                                            'products'
+                                                        )}
                                                         alt={product.name}
                                                         className="w-12 h-12 object-cover rounded-lg mr-3"
                                                         onError={(e) => {
@@ -400,7 +400,7 @@ function Header() {
                                         icon={<UserOutlined />}
                                         className="bg-white text-[#ed1d24] flex items-center justify-center border-2 border-white/30 shadow-md"
                                         size="default"
-                                        src={dataUser.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${dataUser.avatar}` : undefined}
+                                        src={dataUser.avatar ? getImageUrl(dataUser.avatar, 'avatars') : undefined}
                                     />
                                     <div className="hidden md:block">
                                         <span className="text-sm font-medium">{dataUser.fullName || 'Người dùng'}</span>

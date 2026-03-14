@@ -10,6 +10,7 @@ import {
     requestUpdateMessageIsRead,
 } from '../../../services/message/messageService';
 import { useStore } from '../../../hooks/useStore';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { TextArea } = Input;
 
@@ -199,7 +200,7 @@ function MessageManager() {
                                                 <div className="relative flex-shrink-0">
                                                     <Avatar
                                                         size={44}
-                                                        src={user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${user.avatar}` : undefined}
+                                                        src={user?.avatar ? getImageUrl(user.avatar, 'avatars') : undefined}
                                                         icon={!user?.avatar ? <User size={18} /> : undefined}
                                                         className={isActive ? '!bg-blue-500' : '!bg-gray-300'}
                                                     >
@@ -250,7 +251,7 @@ function MessageManager() {
                                         <div className="relative">
                                             <Avatar
                                                 size={40}
-                                                src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                                src={selectedUser.user?.avatar ? getImageUrl(selectedUser.user.avatar, 'avatars') : undefined}
                                                 icon={!selectedUser.user?.avatar ? <User size={18} /> : undefined}
                                             >
                                                 {!selectedUser.user?.avatar && selectedUser.user?.fullName?.[0]}
@@ -294,7 +295,7 @@ function MessageManager() {
                                                 {!isAdminMessage(message) && (
                                                     <Avatar
                                                         size={28}
-                                                        src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                                        src={selectedUser.user?.avatar ? getImageUrl(selectedUser.user.avatar, 'avatars') : undefined}
                                                         icon={!selectedUser.user?.avatar ? <User size={14} /> : undefined}
                                                         className="flex-shrink-0 mt-auto !bg-gray-300"
                                                     >
@@ -336,7 +337,7 @@ function MessageManager() {
                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 mb-3">
                                         <Avatar
                                             size={28}
-                                            src={selectedUser.user?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${selectedUser.user.avatar}` : undefined}
+                                            src={selectedUser.user?.avatar ? getImageUrl(selectedUser.user.avatar, 'avatars') : undefined}
                                             icon={!selectedUser.user?.avatar ? <User size={14} /> : undefined}
                                             className="!bg-gray-300"
                                         >

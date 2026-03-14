@@ -2,18 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const multer = require('multer');
-const path = require('path');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'src/uploads/avatars');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-var upload = multer({ storage: storage });
+// Lưu vào memory để upload lên Cloudinary (không lưu disk)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const userController = require('../controller/user.controller');
 

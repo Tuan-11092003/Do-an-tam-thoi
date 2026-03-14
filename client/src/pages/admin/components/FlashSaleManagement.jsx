@@ -32,6 +32,7 @@ import {
     requestUpdateFlashSale,
 } from '../../../services/flashSale/flashSaleService';
 import { requestGetAllProduct } from '../../../services/product/productService';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { RangePicker } = DatePicker;
 
@@ -171,7 +172,7 @@ function FlashSaleManagement() {
                 return (
                     <div className="flex items-center gap-3">
                         <img
-                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imgUrl}`}
+                            src={getImageUrl(imgUrl, 'products')}
                             alt={productId?.name || ''}
                             className="w-12 h-12 object-cover rounded-xl border border-gray-100 flex-shrink-0"
                             onError={(e) => {
@@ -415,7 +416,7 @@ function FlashSaleManagement() {
                                     <Select.Option key={product._id} value={product._id} disabled={isDisabled} data-name={product.name}>
                                         <div className="flex items-center gap-2">
                                             <img
-                                                src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imgUrl}`}
+                                                src={getImageUrl(imgUrl, 'products')}
                                                 alt=""
                                                 className="w-7 h-7 object-cover rounded"
                                                 onError={(e) => { e.target.style.display = 'none'; }}

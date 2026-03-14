@@ -13,6 +13,7 @@ import ProductQuickAddModal from '../../components/product/ProductQuickAddModal'
 import { requestCreateFavourite } from '../../services/favourite/favouriteService';
 import { formatPrice } from '../../utils/formatPrice';
 import { formatDateTime as formatDate } from '../../utils/formatDate';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function ProductDetailPage() {
     const { id: idParam } = useParams();
@@ -417,7 +418,7 @@ function ProductDetailPage() {
                             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
                                 {mainImage && (
                                     <img
-                                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${mainImage}`}
+                                        src={getImageUrl(mainImage, 'products')}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
                                     />
@@ -469,7 +470,7 @@ function ProductDetailPage() {
                                             }`}
                                         >
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL}/uploads/products/${img}`}
+                                                src={getImageUrl(img, 'products')}
                                                 alt={`${product.name} - ${index + 1}`}
                                                 className="w-full h-full object-cover"
                                             />
@@ -498,7 +499,7 @@ function ProductDetailPage() {
                                                     }`}
                                                 >
                                                     <img
-                                                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${colorImage}`}
+                                                        src={getImageUrl(colorImage, 'products')}
                                                         alt={color.name}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -881,9 +882,7 @@ function ProductDetailPage() {
                                                             {review.images.map((image, index) => (
                                                                 <div key={index} className="relative">
                                                                     <img
-                                                                        src={`${
-                                                                            import.meta.env.VITE_API_URL
-                                                                        }/uploads/previewProducts/${image}`}
+                                                                        src={getImageUrl(image, 'previewProducts')}
                                                                         alt={`Review ${index + 1}`}
                                                                         className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                                                                     />

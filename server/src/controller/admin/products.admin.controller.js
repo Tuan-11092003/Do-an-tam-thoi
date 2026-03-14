@@ -4,20 +4,17 @@ const { OK } = require('../../core/success.response');
 class AdminProductsController {
     async uploadImage(req, res) {
         try {
-            const image = req.file;
-            if (!image) {
+            if (!req.file || !req.file.buffer) {
                 return res.status(400).json({ error: 'No file uploaded' });
             }
-
-            const filename = await ProductService.uploadImage(image);
-            const imageUrl = `${filename}`;
-
+            const { uploadToCloudinary } = require('../../utils/uploadCloudinary');
+            const { secure_url } = await uploadToCloudinary(req.file.buffer, 'products', req.file.mimetype);
             res.json({
                 success: true,
-                url: imageUrl,
+                url: secure_url,
                 data: {
-                    url: imageUrl,
-                    filename: filename,
+                    url: secure_url,
+                    filename: secure_url,
                 },
             });
         } catch (error) {

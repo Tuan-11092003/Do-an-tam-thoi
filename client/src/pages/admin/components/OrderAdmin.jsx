@@ -39,6 +39,7 @@ import {
 import dayjs from 'dayjs';
 import { requestGetAllOrder, requestUpdateOrderStatus } from '../../../services/payment/paymentService';
 import { formatPrice } from '../../../utils/formatPrice';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { Text } = Typography;
 const { Search: AntSearch } = Input;
@@ -179,7 +180,7 @@ function OrderAdmin() {
                 return (
                     <div className="flex items-center gap-3">
                         <img
-                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imageUrl}`}
+                            src={getImageUrl(imageUrl, 'products')}
                             alt={firstItem.name}
                             className="w-12 h-12 rounded-xl object-cover border border-gray-100 flex-shrink-0"
                         />
@@ -508,7 +509,7 @@ function OrderAdmin() {
                                     return (
                                         <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL}/uploads/products/${imgUrl}`}
+                                                src={getImageUrl(imgUrl, 'products')}
                                                 alt={item.name}
                                                 className="w-14 h-14 object-cover rounded-lg border border-gray-100 flex-shrink-0"
                                                 onError={(e) => {

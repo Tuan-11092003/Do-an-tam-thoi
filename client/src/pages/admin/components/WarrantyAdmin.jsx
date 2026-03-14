@@ -34,6 +34,7 @@ import {
     AlertTriangle,
 } from 'lucide-react';
 import { formatDateTime as formatDate } from '../../../utils/formatDate';
+import { getImageUrl } from '../../../utils/imageUrl';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
@@ -232,7 +233,7 @@ function WarrantyAdmin() {
                 return (
                     <div className="flex items-center gap-3">
                         <img
-                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imgUrl}`}
+                            src={getImageUrl(imgUrl, 'products')}
                             alt={product.name}
                             className="w-12 h-12 rounded-xl object-cover border border-gray-100 flex-shrink-0"
                             onError={(e) => {
@@ -522,7 +523,7 @@ function WarrantyAdmin() {
                             </h4>
                             <div className="flex items-center gap-4">
                                 <img
-                                    src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${getProductImage(selectedWarranty.productId)}`}
+                                    src={getImageUrl(getProductImage(selectedWarranty.productId), 'products')}
                                     alt={selectedWarranty.productId?.name}
                                     className="w-16 h-16 object-cover rounded-xl border border-gray-100"
                                     onError={(e) => {
@@ -580,7 +581,7 @@ function WarrantyAdmin() {
                                             key={index}
                                             width="100%"
                                             height={100}
-                                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/warranty/${image}`}
+                                            src={getImageUrl(image, 'warranty')}
                                             alt={`Minh chứng ${index + 1}`}
                                             className="rounded-lg object-cover"
                                             style={{ objectFit: 'cover' }}

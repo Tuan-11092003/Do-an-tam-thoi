@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { requestGetPaymentById } from '../../services/payment/paymentService';
 import { CheckCircle, Package, Tag, ShoppingBag, ArrowRight, Home, Phone, Mail } from 'lucide-react';
 import { formatPrice } from '../../utils/formatPrice';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function PaymentSuccessPage() {
     const [payment, setPayment] = useState(null);
@@ -126,7 +127,7 @@ function PaymentSuccessPage() {
                                             
                                             return (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}/uploads/products/${imageUrl}`}
+                                                    src={getImageUrl(imageUrl, 'products')}
                                                     alt={item.name}
                                                     className="w-20 h-20 object-cover rounded-lg"
                                                     onError={(e) => {

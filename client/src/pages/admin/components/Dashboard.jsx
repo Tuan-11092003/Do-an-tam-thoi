@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import moment from 'moment';
 import { requestGetDashboardAdmin } from '../../../services/user/userService';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { Title, Text } = Typography;
 
@@ -502,7 +503,7 @@ function Dashboard() {
                                             <div className="relative flex-shrink-0">
                                                 <Avatar
                                                     size={64}
-                                                    src={product.image ? `${import.meta.env.VITE_API_URL}/uploads/products/${product.image}` : undefined}
+                                                    src={product.image ? getImageUrl(product.image, 'products') : undefined}
                                                     icon={!product.image ? <Package /> : undefined}
                                                     className="border-2 border-gray-200 group-hover:border-blue-400 transition-colors shadow-md"
                                                     shape="square"

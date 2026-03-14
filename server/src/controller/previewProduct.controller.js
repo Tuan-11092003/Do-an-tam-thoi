@@ -1,11 +1,17 @@
 const { OK } = require('../core/success.response');
 const PreviewProductService = require('../services/previewProduct.service');
+const { uploadMultipleToCloudinary } = require('../utils/uploadCloudinary');
 
 class PreviewProductController {
     async createPreviewProduct(req, res) {
         const { id } = req.user;
-        // Images không bắt buộc, chỉ lấy nếu có
-        const images = req.files && req.files.length > 0 ? req.files.map((file) => file.filename) : [];
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            images = await uploadMultipleToCloudinary(
+                req.files.map((f) => ({ buffer: f.buffer, mimetype: f.mimetype })),
+                'previewProducts'
+            );
+        }
         const { productId, orderId, rating, comment } = req.body;
         // Comment không bắt buộc, mặc định là chuỗi rỗng nếu không có
         const commentText = comment && comment.trim() ? comment.trim() : '';

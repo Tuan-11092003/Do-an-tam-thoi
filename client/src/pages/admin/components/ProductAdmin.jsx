@@ -21,6 +21,7 @@ import {
     requestUploadImage,
 } from '../../../services/product/productService';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 function ProductManager() {
     const [products, setProducts] = useState([]);
@@ -89,10 +90,10 @@ function ProductManager() {
                   uid: `-${index}`,
                   name: img,
                   status: 'done',
-                  url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${img}`,
+                  url: getImageUrl(img, 'products'),
               }))
             : firstColor.images
-            ? [{ uid: '-1', name: firstColor.images, status: 'done', url: `${import.meta.env.VITE_URL_IMAGE}/uploads/products/${firstColor.images}` }]
+            ? [{ uid: '-1', name: firstColor.images, status: 'done', url: getImageUrl(firstColor.images, 'products') }]
             : [];
 
         form.setFieldsValue({
@@ -132,8 +133,10 @@ function ProductManager() {
             if (colorEntry.images && colorEntry.images.length > 0) {
                 for (const fileItem of colorEntry.images) {
                     let imageUrl = null;
-                    if (fileItem.url) {
-                        imageUrl = fileItem.url.split('/uploads/products/').pop();
+                    if (fileItem.url?.startsWith('http')) {
+                        imageUrl = fileItem.url;
+                    } else if (fileItem.url) {
+                        imageUrl = fileItem.url.split('/uploads/products/').pop() || fileItem.url;
                     } else if (fileItem.originFileObj) {
                         const fd = new FormData();
                         fd.append('image', fileItem.originFileObj);
@@ -199,7 +202,7 @@ function ProductManager() {
                 return (
                     <div className="flex items-center gap-3">
                         <img
-                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${imageUrl}`}
+                            src={getImageUrl(imageUrl, 'products')}
                             alt=""
                             className="w-14 h-14 object-cover rounded-xl border border-gray-100 flex-shrink-0"
                         />

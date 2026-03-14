@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useStore } from '../../../hooks/useStore';
 import { requestUpdateUser, requestUploadAvatar } from '../../../services/user/userService';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 function PersonalInfo() {
     const { dataUser, fetchAuth } = useStore();
@@ -96,7 +97,7 @@ function PersonalInfo() {
                         <div className="relative">
                             <Avatar
                                 size={140}
-                                src={dataUser?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${dataUser.avatar}` : undefined}
+                                src={dataUser?.avatar ? getImageUrl(dataUser.avatar, 'avatars') : undefined}
                                 icon={<UserOutlined />}
                                 className="border-4 border-gray-200 shadow-2xl"
                                 style={{ backgroundColor: '#f0f0f0' }}

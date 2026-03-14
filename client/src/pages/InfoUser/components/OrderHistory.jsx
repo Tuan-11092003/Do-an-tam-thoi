@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { requestCreatePreviewProduct } from '../../../services/previewProduct/previewProductService';
 import { formatPrice } from '../../../utils/formatPrice';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
@@ -249,11 +250,10 @@ function OrderHistory() {
                     <Image
                         width={60}
                         height={60}
-                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${
-                            Array.isArray(record.image) 
-                                ? record.image[0] || '' 
-                                : record.image || ''
-                        }`}
+                        src={getImageUrl(
+                            Array.isArray(record.image) ? record.image[0] || '' : record.image || '',
+                            'products'
+                        )}
                         alt={text}
                         className="rounded-lg object-cover"
                         fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="
@@ -577,11 +577,10 @@ function OrderHistory() {
                             <Image
                                 width={80}
                                 height={80}
-                                src={`${import.meta.env.VITE_API_URL}/uploads/products/${
-                                    Array.isArray(selectedProduct.image) 
-                                        ? selectedProduct.image[0] || '' 
-                                        : selectedProduct.image || ''
-                                }`}
+                                src={getImageUrl(
+                                    Array.isArray(selectedProduct.image) ? selectedProduct.image[0] || '' : selectedProduct.image || '',
+                                    'products'
+                                )}
                                 alt={selectedProduct.name}
                                 className="rounded-lg object-cover"
                                 fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="

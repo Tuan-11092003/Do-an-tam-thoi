@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useStore } from '../../hooks/useStore';
 import { useState } from 'react';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function CardBody({ product, onOpenModal }) {
     // Use totalStock from server instead of calculating on client
@@ -87,7 +88,7 @@ function CardBody({ product, onOpenModal }) {
             {/* Product Image Container */}
             <div className="relative overflow-hidden">
                 <img
-                    src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${displayImage}`}
+                    src={getImageUrl(displayImage, 'products')}
                     alt={product?.name}
                     className={`w-full h-full object-cover transition-all duration-500 ${
                         isHovered ? 'scale-110' : 'scale-100'

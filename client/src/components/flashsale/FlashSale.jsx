@@ -8,6 +8,7 @@ import { ShoppingCart, Star } from 'lucide-react';
 import { useStore } from '../../hooks/useStore';
 import { toast } from 'react-toastify';
 import ProductQuickAddModal from '../product/ProductQuickAddModal';
+import { getImageUrl } from '../../utils/imageUrl';
 
 // Hàm helper để lấy ảnh đầu tiên từ color
 const getFirstImage = (color) => {
@@ -79,7 +80,7 @@ const ProductCard = ({ sale, product, discountPrice, formatCurrency, onOpenModal
                 {/* Ảnh sản phẩm */}
                 <div className="relative overflow-hidden">
                     <img
-                        src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${displayImage}`}
+                        src={getImageUrl(displayImage, 'products')}
                         alt={product?.name || 'Product'}
                         className={`w-full h-40 object-cover transition-all duration-500 ${
                             isHovered ? 'scale-110' : 'scale-100'

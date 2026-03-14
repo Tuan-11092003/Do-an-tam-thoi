@@ -150,8 +150,12 @@ class UserController {
 
     async uploadAvatar(req, res) {
         const { id } = req.user;
-        const { filename } = req.file;
-        const data = await UserService.uploadAvatar(id, filename);
+        if (!req.file || !req.file.buffer) {
+            throw new BadRequestError('Không có file ảnh');
+        }
+        const { uploadToCloudinary } = require('../utils/uploadCloudinary');
+        const { secure_url } = await uploadToCloudinary(req.file.buffer, 'avatars', req.file.mimetype);
+        const data = await UserService.uploadAvatar(id, secure_url);
         new OK({ message: 'success', metadata: data }).send(res);
     }
 

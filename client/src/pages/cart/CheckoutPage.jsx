@@ -12,6 +12,7 @@ import Cookies from 'js-cookie';
 import momoLogo from '../../assets/momo.png';
 import vnpayLogo from '../../assets/logovnpay.png';
 import { formatPrice } from '../../utils/formatPrice';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function CheckoutPage() {
     const { fetchCart, dataUser } = useStore();
@@ -326,11 +327,10 @@ function CheckoutPage() {
                                         className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
                                     >
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL}/uploads/products/${
-                                                Array.isArray(item.image) 
-                                                    ? item.image[0] || '' 
-                                                    : item.image || ''
-                                            }`}
+                                            src={getImageUrl(
+                                                Array.isArray(item.image) ? item.image[0] || '' : item.image || '',
+                                                'products'
+                                            )}
                                             alt={item.name}
                                             className="w-16 h-16 object-cover rounded-lg"
                                             onError={(e) => {

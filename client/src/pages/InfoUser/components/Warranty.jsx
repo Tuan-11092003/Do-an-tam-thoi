@@ -28,6 +28,7 @@ import {
     FileText,
 } from 'lucide-react';
 import { formatDate } from '../../../utils/formatDate';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -180,16 +181,15 @@ function Warranty() {
                         <Image
                             width={56}
                             height={56}
-                            src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
+                            src={getImageUrl(
                                 (() => {
                                     const color = product.colors?.[0];
                                     if (!color?.images) return '';
-                                    if (Array.isArray(color.images)) {
-                                        return color.images[0] || '';
-                                    }
+                                    if (Array.isArray(color.images)) return color.images[0] || '';
                                     return color.images;
-                                })()
-                            }`}
+                                })(),
+                                'products'
+                            )}
                             alt={product.name}
                             className="object-cover"
                             fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="
@@ -400,16 +400,15 @@ function Warranty() {
                             <Image
                                 width={80}
                                 height={80}
-                                src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${
+                                src={getImageUrl(
                                     (() => {
                                         const color = selectedWarranty.productId?.colors?.[0];
                                         if (!color?.images) return '';
-                                        if (Array.isArray(color.images)) {
-                                            return color.images[0] || '';
-                                        }
+                                        if (Array.isArray(color.images)) return color.images[0] || '';
                                         return color.images;
-                                    })()
-                                }`}
+                                    })(),
+                                    'products'
+                                )}
                                 alt={selectedWarranty.productId.name}
                                 className="rounded-lg object-cover"
                                 fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8E+UDNmyJUu2ZMmSLVmSBUuWLFmyZMmSJVmyZMuSJUu2bMmSJVuyZMmWLVmyZMvSbMmSLdmyJUuyZEmWJUu2ZMmSJUt2ZEuWLNmyJUuWbNmSJUuWLFmy9U="

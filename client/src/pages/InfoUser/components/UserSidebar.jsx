@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { requestLogout } from '../../../services/user/userService';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 function UserSidebar({ activeKey, onSelect, setActiveKey }) {
     const { dataUser, clearAuth } = useStore();
@@ -86,7 +87,7 @@ function UserSidebar({ activeKey, onSelect, setActiveKey }) {
                     >
                         <Avatar
                             size={80}
-                            src={dataUser?.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${dataUser.avatar}` : undefined}
+                            src={dataUser?.avatar ? getImageUrl(dataUser.avatar, 'avatars') : undefined}
                             icon={<UserOutlined />}
                             className="border-4 border-white shadow-lg"
                         />

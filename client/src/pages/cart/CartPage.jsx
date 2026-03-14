@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { formatPrice } from '../../utils/formatPrice';
+import { getImageUrl } from '../../utils/imageUrl';
 
 function CartPage() {
     const location = useLocation();
@@ -382,7 +383,7 @@ function CartPage() {
                                                         
                                                         return (
                                                             <img
-                                                                src={`${import.meta.env.VITE_API_URL}/uploads/products/${imageUrl}`}
+                                                                src={getImageUrl(imageUrl, 'products')}
                                                                 alt={product.name}
                                                                 className="w-20 h-20 object-cover rounded-lg"
                                                                 onError={(e) => {

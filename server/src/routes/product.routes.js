@@ -1,27 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Ensure upload directory exists
-const uploadDir = 'src/uploads/products';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'src/uploads/products');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-var upload = multer({ storage: storage });
-
 const { asyncHandler } = require('../auth/checkAuth');
 
 const productController = require('../controller/product.controller');

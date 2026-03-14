@@ -20,6 +20,7 @@ import {
 } from '../../../services/user/userService';
 import { useStore } from '../../../hooks/useStore';
 import dayjs from 'dayjs';
+import { getImageUrl } from '../../../utils/imageUrl';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -141,7 +142,7 @@ function UserAdmin() {
                         size={40}
                         src={
                             record.avatar
-                                ? `${import.meta.env.VITE_URL_IMAGE}/uploads/avatars/${record.avatar}`
+                                ? getImageUrl(record.avatar, 'avatars')
                                 : null
                         }
                         icon={!record.avatar && <UserOutlined />}
@@ -473,7 +474,7 @@ function UserAdmin() {
                                 size={80}
                                 src={
                                     viewing.avatar
-                                        ? `${import.meta.env.VITE_URL_IMAGE}/uploads/avatars/${viewing.avatar}`
+                                        ? getImageUrl(viewing.avatar, 'avatars')
                                         : null
                                 }
                                 icon={!viewing.avatar && <UserOutlined />}

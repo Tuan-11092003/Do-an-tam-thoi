@@ -4,6 +4,7 @@ import { requestAddToCart } from '../../services/cart/cartService';
 import { useStore } from '../../hooks/useStore';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../../utils/imageUrl';
 
 // Hàm helper để lấy ảnh đầu tiên từ color
 const getFirstImage = (color) => {
@@ -158,7 +159,7 @@ function ProductQuickAddModal({ product, isOpen, onClose, discountPrice, formatC
                         <div className="md:w-2/5 flex-shrink-0">
                             <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
                                 <img
-                                    src={`${import.meta.env.VITE_URL_IMAGE}/uploads/products/${mainImage}`}
+                                    src={getImageUrl(mainImage, 'products')}
                                     alt={product.name || 'Product'}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
