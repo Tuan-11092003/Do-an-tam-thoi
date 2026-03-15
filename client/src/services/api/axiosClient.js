@@ -120,6 +120,8 @@ export class ApiClient {
     // Xử lý khi authentication thất bại (refresh token thất bại hoặc chưa login)
     // Gọi API logout và redirect về trang login
     handleAuthFailure() {
+        Cookies.remove('logged');
+        if (window.location.pathname === '/login') return;
         this.logout().finally(() => {
             window.location.href = '/login';
         });

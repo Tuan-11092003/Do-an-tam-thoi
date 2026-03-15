@@ -125,6 +125,7 @@ export function Provider({ children }) {
     };
 
     const clearAuth = () => {
+        cookies.remove('logged');
         setDataUser({});
         setCartData([]);
         setCouponData([]);

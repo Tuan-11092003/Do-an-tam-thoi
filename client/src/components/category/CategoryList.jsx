@@ -16,23 +16,29 @@ function CategoryList() {
     // 🟢 Lấy danh sách category 1 lần
     useEffect(() => {
         const fetchCategories = async () => {
-            const res = await requestGetAllCategory();
-            setCategories(res.metadata);
-
-            // Nếu chưa có activeCategory thì set mặc định là cái đầu tiên
-            if (res.metadata?.length > 0) {
-                setActiveCategory(res.metadata[0]._id);
+            try {
+                const res = await requestGetAllCategory();
+                const data = res?.metadata || [];
+                setCategories(data);
+                if (data.length > 0) {
+                    setActiveCategory(data[0]._id);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
             }
         };
         fetchCategories();
-    }, []); // <--- chỉ chạy 1 lần
+    }, []);
 
-    // 🟢 Mỗi khi activeCategory thay đổi thì lấy sản phẩm
     useEffect(() => {
         if (!activeCategory) return;
         const fetchProducts = async () => {
-            const res = await requestGetProductByCategory(activeCategory);
-            setProducts(res.metadata);
+            try {
+                const res = await requestGetProductByCategory(activeCategory);
+                setProducts(res?.metadata || []);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
         };
         fetchProducts();
     }, [activeCategory]);

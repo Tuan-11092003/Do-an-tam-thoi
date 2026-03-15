@@ -32,7 +32,7 @@ function Chatbot() {
         const fetchMessageChatbot = async () => {
             try {
                 const res = await requestGetMessageChatbot();
-                setMessages(res.metadata);
+                setMessages(res?.metadata || []);
             } catch (error) {
                 console.error('Lỗi khi lấy tin nhắn:', error);
                 // Đặt tin nhắn chào mừng mặc định nếu không có tin nhắn

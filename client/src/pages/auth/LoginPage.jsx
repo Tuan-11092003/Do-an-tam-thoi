@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useStore } from '../../hooks/useStore';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import logo from '../../assets/logo.png';
+import cookies from 'js-cookie';
 
 function LoginPage() {
     const [form] = Form.useForm();
@@ -20,6 +21,7 @@ function LoginPage() {
         setLoading(true);
         try {
             const res = await requestLogin(values);
+            cookies.set('logged', '1', { expires: 7 });
             toast.success('Đăng nhập thành công!');
             await fetchAuth();
             await fetchCart();
@@ -39,6 +41,7 @@ function LoginPage() {
     const handleSuccess = async (response) => {
         try {
             const res = await requestLoginGoogle({ credential: response.credential });
+            cookies.set('logged', '1', { expires: 7 });
             toast.success(res.message);
             await fetchAuth();
             await fetchCart();
