@@ -22,7 +22,6 @@ app.use(cookieParser());
 // CORS configuration - cho phép nhiều origins (5173, 5174, 5175, và các localhost ports khác)
 const allowedOrigins = [
     process.env.URL_CLIENT,
-    'https://do-an-tam-thoi.vercel.app',
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
@@ -30,11 +29,13 @@ const allowedOrigins = [
 
 app.use(cors({ 
     origin: (origin, callback) => {
-        // Cho phép (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
         
-        // Cho phép tất cả localhost với bất kỳ port nào (cho development)
         if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+            return callback(null, true);
+        }
+
+        if (origin.endsWith('.vercel.app')) {
             return callback(null, true);
         }
         
