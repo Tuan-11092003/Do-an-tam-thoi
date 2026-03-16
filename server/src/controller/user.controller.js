@@ -2,28 +2,27 @@ const { BadRequestError } = require('../core/error.response');
 const { OK } = require('../core/success.response');
 const UserService = require('../services/users.service');
 
+const COOKIE_SAME_SITE = process.env.NODE_ENV === 'production' ? 'None' : 'Strict';
+
 function setCookie(res, token, refreshToken) {
-    // Cookie token
     res.cookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict',
+        sameSite: COOKIE_SAME_SITE,
         maxAge: 15 * 60 * 1000,
     });
 
-    // Cookie trạng thái login
     res.cookie('logged', 1, {
         httpOnly: false,
         secure: true,
-        sameSite: 'Strict',
+        sameSite: COOKIE_SAME_SITE,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Cookie refreshToken
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict',
+        sameSite: COOKIE_SAME_SITE,
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 }
@@ -92,24 +91,24 @@ class UserController {
         const { token, refreshToken: newRefreshToken } = await UserService.refreshToken(refreshToken);
 
         res.cookie('token', token, {
-            httpOnly: true, // Chặn truy cập từ JavaScript (bảo mật hơn)
-            secure: true, // Chỉ gửi trên HTTPS (để đảm bảo an toàn)
-            sameSite: 'Strict', // Chống tấn công CSRF
-            maxAge: 15 * 60 * 1000, // 15 phút
+            httpOnly: true,
+            secure: true,
+            sameSite: COOKIE_SAME_SITE,
+            maxAge: 15 * 60 * 1000,
         });
 
         res.cookie('refreshToken', newRefreshToken, {
-            httpOnly: true, // Chặn truy cập từ JavaScript (bảo mật hơn)
-            secure: true, // Chỉ gửi trên HTTPS (để đảm bảo an toàn)
-            sameSite: 'Strict', // Chống tấn công CSRF
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+            httpOnly: true,
+            secure: true,
+            sameSite: COOKIE_SAME_SITE,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         res.cookie('logged', 1, {
-            httpOnly: false, // Chặn truy cập từ JavaScript (bảo mật hơn)
-            secure: true, // Chỉ gửi trên HTTPS (để đảm bảo an toàn)
-            sameSite: 'Strict', // Chống tấn công CSRF
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+            httpOnly: false,
+            secure: true,
+            sameSite: COOKIE_SAME_SITE,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         const data = {
@@ -172,7 +171,7 @@ class UserController {
         res.cookie('tokenResetPassword', token, {
             httpOnly: false,
             secure: true,
-            sameSite: 'Strict',
+            sameSite: COOKIE_SAME_SITE,
             maxAge: 10 * 60 * 1000,
         });
         new OK({ message: 'success', metadata: { token, otp } }).send(res);
