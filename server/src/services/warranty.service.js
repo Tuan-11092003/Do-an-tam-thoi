@@ -68,30 +68,7 @@ class WarrantyService {
 
     async updateWarrantyStatus(warrantyId, status) {
         const warranty = await Warranty.findByIdAndUpdate(warrantyId, { status }, { new: true });
-        
-        let emailSent = false;
-        
-        // Gửi email khi trạng thái là "approved" (chấp nhận)
-        // Chỉ cập nhật emailSent = true khi email gửi thành công (log "Exchange confirmation email sent:")
-        if (status === 'approved') {
-            try {
-                const findUser = await User.findById(warranty.userId);
-                if (findUser && findUser.email) {
-                    const emailResult = await SendMailAcceptExchange(findUser.email, warranty._id.toString());
-                    emailSent = emailResult.success === true;
-                    
-                    // Cập nhật emailSent vào database nếu email gửi thành công
-                    if (emailSent) {
-                        await Warranty.findByIdAndUpdate(warrantyId, { emailSent: true }, { new: true });
-                        warranty.emailSent = true;
-                    }
-                }
-            } catch (error) {
-                console.error('Lỗi khi gửi email xác nhận bảo hành:', error);
-                emailSent = false;
-            }
-        }
-        
+
         // Gửi thông báo realtime qua socket đến user
         const statusLabels = {
             approved: 'Đã chấp nhận',
@@ -103,6 +80,26 @@ class WarrantyService {
                 warrantyId: warranty._id,
                 status,
                 statusLabel: statusLabels[status],
+            });
+        }
+
+        // Gửi email khi trạng thái là "approved" — fire-and-forget, không block response
+        if (status === 'approved') {
+            setImmediate(async () => {
+                try {
+                    const findUser = await User.findById(warranty.userId);
+                    if (findUser && findUser.email) {
+                        const emailResult = await SendMailAcceptExchange(findUser.email, warranty._id.toString());
+                        if (emailResult.success) {
+                            await Warranty.findByIdAndUpdate(warrantyId, { emailSent: true });
+                            console.log('Email bảo hành đã gửi thành công cho:', findUser.email);
+                        } else {
+                            console.error('Gửi email bảo hành thất bại:', emailResult.error);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi gửi email xác nhận bảo hành:', error.message);
+                }
             });
         }
 

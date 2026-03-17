@@ -3,15 +3,17 @@ require('dotenv').config();
 
 const SendMailForgotPassword = async (email, otp) => {
     try {
-        // Cấu hình SMTP tường minh - có thể dễ dàng chuyển đổi giữa các provider
         const transport = nodemailer.createTransport({
             host: process.env.SMTP_HOST || 'smtp.gmail.com',
             port: parseInt(process.env.SMTP_PORT || '587'),
-            secure: process.env.SMTP_SECURE === 'true', // true cho port 465, false cho port 587
+            secure: process.env.SMTP_SECURE === 'true',
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_APP_PASSWORD, // App Password cho Gmail
+                pass: process.env.EMAIL_APP_PASSWORD,
             },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
         });
 
         const storeName = 'KCONS VIỆT NAM';
