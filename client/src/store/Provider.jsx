@@ -55,13 +55,21 @@ export function Provider({ children }) {
     }, [dataUser._id]);
 
     const warrantyMessages = {
-        'Đã chấp nhận': '✅ Yêu cầu bảo hành của bạn đã được chấp nhận! Vui lòng kiểm tra email.',
         'Hoàn thành': '🎉 Yêu cầu bảo hành của bạn đã hoàn thành!',
         'Từ chối': '❌ Yêu cầu bảo hành của bạn đã bị từ chối.',
     };
 
+    const getWarrantyMessage = (data) => {
+        if (data.statusLabel === 'Đã chấp nhận') {
+            return data.emailSent
+                ? '✅ Yêu cầu bảo hành của bạn đã được chấp nhận! Vui lòng kiểm tra email.'
+                : '✅ Yêu cầu bảo hành của bạn đã được chấp nhận!';
+        }
+        return warrantyMessages[data.statusLabel] || null;
+    };
+
     const showWarrantyToast = (data) => {
-        const msg = warrantyMessages[data.statusLabel];
+        const msg = getWarrantyMessage(data);
         if (msg) {
             toast.info(msg, {
                 autoClose: false,

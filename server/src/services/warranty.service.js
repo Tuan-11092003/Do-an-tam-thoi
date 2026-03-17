@@ -69,28 +69,22 @@ class WarrantyService {
     async updateWarrantyStatus(warrantyId, status) {
         const warranty = await Warranty.findByIdAndUpdate(warrantyId, { status }, { new: true });
 
-        // Gửi thông báo realtime qua socket đến user
         const statusLabels = {
             approved: 'Đã chấp nhận',
             completed: 'Hoàn thành',
             rejected: 'Từ chối',
         };
-        if (statusLabels[status]) {
-            socketService.emitMessage(warranty.userId.toString(), 'warranty_status_updated', {
-                warrantyId: warranty._id,
-                status,
-                statusLabel: statusLabels[status],
-            });
-        }
 
-        // Gửi email khi trạng thái là "approved" — fire-and-forget, không block response
         if (status === 'approved') {
+            // Gửi email trước, chỉ thông báo socket SAU KHI biết kết quả email
             setImmediate(async () => {
+                let emailSent = false;
                 try {
                     const findUser = await User.findById(warranty.userId);
                     if (findUser && findUser.email) {
                         const emailResult = await SendMailAcceptExchange(findUser.email, warranty._id.toString());
-                        if (emailResult.success) {
+                        emailSent = emailResult.success === true;
+                        if (emailSent) {
                             await Warranty.findByIdAndUpdate(warrantyId, { emailSent: true });
                             console.log('Email bảo hành đã gửi thành công cho:', findUser.email);
                         } else {
@@ -100,6 +94,20 @@ class WarrantyService {
                 } catch (error) {
                     console.error('Lỗi khi gửi email xác nhận bảo hành:', error.message);
                 }
+
+                socketService.emitMessage(warranty.userId.toString(), 'warranty_status_updated', {
+                    warrantyId: warranty._id,
+                    status,
+                    statusLabel: statusLabels[status],
+                    emailSent,
+                });
+            });
+        } else if (statusLabels[status]) {
+            socketService.emitMessage(warranty.userId.toString(), 'warranty_status_updated', {
+                warrantyId: warranty._id,
+                status,
+                statusLabel: statusLabels[status],
+                emailSent: false,
             });
         }
 
