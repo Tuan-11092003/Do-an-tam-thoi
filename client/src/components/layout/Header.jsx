@@ -1,4 +1,4 @@
-﻿import { Search, User, ShoppingCart, FileText, Package, Home, Heart } from 'lucide-react';
+import { Search, User, ShoppingCart, FileText, Package, Home, Heart } from 'lucide-react';
 
 import { Dropdown, Avatar } from 'antd';
 
@@ -360,18 +360,11 @@ function Header() {
                             </Link>
                         )}
                         {!dataUser._id ? (
-                            <div className="flex items-center space-x-3">
-                                <Link to={'/login'}>
-                                    <div className="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg transition-all duration-300">
-                                        Đăng nhập
-                                    </div>
-                                </Link>
-                                <Link to={'/register'}>
-                                    <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
-                                        Đăng ký
-                                    </div>
-                                </Link>
-                            </div>
+                            <Link to={'/login'}>
+                                <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
+                                    Mua sắm ngay
+                                </div>
+                            </Link>
                         ) : (
                             <Dropdown
                                 menu={{ items: userMenuItems }}

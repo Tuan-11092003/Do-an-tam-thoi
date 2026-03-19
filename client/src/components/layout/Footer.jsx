@@ -14,7 +14,7 @@ export default function Footer() {
                         style={{ width: 'auto', minWidth: '120px' }}
                     />
                     <p className="text-sm mb-6">
-                        Cửa hàng giày uy tín – mang đến cho bạn những đôi giày chất lượng cao, phong cách thời trang và dịch vụ chăm sóc khách hàng tận tâm.
+                        Cửa hàng giày uy tín - mang đến cho bạn những đôi giày chất lượng cao, phong cách thời trang và dịch vụ chăm sóc khách hàng tận tâm.
                     </p>
                     <div className="flex space-x-3">
                         <a href="#" className="p-2 rounded-full bg-neutral-800 hover:bg-neutral-700">
@@ -33,10 +33,10 @@ export default function Footer() {
                 <div>
                     <h3 className="text-white font-semibold mb-4 text-lg">Thông tin liên hệ</h3>
                     <ul className="space-y-3 text-sm">
-                        <li>📍 456 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh, Việt Nam</li>
-                        <li>📞 +84 28 1234 5678</li>
-                        <li>✉️ support@shoeshop.com</li>
-                        <li>🕒 Thứ 2 - Thứ 6: 8:00 - 21:00 | Thứ 7 - CN: 9:00 - 22:00</li>
+                        <li>📍 Cổ Nhuế, Bắc Từ Liêm, Hà Nội, Việt Nam</li>
+                        <li>📞 +84 963607325</li>
+                        <li>✉️ support@kcons.com</li>
+                        <li>MST/ĐKKD/QĐTL: 1801377715 Đăng ký thay đổi lần thứ 8 ngày 10 tháng 12 năm 2025. Cấp tại CT</li>
                     </ul>
                 </div>
 

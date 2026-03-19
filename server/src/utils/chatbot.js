@@ -5,12 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const Product = require('../models/product.model');
 const MessageChatbot = require('../models/messageChatbot.model');
 
-/**
- * AI tư vấn sản phẩm giày (có ngữ cảnh hội thoại)
- * @param {string} question - Câu hỏi người dùng
- * @param {string} userId - ID người dùng
- * @returns {Promise<string>} - Câu trả lời từ AI
- */
+
 async function askShoeAssistant(question, userId) {
     try {
         // 🧠 Lấy 5 tin nhắn gần nhất để hiểu ngữ cảnh hội thoại

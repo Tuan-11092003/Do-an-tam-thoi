@@ -4,21 +4,44 @@ import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined, MailOutlined, UserOutli
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 import { Link, useNavigate } from 'react-router-dom';
-import { requestRegister } from '../../services/user/userService';
+import { requestLogin, requestRegister } from '../../services/user/userService';
 import { toast } from 'react-toastify';
 import logo from '../../assets/logo.png';
+import { useStore } from '../../hooks/useStore';
+import cookies from 'js-cookie';
 
 function RegisterPage() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { fetchAuth, fetchCart } = useStore();
 
     const onFinish = async (values) => {
         setLoading(true);
         try {
+            // Đăng ký tài khoản
             await requestRegister(values);
+
+            // Tự động đăng nhập sau khi đăng ký để đồng bộ header, giỏ hàng,...
+            const loginRes = await requestLogin({
+                email: values.email,
+                password: values.password,
+            });
+
+            cookies.set('logged', '1', { expires: 7 });
+
+            // Cập nhật lại thông tin user và giỏ hàng trong global store
+            if (fetchAuth) {
+                await fetchAuth();
+            }
+            if (fetchCart) {
+                await fetchCart();
+            }
+
             toast.success('Đăng ký thành công!');
-            navigate('/login');
+
+            const isAdmin = loginRes?.metadata?.isAdmin === true;
+            navigate(isAdmin ? '/admin/dashboard' : '/');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Đăng ký thất bại');
         } finally {
