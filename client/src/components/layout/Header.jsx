@@ -1,4 +1,4 @@
-import { Search, User, ShoppingCart, FileText, Package, Home, Heart } from 'lucide-react';
+﻿import { Search, User, ShoppingCart, FileText, Package, Home, Heart } from 'lucide-react';
 
 import { Dropdown, Avatar } from 'antd';
 
@@ -14,10 +14,9 @@ import useDebounce from '../../hooks/useDebounce';
 import { useEffect, useState } from 'react';
 import { requestSearchProduct } from '../../services/product/productService';
 import { formatPrice } from '../../utils/formatPrice';
-import { getImageUrl } from '../../utils/imageUrl';
 
 function Header() {
-    const { dataUser, cartData, clearAuth } = useStore();
+    const { dataUser, cartData } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [query, setQuery] = useState('');
@@ -35,14 +34,15 @@ function Header() {
         return location.pathname === path || location.pathname.startsWith(path + '/');
     };
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
         try {
-            await requestLogout();
-            clearAuth();
+            requestLogout();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
             navigate('/login');
-            toast.success('Đăng xuất thành công!');
         } catch (error) {
-            toast.error(error?.response?.data?.message || 'Đăng xuất thất bại');
+            toast.error(error.response.data.message);
         }
     };
 
@@ -261,15 +261,16 @@ function Header() {
                                                     className="flex items-center p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                                                 >
                                                     <img
-                                                        src={getImageUrl(
+                                                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${
                                                             (() => {
                                                                 const color = product.colors?.[0];
                                                                 if (!color?.images) return '';
-                                                                if (Array.isArray(color.images)) return color.images[0] || '';
+                                                                if (Array.isArray(color.images)) {
+                                                                    return color.images[0] || '';
+                                                                }
                                                                 return color.images;
-                                                            })(),
-                                                            'products'
-                                                        )}
+                                                            })()
+                                                        }`}
                                                         alt={product.name}
                                                         className="w-12 h-12 object-cover rounded-lg mr-3"
                                                         onError={(e) => {
@@ -301,19 +302,6 @@ function Header() {
                                                     </div>
                                                 </div>
                                             ))}
-                                            {searchResults.length > 5 && (
-                                                <div className="p-3 text-center border-t border-gray-100">
-                                                    <button
-                                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                                                        onClick={() => {
-                                                            navigate(`/search?q=${query}`);
-                                                            setShowResults(false);
-                                                        }}
-                                                    >
-                                                        Xem tất cả kết quả
-                                                    </button>
-                                                </div>
-                                            )}
                                         </>
                                     ) : (
                                         query.trim() && (
@@ -371,11 +359,18 @@ function Header() {
                             </Link>
                         )}
                         {!dataUser._id ? (
-                            <Link to={'/login'}>
-                                <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
-                                    Mua sắm ngay
-                                </div>
-                            </Link>
+                            <div className="flex items-center space-x-3">
+                                <Link to={'/login'}>
+                                    <div className="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg transition-all duration-300">
+                                        Đăng nhập
+                                    </div>
+                                </Link>
+                                <Link to={'/register'}>
+                                    <div className="px-4 py-2 bg-white text-[#ed1d24] text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md hover:shadow-lg">
+                                        Đăng ký
+                                    </div>
+                                </Link>
+                            </div>
                         ) : (
                             <Dropdown
                                 menu={{ items: userMenuItems }}
@@ -400,7 +395,7 @@ function Header() {
                                         icon={<UserOutlined />}
                                         className="bg-white text-[#ed1d24] flex items-center justify-center border-2 border-white/30 shadow-md"
                                         size="default"
-                                        src={dataUser.avatar ? getImageUrl(dataUser.avatar, 'avatars') : undefined}
+                                        src={dataUser.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${dataUser.avatar}` : undefined}
                                     />
                                     <div className="hidden md:block">
                                         <span className="text-sm font-medium">{dataUser.fullName || 'Người dùng'}</span>
