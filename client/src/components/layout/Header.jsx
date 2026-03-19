@@ -8,6 +8,7 @@ import logo from '../../assets/logo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { useStore } from '../../hooks/useStore';
+import { getImageUrl } from '../../utils/imageUrl';
 import { requestLogout } from '../../services/user/userService';
 import { toast } from 'react-toastify';
 import useDebounce from '../../hooks/useDebounce';
@@ -395,7 +396,7 @@ function Header() {
                                         icon={<UserOutlined />}
                                         className="bg-white text-[#ed1d24] flex items-center justify-center border-2 border-white/30 shadow-md"
                                         size="default"
-                                        src={dataUser.avatar ? `${import.meta.env.VITE_API_URL}/uploads/avatars/${dataUser.avatar}` : undefined}
+                                        src={dataUser.avatar ? getImageUrl(dataUser.avatar, 'avatars') : undefined}
                                     />
                                     <div className="hidden md:block">
                                         <span className="text-sm font-medium">{dataUser.fullName || 'Người dùng'}</span>

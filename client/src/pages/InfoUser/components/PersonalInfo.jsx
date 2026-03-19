@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Form, Input, Button, Avatar, Upload, message, Card, Divider, Spin, Row, Col, Tooltip } from 'antd';
 import {
     UserOutlined,
@@ -77,8 +77,9 @@ function PersonalInfo() {
             const formData = new FormData();
             formData.append('avatar', info.file.originFileObj);
             const res = await requestUploadAvatar(formData);
-            setAvatar(res.metadata);
-            window.location.reload();
+            setAvatar(res.metadata.avatar);
+            await fetchAuth();
+            message.success('C?p nh?t ?nh d?i di?n th?nh c?ng!');
         } catch (error) {
             message.error('Tải lên thất bại!');
         }
