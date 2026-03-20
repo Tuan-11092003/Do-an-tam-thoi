@@ -385,7 +385,7 @@ function CouponManagement() {
                             },
                         ]}
                     >
-                        <Input placeholder="VD: SUMMER2025" className="rounded-lg uppercase" />
+                        <Input placeholder="VD: PAT2026" className="rounded-lg uppercase" />
                     </Form.Item>
 
                     <div className="grid grid-cols-2 gap-4">

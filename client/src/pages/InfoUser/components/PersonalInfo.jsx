@@ -79,7 +79,7 @@ function PersonalInfo() {
             const res = await requestUploadAvatar(formData);
             setAvatar(res.metadata.avatar);
             await fetchAuth();
-            message.success('C?p nh?t ?nh d?i di?n th?nh c?ng!');
+            message.success('Cập nhật ảnh đại diện thành công!');
         } catch (error) {
             message.error('Tải lên thất bại!');
         }
