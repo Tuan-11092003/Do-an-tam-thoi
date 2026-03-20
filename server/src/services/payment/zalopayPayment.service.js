@@ -99,7 +99,7 @@ class ZalopayPaymentService {
             const item = itemData.length > 0 ? JSON.stringify(itemData) : '[]'; // JSON Array String
 
             // embed_data: JSON String với redirecturl
-            // Redirect về callback endpoint để xử lý cả thành công và hủy (giống VNPay/MoMo)
+            // Redirect về callback endpoint để xử lý cả thành công và hủy (giống MoMo)
             const embedDataObj = {
                 redirecturl: callbackUrl,
             };

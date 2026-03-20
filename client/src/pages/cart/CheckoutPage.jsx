@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import momoLogo from '../../assets/momo.png';
-import vnpayLogo from '../../assets/logovnpay.png';
 import { formatPrice } from '../../utils/formatPrice';
 import { getImageUrl } from '../../utils/imageUrl';
 
@@ -29,7 +28,6 @@ function CheckoutPage() {
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
     const [momoLogoLoaded, setMomoLogoLoaded] = useState(true);
-    const [vnpayLogoLoaded, setVnpayLogoLoaded] = useState(true);
 
     useEffect(() => {
         const fetchCartData = async () => {
@@ -259,14 +257,6 @@ function CheckoutPage() {
                 
                 await fetchCart();
                 window.location.href = res.metadata.payUrl;  // Redirect đến MoMo
-            } else if (paymentMethod === 'vnpay') {
-                const res = await requestCreatePayment(paymentData);
-                if (!res?.metadata) {
-                    toast.error('Không thể tạo link thanh toán VNPay. Vui lòng thử lại.');
-                    return;
-                }
-                await fetchCart();
-                window.location.href = res.metadata;  // Redirect đến VNPay
             } else if (paymentMethod === 'zalopay') {
                 const res = await requestCreatePayment(paymentData);
                 if (!res?.metadata) {
@@ -474,33 +464,6 @@ function CheckoutPage() {
                                     <input
                                         type="radio"
                                         name="payment"
-                                        value="vnpay"
-                                        className="mr-3"
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                    />
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center">
-                                            {vnpayLogoLoaded ? (
-                                                <img 
-                                                    src={vnpayLogo} 
-                                                    alt="VNPay" 
-                                                    className="h-6 mr-2 object-contain"
-                                                    style={{ width: 'auto', maxWidth: '100px' }}
-                                                    onError={() => setVnpayLogoLoaded(false)}
-                                                />
-                                            ) : (
-                                                <Wallet className="w-5 h-5 mr-2 text-blue-600" />
-                                            )}
-                                            <span className="font-medium">VNPay</span>
-                                        </div>
-                                        <span className="text-xs text-gray-500">Đa dạng phương thức</span>
-                                    </div>
-                                </label>
-
-                                <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input
-                                        type="radio"
-                                        name="payment"
                                         value="zalopay"
                                         className="mr-3"
                                         onChange={(e) => setPaymentMethod(e.target.value)}
@@ -511,20 +474,6 @@ function CheckoutPage() {
                                             <span className="font-medium">ZaloPay</span>
                                         </div>
                                         <span className="text-xs text-gray-500">App & QR Code</span>
-                                    </div>
-                                </label>
-
-                                <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input
-                                        type="radio"
-                                        name="payment"
-                                        value="bank"
-                                        className="mr-3"
-                                        onChange={(e) => setPaymentMethod(e.target.value)}
-                                    />
-                                    <div className="flex items-center">
-                                        <CreditCard className="w-5 h-5 mr-2 text-gray-600" />
-                                        <span className="font-medium">Chuyển khoản ngân hàng</span>
                                     </div>
                                 </label>
                             </div>
@@ -545,14 +494,7 @@ function CheckoutPage() {
                                                 • <strong>MoMo:</strong> Thanh toán qua ứng dụng MoMo
                                             </li>
                                             <li>
-                                                • <strong>VNPay:</strong> Hỗ trợ thẻ ATM, Internet Banking, QR Code
-                                            </li>
-                                            <li>
                                                 • <strong>ZaloPay:</strong> Thanh toán qua ứng dụng ZaloPay hoặc QR Code
-                                            </li>
-                                            <li>
-                                                • <strong>Chuyển khoản:</strong> Chuyển khoản trực tiếp vào tài khoản
-                                                ngân hàng
                                             </li>
                                         </ul>
                                     </div>

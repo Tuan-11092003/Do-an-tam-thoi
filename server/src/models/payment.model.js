@@ -26,7 +26,7 @@ const modelPayment = new Schema(
             default: 'pending',
         },
         paymentMethod: { type: String, enum: ['momo', 'vnpay', 'cod', 'zalopay'], required: true },
-        orderId: { type: String }, // Lưu orderId từ MoMo/VNPay để tìm payment trong callback
+        orderId: { type: String }, // Lưu orderId từ MoMo/ZaloPay để tìm payment trong callback
         coupon: {
             code: String,
             discount: Number,

@@ -6,7 +6,6 @@ const Product = require('../models/product.model');
 const { BadRequestError } = require('../core/error.response');
 const CartService = require('./cart.service');
 const momoPaymentService = require('./payment/momoPayment.service');
-const vnpayPaymentService = require('./payment/vnpayPayment.service');
 const zalopayPaymentService = require('./payment/zalopayPayment.service');
 const { markCouponAsUsed } = require('./payment/payment.helpers');
 
@@ -150,18 +149,6 @@ class PaymentService {
 
         if (paymentMethod === 'momo') {
             return momoPaymentService.createPayment({
-                itemsWithDiscount,
-                selectedTotalPrice,
-                selectedFinalPrice,
-                finalFullName,
-                finalPhone,
-                finalAddress,
-                couponToApply,
-                userId,
-            });
-        }
-        if (paymentMethod === 'vnpay') {
-            return vnpayPaymentService.createPayment({
                 itemsWithDiscount,
                 selectedTotalPrice,
                 selectedFinalPrice,
@@ -398,11 +385,6 @@ class PaymentService {
     // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
     async zalopayCallback(id) {
         return zalopayPaymentService.callback(id);
-    }
-
-    // Fallback: Tạo payment mới nếu không tìm thấy bằng orderId (backward compatibility)
-    async vnpayCallback(id) {
-        return vnpayPaymentService.callback(id);
     }
 
     async getAllOrder(search = '', status = '') {

@@ -451,7 +451,7 @@ class UserService {
 
             // 8. Thống kê theo phương thức thanh toán
             const paymentMethods = await Payment.aggregate([
-                { $match: { status: { $ne: 'cancelled' } } },
+                { $match: { status: { $ne: 'cancelled' }, paymentMethod: { $ne: 'vnpay' } } },
                 {
                     $group: {
                         _id: '$paymentMethod',

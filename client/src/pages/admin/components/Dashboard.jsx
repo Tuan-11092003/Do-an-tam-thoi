@@ -139,7 +139,7 @@ function Dashboard() {
                     ],
                     paymentMethods: [
                         { method: 'momo', count: 456, revenue: 18500000 },
-                        { method: 'vnpay', count: 234, revenue: 12200000 },
+                        { method: 'zalopay', count: 234, revenue: 12200000 },
                         { method: 'cod', count: 189, revenue: 8900000 },
                     ],
                     revenueByMonth: [
@@ -215,11 +215,13 @@ function Dashboard() {
     const getPaymentMethodText = (method) => {
         const texts = {
             momo: 'MoMo',
-            vnpay: 'VNPay',
+            zalopay: 'ZaloPay',
             cod: 'COD',
         };
         return texts[method] || method;
     };
+
+    const paymentMethodsForChart = (dashboardData.paymentMethods || []).filter((m) => m?.method !== 'vnpay');
 
 
     if (loading) {
@@ -657,7 +659,7 @@ function Dashboard() {
                         className="shadow-sm border-0 h-full"
                     >
                         <ResponsiveContainer width="100%" height={280}>
-                            <BarChart data={dashboardData.paymentMethods || []}>
+                            <BarChart data={paymentMethodsForChart}>
                                 <XAxis
                                     dataKey="method"
                                     tickFormatter={(value) => getPaymentMethodText(value)}

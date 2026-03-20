@@ -136,11 +136,11 @@ class MomoPaymentService {
                         // Kiểm tra HTTP status code
                         if (momoRes.statusCode !== 200) {
                             // Xử lý các HTTP status code cụ thể
-                            let errorMessage = 'MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
+                            let errorMessage = 'MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/ZaloPay).';
                             if (momoRes.statusCode === 503) {
-                                errorMessage = 'MoMo API đang bảo trì. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
+                                errorMessage = 'MoMo API đang bảo trì. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/ZaloPay).';
                             } else if (momoRes.statusCode === 504) {
-                                errorMessage = 'MoMo API không phản hồi. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).';
+                                errorMessage = 'MoMo API không phản hồi. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/ZaloPay).';
                             }
                             
                             reject(new BadRequestError(errorMessage));
@@ -149,7 +149,7 @@ class MomoPaymentService {
                         
                         // Kiểm tra xem response có phải là HTML không (thường là trang lỗi khi API không khả dụng)
                         if (data.trim().startsWith('<')) {
-                            reject(new BadRequestError('MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/VNPay).'));
+                            reject(new BadRequestError('MoMo API hiện không khả dụng. Vui lòng thử lại sau hoặc chọn phương thức thanh toán khác (COD/ZaloPay).'));
                             return;
                         }
                         

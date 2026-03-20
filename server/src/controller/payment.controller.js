@@ -131,59 +131,6 @@ class PaymentController {
         }
     }
 
-    async vnpayCallback(req, res, next) {
-        try {
-            const { vnp_ResponseCode, vnp_OrderInfo, vnp_TxnRef } = req.query;
-            
-            // vnp_ResponseCode = '00' nghĩa là thanh toán thành công
-            if (vnp_ResponseCode && vnp_ResponseCode !== '00') {
-                // Thanh toán thất bại, redirect về trang lỗi hoặc trang chủ
-                return res.redirect(`${process.env.URL_CLIENT}/?payment=failed`);
-            }
-            
-            // Ưu tiên tìm payment bằng vnp_TxnRef (orderId)
-            let payment = null;
-            if (vnp_TxnRef) {
-                payment = await PaymentService.findPaymentByOrderId(vnp_TxnRef);
-            }
-            
-            // Nếu không tìm thấy bằng vnp_TxnRef, thử parse từ vnp_OrderInfo
-            if (!payment && vnp_OrderInfo) {
-                const orderInfoParts = vnp_OrderInfo.split(' ');
-                // Format mới: "Thanh toan don hang {orderId} {userId}"
-                if (orderInfoParts.length >= 5) {
-                    const parsedOrderId = orderInfoParts[4]; // orderId ở vị trí thứ 5
-                    payment = await PaymentService.findPaymentByOrderId(parsedOrderId);
-                }
-            }
-            
-            // Nếu vẫn không tìm thấy, fallback về cách cũ (backward compatibility)
-            if (!payment && vnp_OrderInfo) {
-                const orderInfoParts = vnp_OrderInfo.split(' ');
-                if (orderInfoParts.length >= 6) {
-                    const id = orderInfoParts[5]; // userId ở vị trí thứ 6
-                    if (id && id !== 'undefined') {
-                        payment = await PaymentService.vnpayCallback(id);
-                    }
-                }
-            }
-            
-            // Kiểm tra payment và payment._id có tồn tại không
-            if (!payment || !payment._id) {
-                console.error('VNPay callback: Payment not found or payment._id is missing', {
-                    vnp_TxnRef,
-                    vnp_OrderInfo
-                });
-                return res.redirect(`${process.env.URL_CLIENT}/?payment=error`);
-            }
-            
-            res.redirect(`${process.env.URL_CLIENT}/payment/success/${payment._id}`);
-        } catch (error) {
-            console.error('VNPay callback error:', error);
-            res.redirect(`${process.env.URL_CLIENT}/?payment=error`);
-        }
-    }
-
     // User redirect callback (GET) - Sau khi thanh toán, user được redirect về đây
     async zalopayCallback(req, res, next) {
         try {
