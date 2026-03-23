@@ -129,6 +129,14 @@ function Header() {
         }
     };
 
+    // Giống CardBody: hỗ trợ images là mảng hoặc chuỗi; getImageUrl xử lý URL đầy đủ / Cloudinary / object
+    const getFirstProductImage = (product) => {
+        const color = product?.colors?.[0];
+        if (!color?.images) return '';
+        if (Array.isArray(color.images)) return color.images[0] || '';
+        return color.images;
+    };
+
     const userMenuItems = [
         { 
             key: 'profile', 
@@ -262,16 +270,7 @@ function Header() {
                                                     className="flex items-center p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                                                 >
                                                     <img
-                                                        src={`${import.meta.env.VITE_API_URL}/uploads/products/${
-                                                            (() => {
-                                                                const color = product.colors?.[0];
-                                                                if (!color?.images) return '';
-                                                                if (Array.isArray(color.images)) {
-                                                                    return color.images[0] || '';
-                                                                }
-                                                                return color.images;
-                                                            })()
-                                                        }`}
+                                                        src={getImageUrl(getFirstProductImage(product), 'products')}
                                                         alt={product.name}
                                                         className="w-12 h-12 object-cover rounded-lg mr-3"
                                                         onError={(e) => {
