@@ -273,21 +273,23 @@ class UserService {
     }
 
     async chatbot(question, userId) {
-        const response = await askShoeAssistant(question, userId);
+        const safeQuestion = typeof question === 'string' ? question.trim() : '';
+        const response = await askShoeAssistant(safeQuestion, userId);
+        const safeResponse = typeof response === 'string' && response.trim() ? response.trim() : 'Xin lỗi, tôi chưa có câu trả lời phù hợp cho câu hỏi này. Vui lòng thử lại.';
 
         await modelMessageChatbot.create({
             userId: userId,
             sender: 'user',
-            content: question,
+            content: safeQuestion || 'Câu hỏi rỗng',
         });
 
         await modelMessageChatbot.create({
             userId: userId,
             sender: 'bot',
-            content: response,
+            content: safeResponse,
         });
 
-        return response;
+        return safeResponse;
     }
 
     async getMessageChatbot(userId) {

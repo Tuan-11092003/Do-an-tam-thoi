@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { Button, Input, Spin, Avatar, Badge, Tooltip, Typography } from 'antd';
 import { SendOutlined, RobotOutlined, UserOutlined, CloseOutlined, MessageOutlined } from '@ant-design/icons';
 import { Bot, Sparkles } from 'lucide-react';
@@ -18,6 +18,31 @@ function Chatbot() {
     const { dataUser } = useStore();
     const navigate = useNavigate();
 
+    const fetchMessageChatbot = async () => {
+        if (!dataUser._id) {
+            setMessages([]);
+            return [];
+        }
+
+        try {
+            const res = await requestGetMessageChatbot();
+            const nextMessages = Array.isArray(res?.metadata) ? res.metadata : [];
+            setMessages(nextMessages);
+            return nextMessages;
+        } catch (error) {
+            console.error('Lỗi khi lấy tin nhắn:', error);
+            setMessages([
+                {
+                    _id: 'welcome',
+                    sender: 'bot',
+                    content: '🤖 Xin chào! Tôi là trợ lý AI bạn cần hỗ trợ gì?',
+                    timestamp: new Date(),
+                },
+            ]);
+            return [];
+        }
+    };
+
     const scrollToBottom = () => {
         setTimeout(() => {
             messagesEndRef.current?.scrollIntoView({
@@ -29,24 +54,6 @@ function Chatbot() {
     };
 
     useEffect(() => {
-        const fetchMessageChatbot = async () => {
-            try {
-                const res = await requestGetMessageChatbot();
-                setMessages(res?.metadata || []);
-            } catch (error) {
-                console.error('Lỗi khi lấy tin nhắn:', error);
-                // Đặt tin nhắn chào mừng mặc định nếu không có tin nhắn
-                setMessages([
-                    {
-                        _id: 'welcome',
-                        sender: 'bot',
-                        content:
-                            '👋 Xin chào!  Tôi là trợ lý AI bạn cần hỗ trợ gì? 😊',
-                        timestamp: new Date(),
-                    },
-                ]);
-            }
-        };
         if (!dataUser._id) return;
         fetchMessageChatbot();
     }, [dataUser._id]);
@@ -55,21 +62,21 @@ function Chatbot() {
         scrollToBottom();
     }, [messages]);
 
-    // Cuộn xuống khi trạng thái loading thay đổi
+    // Cuá»™n xuá»‘ng khi tráº¡ng thÃ¡i loading thay Ä‘á»•i
     useEffect(() => {
         if (!isLoading) {
             scrollToBottom();
         }
     }, [isLoading]);
 
-    // Cuộn xuống khi mở chat
+    // Cuá»™n xuá»‘ng khi má»Ÿ chat
     useEffect(() => {
         if (isOpen && messages.length > 0) {
             scrollToBottom();
         }
     }, [isOpen]);
 
-    // Reset số tin nhắn chưa đọc khi mở chat
+    // Reset sá»‘ tin nháº¯n chÆ°a Ä‘á»c khi má»Ÿ chat
     useEffect(() => {
         if (isOpen) {
             setUnreadCount(0);
@@ -77,65 +84,48 @@ function Chatbot() {
     }, [isOpen]);
 
     const handleSend = async () => {
-        if (!inputValue.trim()) return;
+        const question = inputValue.trim();
+        if (!question) return;
 
         if (!dataUser._id) {
-            // Hiển thị thông báo yêu cầu đăng nhập
-            const shouldLogin = window.confirm(
-                '🔐 Bạn cần đăng nhập để sử dụng chatbot.',
-            );
+            const shouldLogin = window.confirm('🔐 Bạn cần đăng nhập để sử dụng chatbot.');
             if (shouldLogin) {
                 navigate('/login');
             }
             return;
         }
 
-        // Thêm tin nhắn user vào UI ngay lập tức (Optimistic Update)
         const userMessage = {
             _id: Date.now().toString(),
             sender: 'user',
-            content: inputValue,
+            content: question,
             timestamp: new Date(),
         };
         setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
         setIsLoading(true);
-
-        // Cuộn xuống sau khi thêm tin nhắn người dùng
         setTimeout(() => scrollToBottom(), 50);
 
         try {
-            // Gọi API để lấy phản hồi từ bot
-            const res = await requestChatbot({ question: inputValue });
+            const res = await requestChatbot({ question });
+            const botContent = res?.metadata ?? 'Xin lỗi, tôi chưa có câu trả lời phù hợp cho câu hỏi này. Vui lòng thử lại.';
 
-            // Thêm phản hồi của bot
-            const botMessage = {
-                _id: (Date.now() + 1).toString(),
-                sender: 'bot',
-                content: res.metadata,
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, botMessage]);
+            setMessages((prev) => {
+                const filtered = prev.filter((msg) => msg._id !== userMessage._id);
+                return [...filtered, { _id: (Date.now() + 1).toString(), sender: 'user', content: question, timestamp: new Date() }, { _id: (Date.now() + 2).toString(), sender: 'bot', content: botContent, timestamp: new Date() }];
+            });
 
-            // Cuộn xuống sau khi thêm tin nhắn bot
+            await fetchMessageChatbot();
+
             setTimeout(() => scrollToBottom(), 100);
 
-            // Tăng số tin nhắn chưa đọc nếu chat đang thu nhỏ
             if (!isOpen) {
                 setUnreadCount((prev) => prev + 1);
             }
         } catch (error) {
-            // Thêm tin nhắn lỗi
-            const errorMessage = {
-                _id: (Date.now() + 1).toString(),
-                sender: 'bot',
-                content: '❌ Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, errorMessage]);
-
-            // Cuộn xuống sau khi thêm tin nhắn lỗi
-            setTimeout(() => scrollToBottom(), 100);
+            setMessages((prev) => prev.filter((msg) => msg._id !== userMessage._id));
+            await fetchMessageChatbot();
+            console.error('Lỗi khi gửi tin nhắn chatbot:', error);
         } finally {
             setIsLoading(false);
         }
@@ -159,21 +149,31 @@ function Chatbot() {
     // Hàm parse và render link sản phẩm từ markdown format [text](/product/id)
     const renderMessageWithLinks = (content) => {
         if (!content) return null;
-        
-        // Regex để tìm pattern [text](/product/id)
-        const linkRegex = /\[([^\]]+)\]\((\/product\/[^\)]+)\)/g;
+
+        const sanitizeDuplicatedProductLabel = (value) => {
+            return String(value)
+                .replace(/\[([^\]]+)\]\((\/product\/[a-fA-F0-9]{24})\)\s*\((?:\1)\)/gi, (_, label, url) => `[${label}](${url})`)
+                .replace(/\[([^\]]+)\]\(\[([^\]]+)\]\((\/product\/[a-fA-F0-9]{24})\)\)/gi, (_, label, nestedLabel, url) => `[${label || nestedLabel}](${url})`)
+                .replace(/\[([^\]]+)\]\((?!\/product\/)([^)]+)\)/g, (_, label, url) => {
+                    if (label.trim() === url.trim()) {
+                        return label.trim();
+                    }
+                    return `[${label}](${url})`;
+                });
+        };
+
+        const sanitizedContent = sanitizeDuplicatedProductLabel(content);
+        const linkRegex = /\[([^\]]+)\]\((\/product\/[^)]+)\)/g;
         const parts = [];
         let lastIndex = 0;
         let match;
         let hasLinks = false;
 
-        while ((match = linkRegex.exec(content)) !== null) {
+        while ((match = linkRegex.exec(sanitizedContent)) !== null) {
             hasLinks = true;
-            // Thêm text trước link
             if (match.index > lastIndex) {
-                parts.push({ type: 'text', content: content.substring(lastIndex, match.index) });
+                parts.push({ type: 'text', content: sanitizedContent.substring(lastIndex, match.index) });
             }
-            // Thêm link
             parts.push({
                 type: 'link',
                 text: match[1],
@@ -182,17 +182,14 @@ function Chatbot() {
             lastIndex = linkRegex.lastIndex;
         }
 
-        // Thêm phần text còn lại
-        if (lastIndex < content.length) {
-            parts.push({ type: 'text', content: content.substring(lastIndex) });
+        if (lastIndex < sanitizedContent.length) {
+            parts.push({ type: 'text', content: sanitizedContent.substring(lastIndex) });
         }
 
-        // Nếu không có link, trả về text thuần
         if (!hasLinks) {
-            return content;
+            return sanitizedContent;
         }
 
-        // Render các parts
         return (
             <>
                 {parts.map((part, index) => {
@@ -215,9 +212,9 @@ function Chatbot() {
     };
 
     return (
-        <div className="fixed bottom-30 right-6 z-50">
+        <div className="fixed bottom-30 right-6 z-50 font-sans">
             {isOpen ? (
-                <div className="bg-white rounded-2xl shadow-2xl w-[380px] md:w-[420px] h-[550px] flex flex-col border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-2xl w-[380px] md:w-[420px] h-[550px] flex flex-col border border-gray-100 overflow-hidden font-sans">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 relative">
                         <div className="absolute inset-0 bg-black/10"></div>
@@ -253,11 +250,9 @@ function Chatbot() {
                                     }`}
                                 >
                                     {message.sender === 'bot' && (
-                                        <img
-                                            src="https://promete.ai/wp-content/uploads/2023/03/avatar5-1.png"
-                                            alt="avatar"
-                                            className="w-10 h-10 object-cover rounded-full border-2 border-white shadow-md"
-                                        />
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-white shadow-md flex items-center justify-center text-white">
+                                            <Bot size={18} strokeWidth={2.2} />
+                                        </div>
                                     )}
                                     <div className="flex flex-col">
                                         <div
@@ -311,9 +306,9 @@ function Chatbot() {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                placeholder="💬 Nhập tin nhắn của bạn..."
+                                placeholder="Nhập tin nhắn của bạn..."
                                 autoSize={{ minRows: 1, maxRows: 4 }}
-                                className="flex-1 rounded-xl border-gray-200 focus:border-indigo-500 focus:shadow-md transition-all"
+                                className="flex-1 rounded-xl border-gray-200 focus:border-indigo-500 focus:shadow-md transition-all font-sans"
                                 disabled={isLoading}
                                 autoFocus
                             />
@@ -328,18 +323,18 @@ function Chatbot() {
                         </div>
                         <div className="flex items-center justify-between mt-2">
                             <Text className="text-xs text-gray-400">
-                                💡 Nhấn Enter để gửi, Shift + Enter để xuống dòng
+                                Nhấn Enter để gửi, Shift + Enter để xuống dòng
                             </Text>
                             {!dataUser._id && (
                                 <Text className="text-xs text-orange-500">
-                                    🔐 Đăng nhập để sử dụng đầy đủ tính năng
+                                    Đăng nhập để sử dụng đầy đủ tính năng
                                 </Text>
                             )}
                         </div>
                     </div>
                 </div>
             ) : (
-                <Tooltip title="Chat với AI Assistant" placement="left">
+                <Tooltip title="Chat vá»›i AI Assistant" placement="left">
                     <div className="relative">
                         <button
                             onClick={() => setIsOpen(true)}
@@ -362,4 +357,6 @@ function Chatbot() {
 }
 
 export default Chatbot;
+
+
 
