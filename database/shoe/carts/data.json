@@ -1,0 +1,197 @@
+[
+  {
+    "_id": "693f8a4cd19c51e39d8e985f",
+    "userId": "693f6ddc8b74d24b3c882f73",
+    "products": [
+      {
+        "productId": "68edef5a94ccdfa02f7c040c",
+        "colorId": "68ededf0b066350ecedbb8b6",
+        "sizeId": "68ededf0b066350ecedbb8b8",
+        "quantity": 1,
+        "_id": "693f8a4cd19c51e39d8e9860"
+      },
+      {
+        "productId": "68edf14b94ccdfa02f7c0410",
+        "colorId": "68edf0fe77ad57de8852f252",
+        "sizeId": "68edf0fe77ad57de8852f254",
+        "quantity": 1,
+        "_id": "693f8da8d19c51e39d8ead93"
+      }
+    ],
+    "totalPrice": 900000,
+    "finalPrice": 720000,
+    "createdAt": "2025-12-15T04:10:52.263Z",
+    "updatedAt": "2025-12-15T04:25:18.351Z",
+    "__v": 1,
+    "coupon": {
+      "code": "PAT2003",
+      "discount": 20,
+      "discountAmount": 180000
+    }
+  },
+  {
+    "_id": "6941791decf02b17403441f3",
+    "userId": "6940cdfb6fa7188b00efff79",
+    "products": [
+      {
+        "productId": "68edef6d94ccdfa02f7c040e",
+        "colorId": "68edee82b066350ecedbb8ff",
+        "sizeId": "68edee82b066350ecedbb901",
+        "quantity": 1,
+        "isSelected": true,
+        "_id": "6941791decf02b17403441f4"
+      }
+    ],
+    "totalPrice": 480000,
+    "finalPrice": 0,
+    "createdAt": "2025-12-16T15:22:05.110Z",
+    "updatedAt": "2025-12-16T15:22:14.712Z",
+    "__v": 0,
+    "address": "NB",
+    "fullName": "Phạm Quang Minh",
+    "phone": "0987654321"
+  },
+  {
+    "_id": "694e03b06f2f085e19a0ab1b",
+    "userId": "6942229e47884f41a46b80a6",
+    "products": [
+      {
+        "productId": "69421bc547884f41a46b543d",
+        "colorId": "69421bd147884f41a46b544b",
+        "sizeId": "69421bd147884f41a46b544c",
+        "quantity": 1,
+        "isSelected": true,
+        "_id": "694e03b06f2f085e19a0ab1c"
+      }
+    ],
+    "totalPrice": 1980000,
+    "finalPrice": 0,
+    "createdAt": "2025-12-26T03:40:32.022Z",
+    "updatedAt": "2025-12-26T03:40:32.039Z",
+    "__v": 0
+  },
+  {
+    "_id": "696f13822b85fa0e27316f0d",
+    "userId": "696f12e063c3bcf24d58e6b6",
+    "products": [
+      {
+        "productId": "68edef5194ccdfa02f7c040b",
+        "colorId": "694215b247884f41a46b44b8",
+        "sizeId": "694215b247884f41a46b44b9",
+        "quantity": 1,
+        "isSelected": true,
+        "_id": "69b77474110ae53f9500840c"
+      },
+      {
+        "productId": "68edf15294ccdfa02f7c0411",
+        "colorId": "69421a8447884f41a46b5400",
+        "sizeId": "69421a8447884f41a46b5401",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "69703db65ce77b469135298a"
+      }
+    ],
+    "totalPrice": 850000,
+    "finalPrice": 433125,
+    "createdAt": "2026-01-20T05:32:50.680Z",
+    "updatedAt": "2026-03-16T03:09:41.821Z",
+    "__v": 29,
+    "address": "Ninh Bình",
+    "fullName": "Tuấn Phạm",
+    "phone": "0987654321",
+    "coupon": {
+      "code": "TTTT",
+      "discount": 45,
+      "discountAmount": 1201050
+    }
+  },
+  {
+    "_id": "697488af7d9d113ffae30347",
+    "userId": "694010d6a81528fd33b00bc2",
+    "products": [
+      {
+        "productId": "68edef5194ccdfa02f7c040b",
+        "colorId": "694215b247884f41a46b44b8",
+        "sizeId": "694215b247884f41a46b44bd",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "697488b47d9d113ffae30367"
+      },
+      {
+        "productId": "68edef1fb066350ecedbb965",
+        "colorId": "6946bab894e521f44562ebe1",
+        "sizeId": "6946bab894e521f44562ebe5",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "697488af7d9d113ffae30348"
+      }
+    ],
+    "totalPrice": 0,
+    "finalPrice": 0,
+    "createdAt": "2026-01-24T08:54:07.027Z",
+    "updatedAt": "2026-01-24T08:54:12.185Z",
+    "__v": 1
+  },
+  {
+    "_id": "69bac51beab78dc3bed89e90",
+    "userId": "69bac361eab78dc3bed89385",
+    "products": [
+      {
+        "productId": "68edef1fb066350ecedbb965",
+        "colorId": "6946bab894e521f44562ebe1",
+        "sizeId": "6946bab894e521f44562ebe7",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "69bac5abeab78dc3bed8a0fb"
+      },
+      {
+        "productId": "69421c8e47884f41a46b5580",
+        "colorId": "69421c8e47884f41a46b5581",
+        "sizeId": "69421c8e47884f41a46b5586",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "69bac58eeab78dc3bed8a028"
+      }
+    ],
+    "totalPrice": 1695000,
+    "finalPrice": 1356000,
+    "createdAt": "2026-03-18T15:30:35.244Z",
+    "updatedAt": "2026-03-18T15:34:39.286Z",
+    "__v": 3,
+    "coupon": {
+      "code": "GIAM",
+      "discount": 20,
+      "discountAmount": 306000
+    },
+    "address": "123",
+    "fullName": "Nam",
+    "phone": "0987654321"
+  },
+  {
+    "_id": "69bac5a5eab78dc3bed8a0bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "products": [
+      {
+        "productId": "68edf14b94ccdfa02f7c0410",
+        "colorId": "694219ea47884f41a46b5200",
+        "sizeId": "694219ea47884f41a46b5201",
+        "quantity": 1,
+        "isSelected": false,
+        "_id": "69bac5aaeab78dc3bed8a0de"
+      },
+      {
+        "productId": "69421d2947884f41a46b5590",
+        "colorId": "69421d2947884f41a46b5591",
+        "sizeId": "69421d2947884f41a46b5594",
+        "quantity": 1,
+        "isSelected": true,
+        "_id": "69bac5a5eab78dc3bed8a0be"
+      }
+    ],
+    "totalPrice": 1075000,
+    "finalPrice": 0,
+    "createdAt": "2026-03-18T15:32:53.592Z",
+    "updatedAt": "2026-03-18T15:33:59.083Z",
+    "__v": 1
+  }
+]

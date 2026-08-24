@@ -1,0 +1,542 @@
+[
+  {
+    "_id": "69439909c61459da7374fa33",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2025-12-18T06:02:49.479Z",
+    "createdAt": "2025-12-18T06:02:49.481Z",
+    "updatedAt": "2025-12-18T06:02:49.481Z",
+    "__v": 0
+  },
+  {
+    "_id": "69439909c61459da7374fa35",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin chào! Cảm ơn bạn đã đến thăm chúng tôi. Bạn cần tìm gì hôm nay? Chúng tôi có rất nhiều mẫu giày dép đẹp và chất lượng từ các thương hiệu nổi tiếng như Converse, Nike, Vans. Bạn có thể cho tôi biết bạn đang tìm kiếm gì không? Màu sắc, kiểu dáng, hay giá cả cụ thể?",
+    "timestamp": "2025-12-18T06:02:49.484Z",
+    "createdAt": "2025-12-18T06:02:49.485Z",
+    "updatedAt": "2025-12-18T06:02:49.485Z",
+    "__v": 0
+  },
+  {
+    "_id": "6943991bc61459da7374fabd",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "tư vấn cho tôi một đôi vans đẳng cấp",
+    "timestamp": "2025-12-18T06:03:07.193Z",
+    "createdAt": "2025-12-18T06:03:07.193Z",
+    "updatedAt": "2025-12-18T06:03:07.193Z",
+    "__v": 0
+  },
+  {
+    "_id": "6943991bc61459da7374fabf",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm một đôi giày Vans đẳng cấp. Dựa trên danh sách sản phẩm của chúng tôi, tôi muốn gợi ý một số lựa chọn sau:\n\nNếu bạn muốn một phong cách cổ điển và thời trang, bạn có thể xem xét đôi giày Vans Old Skool Classic Navy. Đây là một phiên bản kinh điển của Vans với màu xanh navy đẹp mắt và thiết kế đơn giản nhưng vẫn rất thời trang.\n\nNếu bạn muốn một đôi giày thoải mái và dễ dàng mix với trang phục, bạn có thể xem xét đôi giày Vans Classic Bee Check Classic Slip-On in White/Black. Đây là một phiên bản slip-on với màu trắng và đen, rất dễ dàng phối đồ và phù hợp với nhiều phong cách khác nhau.\n\nCuối cùng, nếu bạn muốn một đôi giày với phong cách nữ tính và thoải mái, bạn có thể xem xét đôi giày Vans FLORAL CLASSIC SLIP-ON. Đây là một phiên bản slip-on với họa tiết hoa đẹp mắt và màu xanh tươi mát, rất phù hợp với mùa hè.\n\nTất cả các đôi giày này đều có giá cả phải chăng và có nhiều size khác nhau để bạn lựa chọn. Bạn muốn biết thêm thông tin về một trong những đôi giày này không?",
+    "timestamp": "2025-12-18T06:03:07.196Z",
+    "createdAt": "2025-12-18T06:03:07.197Z",
+    "updatedAt": "2025-12-18T06:03:07.197Z",
+    "__v": 0
+  },
+  {
+    "_id": "69439a330d3267657770aa1e",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "giày vans nào là loại tốt nhất?",
+    "timestamp": "2025-12-18T06:07:47.282Z",
+    "createdAt": "2025-12-18T06:07:47.283Z",
+    "updatedAt": "2025-12-18T06:07:47.283Z",
+    "__v": 0
+  },
+  {
+    "_id": "69439a330d3267657770aa20",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm một đôi giày Vans tốt nhất. Dựa trên danh sách sản phẩm của chúng tôi, tôi muốn gợi ý một số lựa chọn sau:\n\nNếu bạn muốn một phong cách cổ điển và thời trang, bạn có thể xem xét đôi [Vans Old Skool Classic Navy](/product/69421e3947884f41a46b559f). Đây là một phiên bản kinh điển của Vans với màu xanh navy đẹp mắt và thiết kế đơn giản nhưng vẫn rất thời trang.\n\nNếu bạn muốn một đôi giày thoải mái và dễ dàng mix với trang phục, bạn có thể xem xét đôi [Vans Classic Bee Check Classic Slip-On in White/Black](/product/69421f2b47884f41a46b55ae). Đây là một phiên bản slip-on với màu trắng và đen, rất dễ dàng phối đồ và phù hợp với nhiều phong cách khác nhau.\n\nCuối cùng, nếu bạn muốn một đôi giày với phong cách nữ tính và thoải mái, bạn có thể xem xét đôi [Vans FLORAL CLASSIC SLIP-ON](/product/6942200247884f41a46b57a0). Đây là một phiên bản slip-on với họa tiết hoa đẹp mắt và màu xanh tươi mát, rất phù hợp với mùa hè.\n\nTất cả các đôi giày này đều có giá cả phải chăng và có nhiều size khác nhau để bạn lựa chọn. Bạn muốn biết thêm thông tin về một trong những đôi giày này không?",
+    "timestamp": "2025-12-18T06:07:47.288Z",
+    "createdAt": "2025-12-18T06:07:47.289Z",
+    "updatedAt": "2025-12-18T06:07:47.289Z",
+    "__v": 0
+  },
+  {
+    "_id": "694ca764317d8994c5f16212",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "loại giày Nike nào tốt nhất?",
+    "timestamp": "2025-12-25T02:54:28.253Z",
+    "createdAt": "2025-12-25T02:54:28.253Z",
+    "updatedAt": "2025-12-25T02:54:28.253Z",
+    "__v": 0
+  },
+  {
+    "_id": "694ca764317d8994c5f16214",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm một đôi giày Nike tốt nhất. Dựa trên danh sách sản phẩm của chúng tôi, tôi muốn gợi ý một số lựa chọn sau:\n\nNếu bạn muốn một phong cách thể thao và thời trang, bạn có thể xem xét đôi [Giày Nike Court Vision Low Leather Black/ White FZ0630-010](/product/68edf15994ccdfa02f7c0412). Đây là một phiên bản thấp của giày bóng rổ với màu đen và trắng, rất phù hợp với nhiều phong cách khác nhau.\n\nNếu bạn muốn một đôi giày thoải mái và dễ dàng mix với trang phục, bạn có thể xem xét đôi [Giày Nike Court Vision Low Leather Khaki/Sequoia-Gum Med Brown HV4506-200](/product/68edf15294ccdfa02f7c0411). Đây là một phiên bản thấp của giày bóng rổ với màu nâu nhạt và đế cao su, rất dễ dàng phối đồ và phù hợp với nhiều phong cách khác nhau.\n\nCuối cùng, nếu bạn muốn một đôi giày với phong cách cổ điển và thời trang, bạn có thể xem xét đôi [Giày Nike Cortez Leather White/Varsity Blue/Varsity Red DN1791-108](/product/69421c8e47884f41a46b5580). Đây là một phiên bản kinh điển của giày Nike với màu trắng, xanh và đỏ, rất phù hợp với mùa hè.\n\nTất cả các đôi giày này đều có giá cả phải chăng và có nhiều size khác nhau để bạn lựa chọn. Bạn muốn biết thêm thông tin về một trong những đôi giày này không?",
+    "timestamp": "2025-12-25T02:54:28.257Z",
+    "createdAt": "2025-12-25T02:54:28.258Z",
+    "updatedAt": "2025-12-25T02:54:28.258Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbb8910a3c2e422bf5046",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "sản phẩm nào bạn thấy tốt nhất có giá từ 1 triệu - 1 triệu rưỡi ",
+    "timestamp": "2026-01-08T14:13:29.134Z",
+    "createdAt": "2026-01-08T14:13:29.137Z",
+    "updatedAt": "2026-01-08T14:13:29.137Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbb8910a3c2e422bf5048",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm sản phẩm giày dép tốt nhất với giá từ 1 triệu đến 1 triệu rưỡi. \n\nTôi gợi ý bạn sản phẩm [Giày Converse Chuck 70 High Toadstool Tan A08616C](/product/68edef6d94ccdfa02f7c040e) với giá 1.000.000đ, giảm giá 20%, màu vàng, size có sẵn từ 40 đến 45. \n\nHoặc bạn cũng có thể xem xét sản phẩm [Giày Converse x Isabel Marant Chuck 70 Low Vanilla White - A10800C](/product/68edef5a94ccdfa02f7c040c) với giá 950.000đ, giảm giá 10%, màu trắng, size có sẵn từ 40 đến 45. \n\nCả hai sản phẩm đều có chất lượng tốt và giá cả hợp lý. Bạn có thể click vào link sản phẩm để xem chi tiết và chọn lựa phù hợp với nhu cầu của mình.",
+    "timestamp": "2026-01-08T14:13:29.163Z",
+    "createdAt": "2026-01-08T14:13:29.163Z",
+    "updatedAt": "2026-01-08T14:13:29.163Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbbe210a3c2e422bf544b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "Hãy tư vấn cho tôi loại giày adidas tốt nhất",
+    "timestamp": "2026-01-08T14:14:58.314Z",
+    "createdAt": "2026-01-08T14:14:58.315Z",
+    "updatedAt": "2026-01-08T14:14:58.315Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbbe210a3c2e422bf544d",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm loại giày adidas tốt nhất. Dựa trên danh sách sản phẩm của chúng tôi, tôi gợi ý bạn sản phẩm [adidas Quần vợt & Phong cách sống Giày Grand Court Cloudfoam Comfort trắng GW9199](/product/694e9d75e3753360b3bcfcfd) với giá 1.280.000đ, giảm giá 5%, màu trắng, size có sẵn từ 38 đến 44. Đây là một sản phẩm adidas chất lượng tốt, thoải mái và phù hợp với nhiều phong cách sống.\n\nNếu bạn đang tìm kiếm một sản phẩm adidas cho mục đích chạy bộ, tôi cũng có thể gợi ý sản phẩm [adidas Chạy Giày Galaxy 6 Nam trắng IE8136](/product/694e9f3ae3753360b3bcfd8b) với giá 2.000.000đ, giảm giá 5%, màu trắng, size có sẵn từ 40 đến 42. Đây là một sản phẩm chuyên nghiệp cho chạy bộ, với thiết kế hiện đại và công nghệ tiên tiến.\n\nHy vọng những gợi ý này sẽ giúp bạn tìm được sản phẩm phù hợp với nhu cầu của mình!",
+    "timestamp": "2026-01-08T14:14:58.319Z",
+    "createdAt": "2026-01-08T14:14:58.319Z",
+    "updatedAt": "2026-01-08T14:14:58.319Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbcb010a3c2e422bf5586",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "Chính sách đổi trả thì thế nào?",
+    "timestamp": "2026-01-08T14:18:24.557Z",
+    "createdAt": "2026-01-08T14:18:24.557Z",
+    "updatedAt": "2026-01-08T14:18:24.557Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbcb010a3c2e422bf5588",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Chính sách đổi trả của chúng tôi rất linh hoạt và đảm bảo quyền lợi của khách hàng. Nếu bạn không hài lòng với sản phẩm, bạn có thể đổi trả trong vòng 7 ngày kể từ ngày nhận hàng. Để đổi trả, sản phẩm phải còn trong tình trạng nguyên bản, bao gồm cả hộp và phụ kiện.\n\nTrước khi tiến hành đổi trả, bạn cần liên hệ với bộ phận chăm sóc khách hàng của chúng tôi để được hướng dẫn cụ thể. Chúng tôi sẽ hỗ trợ bạn trong quá trình đổi trả và đảm bảo rằng bạn nhận được sản phẩm phù hợp với nhu cầu của mình.\n\nNếu bạn đã xem xét các sản phẩm mà tôi gợi ý trước đó, như [Giày Converse Chuck 70 High Toadstool Tan A08616C](/product/68edef6d94ccdfa02f7c040e) hoặc [adidas Quần vợt & Phong cách sống Giày Grand Court Cloudfoam Comfort trắng GW9199](/product/694e9d75e3753360b3bcfcfd), và muốn biết thêm thông tin về chính sách đổi trả cho sản phẩm cụ thể, vui lòng cho tôi biết và tôi sẽ cung cấp thêm thông tin chi tiết.",
+    "timestamp": "2026-01-08T14:18:24.559Z",
+    "createdAt": "2026-01-08T14:18:24.560Z",
+    "updatedAt": "2026-01-08T14:18:24.560Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbd7310a3c2e422bf5621",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "Với chiều dài bàn chân là 20centimet thì lấy size bao nhiêu cho loại giày adidas?",
+    "timestamp": "2026-01-08T14:21:39.834Z",
+    "createdAt": "2026-01-08T14:21:39.834Z",
+    "updatedAt": "2026-01-08T14:21:39.834Z",
+    "__v": 0
+  },
+  {
+    "_id": "695fbd7310a3c2e422bf5623",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Để chọn size giày phù hợp với chiều dài bàn chân 20cm, bạn có thể tham khảo bảng size của adidas. Thông thường, chiều dài bàn chân 20cm tương ứng với size 34 hoặc 35 của adidas.\n\nNếu bạn đang tìm kiếm một sản phẩm adidas, tôi gợi ý bạn sản phẩm [adidas Quần vợt & Phong cách sống Giày Grand Court Cloudfoam Comfort trắng GW9199](/product/694e9d75e3753360b3bcfcfd) với giá 1.280.000đ, giảm giá 5%, màu trắng, size có sẵn từ 38 đến 44. Tuy nhiên, sản phẩm này có thể không có size 34 hoặc 35, nên bạn cần kiểm tra kỹ lưỡng trước khi quyết định mua.\n\nMột sản phẩm khác mà bạn có thể xem xét là [adidas Chạy Giày Galaxy 6 Nam trắng IE8136](/product/694e9f3ae3753360b3bcfd8b) với giá 2.000.000đ, giảm giá 5%, màu trắng, size có sẵn từ 40 đến 42. Tuy nhiên, sản phẩm này cũng có thể không có size phù hợp với bạn.\n\nNếu bạn muốn tìm kiếm sản phẩm có size phù hợp, bạn có thể cho tôi biết thêm thông tin về phong cách và mục đích sử dụng giày của bạn, và tôi sẽ cố gắng gợi ý sản phẩm phù hợp hơn.",
+    "timestamp": "2026-01-08T14:21:39.836Z",
+    "createdAt": "2026-01-08T14:21:39.836Z",
+    "updatedAt": "2026-01-08T14:21:39.836Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bae6082e3b4cf2b0ee7b9",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "hello bạn có thể giúp tôi không?",
+    "timestamp": "2026-01-17T15:44:32.138Z",
+    "createdAt": "2026-01-17T15:44:32.139Z",
+    "updatedAt": "2026-01-17T15:44:32.139Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bae6082e3b4cf2b0ee7bb",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:44:32.143Z",
+    "createdAt": "2026-01-17T15:44:32.144Z",
+    "updatedAt": "2026-01-17T15:44:32.144Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bae9082e3b4cf2b0ee8b6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T15:45:20.959Z",
+    "createdAt": "2026-01-17T15:45:20.959Z",
+    "updatedAt": "2026-01-17T15:45:20.959Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bae9082e3b4cf2b0ee8b8",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:45:20.962Z",
+    "createdAt": "2026-01-17T15:45:20.963Z",
+    "updatedAt": "2026-01-17T15:45:20.963Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bafe182e3b4cf2b0eee6a",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T15:50:57.912Z",
+    "createdAt": "2026-01-17T15:50:57.912Z",
+    "updatedAt": "2026-01-17T15:50:57.912Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bafe182e3b4cf2b0eee6c",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:50:57.916Z",
+    "createdAt": "2026-01-17T15:50:57.917Z",
+    "updatedAt": "2026-01-17T15:50:57.917Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb0e4f87f4af894561c68",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hêllo",
+    "timestamp": "2026-01-17T15:55:16.270Z",
+    "createdAt": "2026-01-17T15:55:16.271Z",
+    "updatedAt": "2026-01-17T15:55:16.271Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb0e4f87f4af894561c6a",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:55:16.274Z",
+    "createdAt": "2026-01-17T15:55:16.274Z",
+    "updatedAt": "2026-01-17T15:55:16.274Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb111f87f4af894561d73",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T15:56:01.922Z",
+    "createdAt": "2026-01-17T15:56:01.923Z",
+    "updatedAt": "2026-01-17T15:56:01.923Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb111f87f4af894561d75",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:56:01.926Z",
+    "createdAt": "2026-01-17T15:56:01.926Z",
+    "updatedAt": "2026-01-17T15:56:01.926Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb15cf87f4af894561e7e",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T15:57:16.656Z",
+    "createdAt": "2026-01-17T15:57:16.656Z",
+    "updatedAt": "2026-01-17T15:57:16.656Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb15cf87f4af894561e80",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:57:16.658Z",
+    "createdAt": "2026-01-17T15:57:16.658Z",
+    "updatedAt": "2026-01-17T15:57:16.658Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb1daf87f4af894561f93",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T15:59:22.803Z",
+    "createdAt": "2026-01-17T15:59:22.803Z",
+    "updatedAt": "2026-01-17T15:59:22.803Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb1daf87f4af894561f95",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T15:59:22.805Z",
+    "createdAt": "2026-01-17T15:59:22.805Z",
+    "updatedAt": "2026-01-17T15:59:22.805Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb2494160f7b4d7dab010",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-17T16:01:13.535Z",
+    "createdAt": "2026-01-17T16:01:13.537Z",
+    "updatedAt": "2026-01-17T16:01:13.537Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bb2494160f7b4d7dab012",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin lỗi, có lỗi xảy ra khi tư vấn sản phẩm. Vui lòng thử lại.",
+    "timestamp": "2026-01-17T16:01:13.539Z",
+    "createdAt": "2026-01-17T16:01:13.540Z",
+    "updatedAt": "2026-01-17T16:01:13.540Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bbfeb42e82fdc9fbe2130",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello bạn có thể hỗ trợ tôi không?",
+    "timestamp": "2026-01-17T16:59:23.895Z",
+    "createdAt": "2026-01-17T16:59:23.896Z",
+    "updatedAt": "2026-01-17T16:59:23.896Z",
+    "__v": 0
+  },
+  {
+    "_id": "696bbfeb42e82fdc9fbe2132",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui được hỗ trợ bạn. Tôi xin lỗi vì sự cố kỹ thuật trước đó. Tôi sẵn sàng giúp bạn tìm kiếm sản phẩm phù hợp với nhu cầu của bạn.\n\nĐể bắt đầu, bạn đang tìm kiếm loại giày dép nào? Giày thể thao, giày thời trang, hay giày cho một hoạt động cụ thể? Hay bạn có màu sắc hoặc giá cả cụ thể nào trong tâm trí?\n\nTôi có thể gợi ý một số sản phẩm phổ biến như [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) hoặc [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) nếu bạn thích phong cách thể thao. Hãy cho tôi biết nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào!",
+    "timestamp": "2026-01-17T16:59:23.900Z",
+    "createdAt": "2026-01-17T16:59:23.901Z",
+    "updatedAt": "2026-01-17T16:59:23.901Z",
+    "__v": 0
+  },
+  {
+    "_id": "696cc31127fe5bbcc600ddc4",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-18T11:25:05.742Z",
+    "createdAt": "2026-01-18T11:25:05.743Z",
+    "updatedAt": "2026-01-18T11:25:05.743Z",
+    "__v": 0
+  },
+  {
+    "_id": "696cc31127fe5bbcc600ddc6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui khi được giúp đỡ bạn. Bạn đang tìm kiếm một đôi giày phù hợp không? Chúng tôi có rất nhiều sản phẩm từ các thương hiệu như Converse, Nike, Vans, và Adidas. Bạn có thể cho tôi biết thêm thông tin về phong cách và mục đích sử dụng giày của bạn không? Ví dụ, bạn thích giày thể thao, giày thời trang, hay giày chạy bộ? \n\nTôi gợi ý bạn sản phẩm [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) với giá 1.600.000đ, giảm giá 10%, màu đen, size có sẵn từ 40 đến 45. Hoặc nếu bạn thích thương hiệu Nike, bạn có thể xem sản phẩm [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ, giảm giá 10%, màu xanh đen, size có sẵn từ 35 đến 39.\n\nHãy cho tôi biết thêm thông tin về nhu cầu của bạn, và tôi sẽ cố gắng gợi ý sản phẩm phù hợp hơn!",
+    "timestamp": "2026-01-18T11:25:05.779Z",
+    "createdAt": "2026-01-18T11:25:05.779Z",
+    "updatedAt": "2026-01-18T11:25:05.779Z",
+    "__v": 0
+  },
+  {
+    "_id": "696eeae7061f2afcbc4475d3",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-20T02:39:35.364Z",
+    "createdAt": "2026-01-20T02:39:35.364Z",
+    "updatedAt": "2026-01-20T02:39:35.364Z",
+    "__v": 0
+  },
+  {
+    "_id": "696eeae7061f2afcbc4475d5",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui khi được giúp đỡ bạn. Bạn đang tìm kiếm một đôi giày phù hợp không? Chúng tôi có rất nhiều sản phẩm từ các thương hiệu như Converse, Nike, Vans, và Adidas. Bạn có thể cho tôi biết thêm thông tin về phong cách và mục đích sử dụng giày của bạn không? Ví dụ, bạn thích giày thể thao, giày thời trang, hay giày chạy bộ?\n\nTôi gợi ý bạn sản phẩm [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) với giá 1.600.000đ, giảm giá 10%, màu đen, size có sẵn từ 40 đến 45. Hoặc nếu bạn thích thương hiệu Nike, bạn có thể xem sản phẩm [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ, giảm giá 10%, màu xanh đen, size có sẵn từ 35 đến 39.\n\nHãy cho tôi biết thêm thông tin về nhu cầu của bạn, và tôi sẽ cố gắng gợi ý sản phẩm phù hợp hơn!",
+    "timestamp": "2026-01-20T02:39:35.380Z",
+    "createdAt": "2026-01-20T02:39:35.380Z",
+    "updatedAt": "2026-01-20T02:39:35.380Z",
+    "__v": 0
+  },
+  {
+    "_id": "697491da7d9d113ffae30542",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "Loại Nike nào ổn nhất?",
+    "timestamp": "2026-01-24T09:33:14.750Z",
+    "createdAt": "2026-01-24T09:33:14.750Z",
+    "updatedAt": "2026-01-24T09:33:14.750Z",
+    "__v": 0
+  },
+  {
+    "_id": "697491da7d9d113ffae30544",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm một sản phẩm của Nike và muốn biết loại nào ổn nhất. Tôi có thể gợi ý một số sản phẩm Nike phổ biến như [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ và giảm giá 10%, hoặc [Giày Nike Court Vision Low Leather Black/ White FZ0630-010](/product/68edf15994ccdfa02f7c0412) với giá 1.150.000đ và giảm giá 10%.\n\nNếu bạn thích phong cách thể thao và muốn một sản phẩm với màu sắc nổi bật, tôi cũng có thể gợi ý [Giày Nike Court Vision Low Leather White/Stadium Green FV9952-101](/product/69421bc547884f41a46b543d) với giá 2.200.000đ và giảm giá 10%.\n\nHãy cho tôi biết nếu bạn có màu sắc hoặc giá cả cụ thể nào trong tâm trí, hoặc nếu bạn muốn thêm thông tin về các sản phẩm này!",
+    "timestamp": "2026-01-24T09:33:14.754Z",
+    "createdAt": "2026-01-24T09:33:14.754Z",
+    "updatedAt": "2026-01-24T09:33:14.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "6974960f7d9d113ffae306ab",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-24T09:51:11.113Z",
+    "createdAt": "2026-01-24T09:51:11.113Z",
+    "updatedAt": "2026-01-24T09:51:11.113Z",
+    "__v": 0
+  },
+  {
+    "_id": "6974960f7d9d113ffae306ad",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui được hỗ trợ bạn. Tôi thấy rằng trước đó bạn đã hỏi về loại Nike nào ổn nhất. Tôi có thể gợi ý một số sản phẩm Nike phổ biến như [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ và giảm giá 10%, hoặc [Giày Nike Court Vision Low Leather Black/ White FZ0630-010](/product/68edf15994ccdfa02f7c0412) với giá 1.150.000đ và giảm giá 10%.\n\nNếu bạn muốn tìm kiếm sản phẩm khác, bạn có thể cho tôi biết thêm về màu sắc, giá cả, hoặc phong cách mà bạn thích. Tôi sẽ cố gắng giúp bạn tìm được sản phẩm phù hợp nhất!",
+    "timestamp": "2026-01-24T09:51:11.120Z",
+    "createdAt": "2026-01-24T09:51:11.120Z",
+    "updatedAt": "2026-01-24T09:51:11.120Z",
+    "__v": 0
+  },
+  {
+    "_id": "6974961a7d9d113ffae30747",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-24T09:51:22.459Z",
+    "createdAt": "2026-01-24T09:51:22.459Z",
+    "updatedAt": "2026-01-24T09:51:22.459Z",
+    "__v": 0
+  },
+  {
+    "_id": "6974961a7d9d113ffae30749",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui được hỗ trợ bạn. Tôi thấy rằng trước đó bạn đã hỏi về loại Nike nào ổn nhất. Tôi có thể gợi ý một số sản phẩm Nike phổ biến như [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ và giảm giá 10%, hoặc [Giày Nike Court Vision Low Leather Black/ White FZ0630-010](/product/68edf15994ccdfa02f7c0412) với giá 1.150.000đ và giảm giá 10%.\n\nNếu bạn muốn tìm kiếm sản phẩm khác, bạn có thể cho tôi biết thêm về màu sắc, giá cả, hoặc phong cách mà bạn thích. Tôi sẽ cố gắng giúp bạn tìm được sản phẩm phù hợp nhất!",
+    "timestamp": "2026-01-24T09:51:22.461Z",
+    "createdAt": "2026-01-24T09:51:22.461Z",
+    "updatedAt": "2026-01-24T09:51:22.461Z",
+    "__v": 0
+  },
+  {
+    "_id": "697496557d9d113ffae307e3",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "hello",
+    "timestamp": "2026-01-24T09:52:21.229Z",
+    "createdAt": "2026-01-24T09:52:21.229Z",
+    "updatedAt": "2026-01-24T09:52:21.229Z",
+    "__v": 0
+  },
+  {
+    "_id": "697496557d9d113ffae307e5",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Xin chào! Tôi rất vui được hỗ trợ bạn. Vì bạn vừa mới đến, tôi muốn hỏi bạn đang tìm kiếm loại giày nào? Bạn thích phong cách thể thao, phong cách đường phố, hay phong cách cổ điển? \n\nNếu bạn thích phong cách thể thao, tôi có thể gợi ý [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ và giảm giá 10%, hoặc [Giày Nike Court Vision Low Leather Black/ White FZ0630-010](/product/68edf15994ccdfa02f7c0412) với giá 1.150.000đ và giảm giá 10%.\n\nNếu bạn thích phong cách đường phố, tôi có thể gợi ý [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) với giá 1.600.000đ và giảm giá 10%, hoặc [Giày Vans Old Skool Classic Navy](/product/69421e3947884f41a46b559f) với giá 1.900.000đ và giảm giá 10%.\n\nHãy cho tôi biết thêm về màu sắc, giá cả, hoặc phong cách mà bạn thích, tôi sẽ cố gắng giúp bạn tìm được sản phẩm phù hợp nhất!",
+    "timestamp": "2026-01-24T09:52:21.232Z",
+    "createdAt": "2026-01-24T09:52:21.232Z",
+    "updatedAt": "2026-01-24T09:52:21.232Z",
+    "__v": 0
+  },
+  {
+    "_id": "697497217d9d113ffae3087f",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "giày vans thì sao?",
+    "timestamp": "2026-01-24T09:55:45.435Z",
+    "createdAt": "2026-01-24T09:55:45.435Z",
+    "updatedAt": "2026-01-24T09:55:45.435Z",
+    "__v": 0
+  },
+  {
+    "_id": "697497217d9d113ffae30881",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Tôi hiểu rằng bạn đang tìm kiếm thông tin về giày Vans. Chúng tôi có nhiều sản phẩm Vans khác nhau với các phong cách và màu sắc đa dạng.\n\nNếu bạn thích phong cách cổ điển, tôi gợi ý bạn sản phẩm [Giày Vans Old Skool Classic Navy](/product/69421e3947884f41a46b559f) với giá 1.900.000đ và giảm giá 10%. Đây là một trong những mẫu giày Vans phổ biến nhất với thiết kế đơn giản nhưng thời thượng.\n\nNếu bạn thích phong cách giản dị và thoải mái, tôi gợi ý bạn sản phẩm [Giày Vans Classic Bee Check Classic Slip-On in White/Black](/product/69421f2b47884f41a46b55ae) với giá 700.000đ và giảm giá 10%. Đây là một đôi giày slip-on dễ dàng kết hợp với nhiều trang phục khác nhau.\n\nNếu bạn thích phong cách nữ tính và tươi sáng, tôi gợi ý bạn sản phẩm [Giày Vans FLORAL CLASSIC SLIP-ON](/product/6942200247884f41a46b57a0) với giá 850.000đ và giảm giá 10%. Đây là một đôi giày với họa tiết hoa đẹp mắt và màu sắc tươi sáng.\n\nHãy cho tôi biết thêm về màu sắc, giá cả, hoặc phong cách mà bạn thích, tôi sẽ cố gắng giúp bạn tìm được sản phẩm phù hợp nhất!",
+    "timestamp": "2026-01-24T09:55:45.437Z",
+    "createdAt": "2026-01-24T09:55:45.437Z",
+    "updatedAt": "2026-01-24T09:55:45.437Z",
+    "__v": 0
+  },
+  {
+    "_id": "697497487d9d113ffae30a71",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "user",
+    "content": "loại nào đang được flashSale?",
+    "timestamp": "2026-01-24T09:56:24.789Z",
+    "createdAt": "2026-01-24T09:56:24.789Z",
+    "updatedAt": "2026-01-24T09:56:24.789Z",
+    "__v": 0
+  },
+  {
+    "_id": "697497487d9d113ffae30a73",
+    "userId": "694010d6a81528fd33b00bc2",
+    "sender": "bot",
+    "content": "Để biết được loại giày Vans nào đang được giảm giá, bạn có thể xem các sản phẩm sau:\n\n- [Giày Vans Old Skool Classic Navy](/product/69421e3947884f41a46b559f) với giá 1.900.000đ và giảm giá 10%.\n- [Giày Vans Classic Bee Check Classic Slip-On in White/Black](/product/69421f2b47884f41a46b55ae) với giá 700.000đ và giảm giá 10%.\n- [Giày Vans FLORAL CLASSIC SLIP-ON](/product/6942200247884f41a46b57a0) với giá 850.000đ và giảm giá 10%.\n- [Giày Vans x National Geographic Classic Slip-on Then](/product/694220ea47884f41a46b57b2) với giá 750.000đ và giảm giá 10%.\n\nNếu bạn muốn tìm kiếm thêm các sản phẩm khác, vui lòng cho tôi biết thêm về màu sắc, giá cả, hoặc phong cách mà bạn thích. Tôi sẽ cố gắng giúp bạn tìm được sản phẩm phù hợp nhất!",
+    "timestamp": "2026-01-24T09:56:24.791Z",
+    "createdAt": "2026-01-24T09:56:24.792Z",
+    "updatedAt": "2026-01-24T09:56:24.792Z",
+    "__v": 0
+  },
+  {
+    "_id": "69a44d369dbcb158b1ede573",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "giày nào ngon nhất",
+    "timestamp": "2026-03-01T14:29:10.439Z",
+    "createdAt": "2026-03-01T14:29:10.440Z",
+    "updatedAt": "2026-03-01T14:29:10.440Z",
+    "__v": 0
+  },
+  {
+    "_id": "69a44d369dbcb158b1ede575",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Tôi hiểu bạn đang tìm kiếm một đôi giày thực sự \"ngon\"! Với rất nhiều sản phẩm từ các thương hiệu như Converse, Nike, Vans, và Adidas, tôi có thể gợi ý một số lựa chọn thú vị.\n\nNếu bạn thích phong cách thể thao và thời trang, tôi gợi ý bạn sản phẩm [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) với giá 1.600.000đ, giảm giá 10%, màu đen, size có sẵn từ 40 đến 45. Đây là một lựa chọn tuyệt vời cho những ai yêu thích phong cách cổ điển nhưng vẫn muốn một chút phong cách hiện đại.\n\nNếu bạn thích thương hiệu Nike, bạn có thể xem sản phẩm [Giày Nike Big Low Leather Black/ Hyper Royal 355152-018](/product/68edf14b94ccdfa02f7c0410) với giá 1.700.000đ, giảm giá 10%, màu xanh đen, size có sẵn từ 35 đến 39. Đây là một đôi giày thể thao cao cấp với thiết kế mạnh mẽ và phong cách thời trang.\n\nHoặc nếu bạn thích một lựa chọn khác, tôi gợi ý bạn sản phẩm [Giày Vans Old Skool Classic Navy](/product/69421e3947884f41a46b559f) với giá 1.900.000đ, giảm giá 10%, màu xanh navy, size có sẵn từ 38 đến 43. Đây là một đôi giày thể thao cổ điển với phong cách mạnh mẽ và thời trang.\n\nHãy cho tôi biết thêm thông tin về nhu cầu của bạn, và tôi sẽ cố gắng gợi ý sản phẩm phù hợp hơn!",
+    "timestamp": "2026-03-01T14:29:10.458Z",
+    "createdAt": "2026-03-01T14:29:10.458Z",
+    "updatedAt": "2026-03-01T14:29:10.458Z",
+    "__v": 0
+  },
+  {
+    "_id": "69a44d6f9dbcb158b1ede60f",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "user",
+    "content": "size giày lớn nhất cửa hàng đang có là bao nhiêu?",
+    "timestamp": "2026-03-01T14:30:07.492Z",
+    "createdAt": "2026-03-01T14:30:07.492Z",
+    "updatedAt": "2026-03-01T14:30:07.492Z",
+    "__v": 0
+  },
+  {
+    "_id": "69a44d6f9dbcb158b1ede611",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "sender": "bot",
+    "content": "Xin chào! Tôi hiểu bạn đang tìm kiếm size giày lớn nhất mà cửa hàng chúng tôi đang có. \n\nTừ danh sách sản phẩm của chúng tôi, size giày lớn nhất hiện có là 45, có trong các sản phẩm như [Giày Converse Chuck 70 Ruffles & Bows Black A10026C](/product/68ededf0b066350ecedbb8b5) với giá 1.600.000đ, giảm giá 10%, màu đen. Hoặc bạn cũng có thể xem sản phẩm [Giày Converse x Isabel Marant Chuck 70 Low Vanilla White - A10800C](/product/68edef5a94ccdfa02f7c040c) với giá 950.000đ, giảm giá 10%, màu trắng, cũng có size lên đến 45.\n\nNếu bạn cần thêm thông tin hoặc muốn tìm kiếm sản phẩm khác, hãy cho tôi biết!",
+    "timestamp": "2026-03-01T14:30:07.494Z",
+    "createdAt": "2026-03-01T14:30:07.494Z",
+    "updatedAt": "2026-03-01T14:30:07.494Z",
+    "__v": 0
+  }
+]

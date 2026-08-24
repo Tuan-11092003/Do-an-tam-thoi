@@ -1,0 +1,1629 @@
+[
+  {
+    "_id": "693d84e8dd4999877191b344",
+    "orderId": "693d83a1dd4999877191a57b",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "approved",
+    "receivedDate": "2025-12-13T15:23:20.796Z",
+    "returnDate": "2025-12-20T15:23:20.796Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "693f89afd19c51e39d8e93f8",
+    "orderId": "693f8994d19c51e39d8e9351",
+    "productId": "68edee82b066350ecedbb8fe",
+    "userId": "693f6ddc8b74d24b3c882f73",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-15T04:08:15.872Z",
+    "returnDate": "2025-12-22T04:08:15.872Z",
+    "images": [
+      "1765771766410.png"
+    ],
+    "__v": 0,
+    "description": "lỗi size rồi 40 cơ mà đổi cho tôi"
+  },
+  {
+    "_id": "6940112ea81528fd33b00db1",
+    "orderId": "69401121a81528fd33b00d95",
+    "productId": "68edef5194ccdfa02f7c040b",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2025-12-15T13:46:22.057Z",
+    "returnDate": "2025-12-22T13:46:22.057Z",
+    "images": [
+      "1765806446938.png"
+    ],
+    "__v": 0,
+    "description": "hỏng giày rồi đổi cho tôi đôi khác"
+  },
+  {
+    "_id": "6940112ea81528fd33b00db2",
+    "orderId": "69401121a81528fd33b00d95",
+    "productId": "68edef6294ccdfa02f7c040d",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-15T13:46:22.057Z",
+    "returnDate": "2025-12-22T13:46:22.057Z",
+    "images": [
+      "1765806974101.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi tôi muốn đổi đôi khác"
+  },
+  {
+    "_id": "694026ec81d75db277645e14",
+    "orderId": "694026d281d75db277645df1",
+    "productId": "68edef6d94ccdfa02f7c040e",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-15T15:19:08.284Z",
+    "returnDate": "2025-12-22T15:19:08.284Z",
+    "images": [
+      "1765811976254.png"
+    ],
+    "__v": 0,
+    "description": "đổi cho tôi sai màu rồi"
+  },
+  {
+    "_id": "69402875890b17c51cc44eec",
+    "orderId": "6940286b890b17c51cc44ed3",
+    "productId": "68ededf0b066350ecedbb8b5",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-15T15:25:41.544Z",
+    "returnDate": "2025-12-22T15:25:41.544Z",
+    "images": [
+      "1765812377015.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi đổi giúp tôi màu kahcs"
+  },
+  {
+    "_id": "694222e147884f41a46b8257",
+    "orderId": "694222c247884f41a46b81ea",
+    "productId": "68edef5194ccdfa02f7c040b",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2025-12-17T03:26:25.332Z",
+    "returnDate": "2025-12-24T03:26:25.332Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501905/my-app/warranty/1765942015574_knohh2.png"
+    ],
+    "__v": 0,
+    "description": "Tôi muốn đổi giày, hỏng rồi",
+    "emailSent": false
+  },
+  {
+    "_id": "6942239047884f41a46b862d",
+    "orderId": "6942237f47884f41a46b8608",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-17T03:29:20.852Z",
+    "returnDate": "2025-12-24T03:29:20.852Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501906/my-app/warranty/1765942187201_nyeplr.png"
+    ],
+    "__v": 0,
+    "description": "Lỗi size tôi muốn đổi ",
+    "emailSent": false
+  },
+  {
+    "_id": "6942343378da41ebcec80f8f",
+    "orderId": "694233d163bab4660fa18d80",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "defect",
+    "status": "completed",
+    "receivedDate": "2025-12-17T04:40:19.733Z",
+    "returnDate": "2025-12-24T04:40:19.733Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501907/my-app/warranty/1765946451503_zwxhi1.png"
+    ],
+    "__v": 0,
+    "description": "lỗi màu rồi đổi cho tôi",
+    "emailSent": false
+  },
+  {
+    "_id": "6942360508344ac20d9a0d30",
+    "orderId": "694235d863635105249d7bbf",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-17T04:48:05.391Z",
+    "returnDate": "2025-12-24T04:48:05.391Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501908/my-app/warranty/1765946909395_xqhz51.png"
+    ],
+    "__v": 0,
+    "description": "đổi cho tôi đôi này lỗi size",
+    "emailSent": false
+  },
+  {
+    "_id": "69423872cec1ef30b4360b98",
+    "orderId": "69423824cec1ef30b4360a12",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-17T04:58:26.457Z",
+    "returnDate": "2025-12-24T04:58:26.457Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501909/my-app/warranty/1765947548940_d0pkyn.png"
+    ],
+    "__v": 0,
+    "description": "đổi cho tôi đôi khác lỗi rồi",
+    "emailSent": false
+  },
+  {
+    "_id": "69423a0b1bfc5cba2c032abf",
+    "orderId": "69423a041bfc5cba2c032aa2",
+    "productId": "68edf14b94ccdfa02f7c0410",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-17T05:05:15.274Z",
+    "returnDate": "2025-12-24T05:05:15.274Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501910/my-app/warranty/1765947941100_kd6onk.png"
+    ],
+    "__v": 0,
+    "description": "đổi cho tôi đôi khác lỗi màu r",
+    "emailSent": false
+  },
+  {
+    "_id": "69423b531bfc5cba2c032e50",
+    "orderId": "69423b1a1bfc5cba2c032cfb",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-17T05:10:43.721Z",
+    "returnDate": "2025-12-24T05:10:43.721Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501911/my-app/warranty/1765948269853_rfndn6.png"
+    ],
+    "__v": 0,
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "emailSent": false
+  },
+  {
+    "_id": "69423bdb1bfc5cba2c03321b",
+    "orderId": "69423bd11bfc5cba2c0331c4",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-17T05:12:59.571Z",
+    "returnDate": "2025-12-24T05:12:59.571Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501912/my-app/warranty/1765948401263_qyjp7m.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi đổi cjo tôi",
+    "emailSent": false
+  },
+  {
+    "_id": "69480fe59b524d3fbf3ce308",
+    "orderId": "6946c05327b629b1e61e3df0",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-21T15:19:01.679Z",
+    "returnDate": "2025-12-28T15:19:01.679Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694ca52b4c6d77fc448401c8",
+    "orderId": "694ca3907b06cfa67cf96c6e",
+    "productId": "69421bc547884f41a46b543d",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "wrong_size",
+    "status": "processing",
+    "receivedDate": "2025-12-25T02:44:59.805Z",
+    "returnDate": "2026-01-01T02:44:59.805Z",
+    "images": [
+      "1766630761078.png"
+    ],
+    "__v": 0,
+    "description": "lỗi size, tôi muốn đổi đôi khác "
+  },
+  {
+    "_id": "694ca9b5dd8e2962a7b96ce5",
+    "orderId": "694c9ec7087fccdd4cb3fcae",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-25T03:04:21.667Z",
+    "returnDate": "2026-01-01T03:04:21.667Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694caa69747c731d3f19e668",
+    "orderId": "694ca972dd8e2962a7b96c6a",
+    "productId": "68edef5a94ccdfa02f7c040c",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-25T03:07:21.074Z",
+    "returnDate": "2026-01-01T03:07:21.074Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694caa79747c731d3f19e695",
+    "orderId": "694ca972dd8e2962a7b96c6a",
+    "productId": "68edef5a94ccdfa02f7c040c",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-25T03:07:37.222Z",
+    "returnDate": "2026-01-01T03:07:37.222Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694cabe0747c731d3f19e822",
+    "orderId": "694c9d4839d1c0fd23b0e503",
+    "productId": "68edef5194ccdfa02f7c040b",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-25T03:13:36.331Z",
+    "returnDate": "2026-01-01T03:13:36.331Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694cac1d747c731d3f19e84f",
+    "orderId": "694ca3907b06cfa67cf96c6e",
+    "productId": "69421bc547884f41a46b543d",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-25T03:14:37.306Z",
+    "returnDate": "2026-01-01T03:14:37.306Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694cad36747c731d3f19e95c",
+    "orderId": "694ca37b7b06cfa67cf96b4c",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "approved",
+    "receivedDate": "2025-12-25T03:19:18.622Z",
+    "returnDate": "2026-01-01T03:19:18.622Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694d5ab6acf21e62d9e9a604",
+    "orderId": "694d5aa9acf21e62d9e9a5ba",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "defect",
+    "status": "approved",
+    "receivedDate": "2025-12-25T15:39:34.627Z",
+    "returnDate": "2026-01-01T15:39:34.627Z",
+    "images": [
+      "1766677205123.png"
+    ],
+    "__v": 0,
+    "description": "Lỗi rồi đổi cho tôi đôi mới"
+  },
+  {
+    "_id": "694d5cd8acf21e62d9e9a905",
+    "orderId": "694d5ccaacf21e62d9e9a8c7",
+    "productId": "69421d2947884f41a46b5590",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "defect",
+    "status": "completed",
+    "receivedDate": "2025-12-25T15:48:40.856Z",
+    "returnDate": "2026-01-01T15:48:40.856Z",
+    "images": [
+      "1766677772345.png"
+    ],
+    "__v": 0,
+    "description": "Lỗi màu rồi đổi cho tôi"
+  },
+  {
+    "_id": "694d5e9939577330b4c52593",
+    "orderId": "694d5e9039577330b4c5253f",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2025-12-25T15:56:09.629Z",
+    "returnDate": "2026-01-01T15:56:09.629Z",
+    "images": [
+      "1766678197339.png"
+    ],
+    "__v": 0,
+    "description": "Lỗi Size rồi đổi cho tôi đôi 40"
+  },
+  {
+    "_id": "694d63d1e3b6cc8a331a3a54",
+    "orderId": "694d63c9e3b6cc8a331a39c2",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:18:25.972Z",
+    "returnDate": "2026-01-01T16:18:25.972Z",
+    "images": [
+      "1766679530158.png"
+    ],
+    "__v": 0,
+    "description": "đổiỉỉ cho tôi đôi khác"
+  },
+  {
+    "_id": "694d64ae4c26929e1a913e93",
+    "orderId": "694d64a74c26929e1a913e55",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:22:06.859Z",
+    "returnDate": "2026-01-01T16:22:06.859Z",
+    "images": [
+      "1766679750800.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi đổi cho tôi"
+  },
+  {
+    "_id": "694d67fb401473395e24a4c1",
+    "orderId": "694d67f5401473395e24a483",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:36:11.457Z",
+    "returnDate": "2026-01-01T16:36:11.457Z",
+    "images": [
+      "1766680595714.png"
+    ],
+    "__v": 0,
+    "description": "dododir amadjdjaaa jajaidio"
+  },
+  {
+    "_id": "694d68bc930980b5c8ac63b1",
+    "orderId": "694d68b6930980b5c8ac6373",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:39:24.313Z",
+    "returnDate": "2026-01-01T16:39:24.313Z",
+    "images": [
+      "1766680781889.png"
+    ],
+    "__v": 0,
+    "description": "saiaiasnasmqwiqsmiqniqnidnqiniqn"
+  },
+  {
+    "_id": "694d69545503e19192aa5715",
+    "orderId": "694d694f5503e19192aa56d7",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "defect",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:41:56.078Z",
+    "returnDate": "2026-01-01T16:41:56.078Z",
+    "images": [
+      "1766680936218.png"
+    ],
+    "__v": 0,
+    "description": "ánqnisnqijsdiqnsinqinqinsinqi"
+  },
+  {
+    "_id": "694d69b5a5222fa3a673ace7",
+    "orderId": "694d69ada5222fa3a673ac62",
+    "productId": "69421c8e47884f41a46b5580",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "defect",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:43:33.707Z",
+    "returnDate": "2026-01-01T16:43:33.707Z",
+    "images": [
+      "1766681037784.png"
+    ],
+    "__v": 0,
+    "description": "looxiaiajsqisniqndnqinqj d"
+  },
+  {
+    "_id": "694d6b73b1e5eb723c6d55d2",
+    "orderId": "694d6b6db1e5eb723c6d5595",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "defect",
+    "status": "completed",
+    "receivedDate": "2025-12-25T16:50:59.012Z",
+    "returnDate": "2026-01-01T16:50:59.012Z",
+    "images": [
+      "1766681480015.png"
+    ],
+    "__v": 0,
+    "description": "ajdniqidqninoqnxoqjiejiqsnjfbehbdjw"
+  },
+  {
+    "_id": "694df0ef6f2f085e19a09f75",
+    "orderId": "694df0e86f2f085e19a09f38",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T02:20:31.349Z",
+    "returnDate": "2026-01-02T02:20:31.349Z",
+    "images": [
+      "1766715663443.png"
+    ],
+    "__v": 0,
+    "description": "sai size rồi đổi cjo tôi với"
+  },
+  {
+    "_id": "694e03516f2f085e19a0a5e6",
+    "orderId": "694e034c6f2f085e19a0a5a9",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "6942229e47884f41a46b80a6",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-26T03:38:57.156Z",
+    "returnDate": "2026-01-02T03:38:57.156Z",
+    "images": [
+      "1766720372360.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi đổi cho tôi màu xanh"
+  },
+  {
+    "_id": "694e144b7c855a14cc4c6cdd",
+    "orderId": "694e14437c855a14cc4c6c4a",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T04:51:23.775Z",
+    "returnDate": "2026-01-02T04:51:23.775Z",
+    "images": [
+      "1766724710574.png"
+    ],
+    "__v": 0,
+    "description": "Lỗi size roodi đổi cho tôi ddoooi khác"
+  },
+  {
+    "_id": "694e1cb0d4f5ea62152fca39",
+    "orderId": "694e1c90d4f5ea62152fc8cb",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T05:27:12.163Z",
+    "returnDate": "2026-01-02T05:27:12.163Z",
+    "images": [
+      "1766726851134.png"
+    ],
+    "__v": 0,
+    "description": "hbubdiqsjiqjedjwnjwbusiniqsoq"
+  },
+  {
+    "_id": "694e1d812f041faf3955cc6e",
+    "orderId": "694e1d762f041faf3955cc31",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T05:30:41.852Z",
+    "returnDate": "2026-01-02T05:30:41.852Z",
+    "images": [
+      "1766727067907.png"
+    ],
+    "__v": 0,
+    "description": "i1ndjajdb2ndnjnxjnqajijwi"
+  },
+  {
+    "_id": "694e1e63b19abddee0305f7d",
+    "orderId": "694e1e5eb19abddee0305ee9",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-26T05:34:27.760Z",
+    "returnDate": "2026-01-02T05:34:27.760Z",
+    "images": [
+      "1766727288476.png"
+    ],
+    "__v": 0,
+    "description": "ndnnnnnnnnnnnnnnndss"
+  },
+  {
+    "_id": "694e298bff07a89d7b9244d1",
+    "orderId": "694e2981ff07a89d7b92445a",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-26T06:22:03.169Z",
+    "returnDate": "2026-01-02T06:22:03.169Z",
+    "images": [
+      "1766730150713.png"
+    ],
+    "__v": 0,
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "_id": "694e2b915765e5d4e11fb35a",
+    "orderId": "694e2b8b5765e5d4e11fb31d",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T06:30:41.908Z",
+    "returnDate": "2026-01-02T06:30:41.908Z",
+    "images": [
+      "1766730666000.png"
+    ],
+    "__v": 0,
+    "description": "iaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "_id": "694e2c933a298e11b779fd95",
+    "orderId": "694e2c8e3a298e11b779fd58",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "not_as_described",
+    "status": "completed",
+    "receivedDate": "2025-12-26T06:34:59.520Z",
+    "returnDate": "2026-01-02T06:34:59.520Z",
+    "images": [
+      "1766730917935.png"
+    ],
+    "__v": 0,
+    "description": "akkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+  },
+  {
+    "_id": "694e2f16642331c1e96aee28",
+    "orderId": "694e2f10642331c1e96aedeb",
+    "productId": "694220ea47884f41a46b57b2",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-26T06:45:42.039Z",
+    "returnDate": "2026-01-02T06:45:42.039Z",
+    "images": [
+      "1766731562304.png"
+    ],
+    "__v": 0,
+    "description": "jaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "_id": "694e2fad63620a97deb7c0e4",
+    "orderId": "694e2fa663620a97deb7c06d",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-26T06:48:13.787Z",
+    "returnDate": "2026-01-02T06:48:13.787Z",
+    "images": [
+      "1766731713326.png"
+    ],
+    "__v": 0,
+    "description": "akkkkkkkkkkkaaaaaaaaaaaaaa"
+  },
+  {
+    "_id": "694ea2f234a4c35a5e7f4c98",
+    "orderId": "694ea2ce34a4c35a5e7f480c",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2025-12-26T15:00:02.978Z",
+    "returnDate": "2026-01-02T15:00:02.978Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694eabe26446093d81852768",
+    "orderId": "694eabdc6446093d818526cb",
+    "productId": "68edef5194ccdfa02f7c040b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2025-12-26T15:38:10.828Z",
+    "returnDate": "2026-01-02T15:38:10.828Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694eadd94bd171f8e071937a",
+    "orderId": "694eadd24bd171f8e07192e4",
+    "productId": "69421c8e47884f41a46b5580",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2025-12-26T15:46:33.190Z",
+    "returnDate": "2026-01-02T15:46:33.190Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694f4a3ec2d676895d04d8f6",
+    "orderId": "694f4a35c2d676895d04d893",
+    "productId": "68edef6294ccdfa02f7c040d",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-27T02:53:50.747Z",
+    "returnDate": "2026-01-03T02:53:50.747Z",
+    "images": [
+      "1766804056678.png"
+    ],
+    "__v": 0,
+    "description": "kaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "_id": "694fd66944fcd4b25b3fae1a",
+    "orderId": "694fd66044fcd4b25b3fadb7",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-27T12:51:53.356Z",
+    "returnDate": "2026-01-03T12:51:53.356Z",
+    "images": [
+      "1766845026104.png"
+    ],
+    "__v": 0,
+    "description": "lỗi size rồi đổi cho tôi đôi khác"
+  },
+  {
+    "_id": "694fe8bed5f05b64de00d03b",
+    "orderId": "694fe015d5f05b64de00ca0a",
+    "productId": "68edef5194ccdfa02f7c040b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2025-12-27T14:10:06.237Z",
+    "returnDate": "2026-01-03T14:10:06.237Z",
+    "images": [
+      "1766844636354.png"
+    ],
+    "__v": 0,
+    "description": "lỗi size rồi đổi cho tôi"
+  },
+  {
+    "_id": "694fe930d5f05b64de00d11f",
+    "orderId": "694fdd90d5f05b64de00c86d",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-27T14:12:00.285Z",
+    "returnDate": "2026-01-03T14:12:00.285Z",
+    "images": [
+      "1766844763614.png"
+    ],
+    "__v": 0,
+    "description": "sai màu rồi đổi cho tôi màu khác"
+  },
+  {
+    "_id": "694fecaad5f05b64de00d587",
+    "orderId": "694fec9fd5f05b64de00d505",
+    "productId": "68edf15994ccdfa02f7c0412",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-27T14:26:50.126Z",
+    "returnDate": "2026-01-03T14:26:50.126Z",
+    "images": [
+      "1766845681976.png"
+    ],
+    "__v": 0,
+    "description": "kkkkkkkkkkkkkkkkkkkkkkk"
+  },
+  {
+    "_id": "694fed8bd5f05b64de00d693",
+    "orderId": "694fed83d5f05b64de00d64f",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-27T14:30:35.273Z",
+    "returnDate": "2026-01-03T14:30:35.273Z",
+    "images": [
+      "1766845895339.png"
+    ],
+    "__v": 0,
+    "description": "kkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+  },
+  {
+    "_id": "694fee9cd5f05b64de00da20",
+    "orderId": "694fee96d5f05b64de00d9dc",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2025-12-27T14:35:08.078Z",
+    "returnDate": "2026-01-03T14:35:08.078Z",
+    "images": [
+      "1766846134639.png"
+    ],
+    "__v": 0,
+    "description": "hậiaiaiaaoaoaooqoqnsjxo"
+  },
+  {
+    "_id": "694ffcf90b53f193c82816f7",
+    "orderId": "694ff9ad09f7b64d52fa61d0",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2025-12-27T15:36:25.973Z",
+    "returnDate": "2026-01-03T15:36:25.973Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "694ffe720b53f193c82817e2",
+    "orderId": "69454c567742c658d0048341",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-27T15:42:42.685Z",
+    "returnDate": "2026-01-03T15:42:42.685Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695002b70b53f193c8281e85",
+    "orderId": "694d59f0acf21e62d9e9a1cc",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-27T16:00:55.090Z",
+    "returnDate": "2026-01-03T16:00:55.090Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695003360b53f193c8281e9f",
+    "orderId": "694c0608556d4cba5a510773",
+    "productId": "68edef5a94ccdfa02f7c040c",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-27T16:03:02.488Z",
+    "returnDate": "2026-01-03T16:03:02.488Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695004220b53f193c82820c2",
+    "orderId": "694c05ae556d4cba5a510314",
+    "productId": "68edee82b066350ecedbb8fe",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2025-12-27T16:06:58.735Z",
+    "returnDate": "2026-01-03T16:06:58.735Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695a74d0c4b03f73a402d72e",
+    "orderId": "695a7453c4b03f73a402d69b",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2026-01-04T14:10:24.936Z",
+    "returnDate": "2026-01-11T14:10:24.936Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695a7792c4b03f73a402da6c",
+    "orderId": "695a7789c4b03f73a402da13",
+    "productId": "694ea062e3753360b3bcfde6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2026-01-04T14:22:10.503Z",
+    "returnDate": "2026-01-11T14:22:10.503Z",
+    "images": [
+      "1767536562019.png"
+    ],
+    "__v": 0,
+    "description": "jajjjjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "695a783ec4b03f73a402e066",
+    "orderId": "695a7826c4b03f73a402df8d",
+    "productId": "694e9ffee3753360b3bcfdd6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "completed",
+    "receivedDate": "2026-01-04T14:25:02.920Z",
+    "returnDate": "2026-01-11T14:25:02.920Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695a7e427073acb6dd58cd5e",
+    "orderId": "695a7e3b7073acb6dd58cd05",
+    "productId": "694ea062e3753360b3bcfde6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-01-04T14:50:42.758Z",
+    "returnDate": "2026-01-11T14:50:42.758Z",
+    "images": [
+      "1767538279890.png"
+    ],
+    "__v": 0,
+    "description": "mâmmmmmmmmmmmmmmmmmmmmmm"
+  },
+  {
+    "_id": "695b201f74d5a053dbef4bf7",
+    "orderId": "695a80e17073acb6dd58d38a",
+    "productId": "68edef6294ccdfa02f7c040d",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "pending",
+    "receivedDate": "2026-01-05T02:21:19.000Z",
+    "returnDate": "2026-01-12T02:21:19.000Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695b21ce23f5b8a096284c6a",
+    "orderId": "695a7f017073acb6dd58d1a8",
+    "productId": "69421d2947884f41a46b5590",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-01-05T02:28:30.297Z",
+    "returnDate": "2026-01-12T02:28:30.297Z",
+    "images": [
+      "1767581352197.png"
+    ],
+    "__v": 0,
+    "description": "hhhhhhhhhhhhhhhhhhhh"
+  },
+  {
+    "_id": "695b220a23f5b8a096285035",
+    "orderId": "695b220123f5b8a096284fdc",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-01-05T02:29:30.200Z",
+    "returnDate": "2026-01-12T02:29:30.200Z",
+    "images": [
+      "1767581258244.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "695b228771f80d5221eb8388",
+    "orderId": "695b227e71f80d5221eb832f",
+    "productId": "694e9f3ae3753360b3bcfd8b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "approved",
+    "receivedDate": "2026-01-05T02:31:35.936Z",
+    "returnDate": "2026-01-12T02:31:35.936Z",
+    "images": [
+      "1767581290871.png"
+    ],
+    "__v": 0,
+    "description": "kkkkkkkkkkkkkkkkkkkkk"
+  },
+  {
+    "_id": "695b23af9c1ca097285e479c",
+    "orderId": "695b23a69c1ca097285e4740",
+    "productId": "694e9d75e3753360b3bcfcfd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-01-05T02:36:31.689Z",
+    "returnDate": "2026-01-12T02:36:31.689Z",
+    "images": [
+      "1767580654460.png"
+    ],
+    "__v": 0,
+    "description": "dodoori cho tôi đôi khác hỏng giày rồi"
+  },
+  {
+    "_id": "695b256e7f81a1c070ef98fa",
+    "orderId": "695b25687f81a1c070ef98a1",
+    "productId": "68ededf0b066350ecedbb8b5",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-01-05T02:43:58.190Z",
+    "returnDate": "2026-01-12T02:43:58.190Z",
+    "images": [
+      "1767581070707.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "695b26cc7f81a1c070ef9d7e",
+    "orderId": "695b26c77f81a1c070ef9d25",
+    "productId": "694e9f3ae3753360b3bcfd8b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-05T02:49:48.348Z",
+    "returnDate": "2026-01-12T02:49:48.348Z",
+    "images": [
+      "1767581412137.png"
+    ],
+    "__v": 0,
+    "description": "qiiiiiiiiiiiiiiiiiiiiiiiii"
+  },
+  {
+    "_id": "695b2838f39a8fef7d3982a6",
+    "orderId": "695b2833f39a8fef7d39824a",
+    "productId": "694e9d75e3753360b3bcfcfd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "completed",
+    "receivedDate": "2026-01-05T02:55:52.556Z",
+    "returnDate": "2026-01-12T02:55:52.556Z",
+    "images": [
+      "1767581789464.png"
+    ],
+    "__v": 0,
+    "description": "kkkkkkkkkkkkkkkkjjjjjj"
+  },
+  {
+    "_id": "695b28bcf39a8fef7d398414",
+    "orderId": "695b28b5f39a8fef7d3983c4",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-05T02:58:04.597Z",
+    "returnDate": "2026-01-12T02:58:04.597Z",
+    "images": [
+      "1767581905005.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "695b2a24fa9ff4b951aaa935",
+    "orderId": "695b2a16fa9ff4b951aaa8e5",
+    "productId": "694ea140e3753360b3bcfdf8",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-01-05T03:04:04.226Z",
+    "returnDate": "2026-01-12T03:04:04.226Z",
+    "images": [
+      "1767582324097.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "695b2a3cfa9ff4b951aaabe8",
+    "orderId": "695b2a35fa9ff4b951aaab98",
+    "productId": "694e9ffee3753360b3bcfdd6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-05T03:04:28.805Z",
+    "returnDate": "2026-01-12T03:04:28.805Z",
+    "images": [
+      "1767582308239.png"
+    ],
+    "__v": 0,
+    "description": "hhhhhhhhhhhhhhhhhhhhhhhhhh"
+  },
+  {
+    "_id": "695b2b91697971564f029db2",
+    "orderId": "695b2b8b697971564f029d62",
+    "productId": "694ea140e3753360b3bcfdf8",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-01-05T03:10:09.738Z",
+    "returnDate": "2026-01-12T03:10:09.738Z",
+    "images": [
+      "1767582982428.png"
+    ],
+    "__v": 0,
+    "description": "lỗi rồi"
+  },
+  {
+    "_id": "695b34d4697971564f02d3a4",
+    "orderId": "695b34b5697971564f02cd8e",
+    "productId": "694e9ffee3753360b3bcfdd6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-05T03:49:40.688Z",
+    "returnDate": "2026-01-12T03:49:40.688Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695b34d8697971564f02d3aa",
+    "orderId": "695b349e697971564f02c918",
+    "productId": "694e9ffee3753360b3bcfdd6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-05T03:49:44.311Z",
+    "returnDate": "2026-01-12T03:49:44.311Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695b69cc545eab66860f9410",
+    "orderId": "695b69b3545eab66860f9391",
+    "productId": "68edee82b066350ecedbb8fe",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-05T07:35:40.039Z",
+    "returnDate": "2026-01-12T07:35:40.039Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695b6da9ff58e6c81262bc18",
+    "orderId": "695b6d94ff58e6c81262baae",
+    "productId": "68ededf0b066350ecedbb8b5",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-05T07:52:09.144Z",
+    "returnDate": "2026-01-12T07:52:09.144Z",
+    "images": [],
+    "__v": 0
+  },
+  {
+    "_id": "695b6dabff58e6c81262bc1e",
+    "orderId": "695b6d7dff58e6c81262b95d",
+    "productId": "68ededf0b066350ecedbb8b5",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-05T07:52:11.222Z",
+    "returnDate": "2026-01-12T07:52:11.222Z",
+    "images": [
+      "1768189434514.png"
+    ],
+    "__v": 0,
+    "description": "kakakak",
+    "emailSent": true
+  },
+  {
+    "_id": "696460a8e2baea8e2d579895",
+    "orderId": "69645d62bbfa05e9519eead7",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "not_as_described",
+    "status": "approved",
+    "receivedDate": "2026-01-12T02:47:04.737Z",
+    "returnDate": "2026-01-19T02:47:04.737Z",
+    "images": [
+      "1768186065769.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+  },
+  {
+    "_id": "696461c1e2baea8e2d579922",
+    "orderId": "69645d29bbfa05e9519ee6d7",
+    "productId": "69421d2947884f41a46b5590",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-01-12T02:51:45.182Z",
+    "returnDate": "2026-01-19T02:51:45.182Z",
+    "images": [
+      "1768186378271.png"
+    ],
+    "__v": 0,
+    "description": "..............jjaiakqnixoqjixiwdq"
+  },
+  {
+    "_id": "696462cb4a541df2b9241bdd",
+    "orderId": "69645d17bbfa05e9519ee400",
+    "productId": "6942200247884f41a46b57a0",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-12T02:56:11.343Z",
+    "returnDate": "2026-01-19T02:56:11.343Z",
+    "images": [
+      "1768186590354.png"
+    ],
+    "__v": 0,
+    "description": "jjjjjjjjjjjjjaasinisjiiqix"
+  },
+  {
+    "_id": "69646b46039ea5fd23022d59",
+    "orderId": "69645cf1bbfa05e9519ee13e",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "approved",
+    "receivedDate": "2026-01-12T03:32:22.307Z",
+    "returnDate": "2026-01-19T03:32:22.307Z",
+    "images": [
+      "1768188760626.png"
+    ],
+    "__v": 0,
+    "description": ".jahaaia"
+  },
+  {
+    "_id": "69646d25e36167965fa3fa1c",
+    "orderId": "69645cd2bbfa05e9519ee00c",
+    "productId": "69421f2b47884f41a46b55ae",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-01-12T03:40:21.727Z",
+    "returnDate": "2026-01-19T03:40:21.727Z",
+    "images": [
+      "1768189249259.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "hahahah"
+  },
+  {
+    "_id": "696471ec91310ba4d22cdabd",
+    "orderId": "696471c091310ba4d22cda37",
+    "productId": "694ea062e3753360b3bcfde6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-01-12T04:00:44.371Z",
+    "returnDate": "2026-01-19T04:00:44.371Z",
+    "images": [
+      "1768190464801.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "ạmaj"
+  },
+  {
+    "_id": "696472fb4d12ea9caa27e964",
+    "orderId": "69645c2ebbfa05e9519ede96",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-01-12T04:05:15.419Z",
+    "returnDate": "2026-01-19T04:05:15.419Z",
+    "images": [
+      "1768190760081.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "kakaajaj"
+  },
+  {
+    "_id": "696cd13027fe5bbcc600e136",
+    "orderId": "696cc3ba27fe5bbcc600de96",
+    "productId": "694e9ffee3753360b3bcfdd6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-01-18T12:25:20.761Z",
+    "returnDate": "2026-01-25T12:25:20.761Z",
+    "images": [
+      "1768739145121.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "hahahaha"
+  },
+  {
+    "_id": "696eeb09061f2afcbc44777a",
+    "orderId": "696eeafe061f2afcbc4476ee",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-20T02:40:09.420Z",
+    "returnDate": "2026-01-27T02:40:09.420Z",
+    "images": [],
+    "emailSent": false,
+    "__v": 0
+  },
+  {
+    "_id": "696eeb8d061f2afcbc4479eb",
+    "orderId": "696eeb44061f2afcbc447860",
+    "productId": "69421e3947884f41a46b559f",
+    "userId": "694010d6a81528fd33b00bc2",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-01-20T02:42:21.903Z",
+    "returnDate": "2026-01-27T02:42:21.903Z",
+    "images": [
+      "1768876956838.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "jajajajajajjaj"
+  },
+  {
+    "_id": "697cb21ac8fa1e892b858155",
+    "orderId": "6978c4d38b5b50ae4389d6c0",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": null,
+    "status": "available",
+    "receivedDate": "2026-01-30T13:28:58.558Z",
+    "returnDate": "2026-02-06T13:28:58.558Z",
+    "images": [],
+    "emailSent": false,
+    "__v": 0
+  },
+  {
+    "_id": "69b0cfbe11728636bd3242b0",
+    "orderId": "69aa2a6cecde62decad9264f",
+    "productId": "68ededf0b066350ecedbb8b5",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "completed",
+    "receivedDate": "2026-03-11T02:13:18.911Z",
+    "returnDate": "2026-03-18T02:13:18.911Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773503246/my-app/warranty/el0iqoosqcbnizenrej7.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hỏng giày rồi "
+  },
+  {
+    "_id": "69b22892f32ca82de1d9b621",
+    "orderId": "69b22840f32ca82de1d9b521",
+    "productId": "694ea062e3753360b3bcfde6",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-12T02:44:34.690Z",
+    "returnDate": "2026-03-19T02:44:34.690Z",
+    "images": [
+      "1773283570977.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "sai màu rồi "
+  },
+  {
+    "_id": "69b22937f32ca82de1d9bacb",
+    "orderId": "69b22926f32ca82de1d9b9fe",
+    "productId": "69421c8e47884f41a46b5580",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "approved",
+    "receivedDate": "2026-03-12T02:47:19.219Z",
+    "returnDate": "2026-03-19T02:47:19.219Z",
+    "images": [
+      "1773283662838.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "hỏng đồ của tôi rồi"
+  },
+  {
+    "_id": "69b22b9968b79167bde99149",
+    "orderId": "69b22b9268b79167bde990b6",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-12T02:57:29.614Z",
+    "returnDate": "2026-03-19T02:57:29.614Z",
+    "images": [
+      "1773284275157.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "jajajjajaj"
+  },
+  {
+    "_id": "69b22c3768b79167bde9975d",
+    "orderId": "69b22c2f68b79167bde996cd",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "not_as_described",
+    "status": "completed",
+    "receivedDate": "2026-03-12T03:00:07.651Z",
+    "returnDate": "2026-03-19T03:00:07.651Z",
+    "images": [
+      "1773284438150.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "bạn đùa tôi à"
+  },
+  {
+    "_id": "69b22d3d68b79167bde99e1e",
+    "orderId": "69b22d3668b79167bde99d83",
+    "productId": "68edee82b066350ecedbb8fe",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "completed",
+    "receivedDate": "2026-03-12T03:04:29.874Z",
+    "returnDate": "2026-03-19T03:04:29.874Z",
+    "images": [
+      "1773284699786.jpg"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "nhầm size rồi shop ơi"
+  },
+  {
+    "_id": "69b57b9692d5265454e8e23a",
+    "orderId": "69b57b4992d5265454e8e040",
+    "productId": "68edf15294ccdfa02f7c0411",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-14T15:15:34.758Z",
+    "returnDate": "2026-03-21T15:15:34.758Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773501343/my-app/warranty/quj38b0wjln2hapneqwl.png"
+    ],
+    "emailSent": true,
+    "__v": 0,
+    "description": "sai màu rồi"
+  },
+  {
+    "_id": "69b8b45c7969da398a4b68d9",
+    "orderId": "69b8b4357969da398a4b6777",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "not_as_described",
+    "status": "approved",
+    "receivedDate": "2026-03-17T01:54:36.952Z",
+    "returnDate": "2026-03-24T01:54:36.952Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773712518/my-app/warranty/zjj23kr88vqaohst97of.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "Bản gửi nhầm giày rồi"
+  },
+  {
+    "_id": "69b8b5dcf331b9c92cf00f32",
+    "orderId": "69b8b5cdf331b9c92cf00eb4",
+    "productId": "68edef1fb066350ecedbb965",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:01:00.060Z",
+    "returnDate": "2026-03-24T02:01:00.060Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773712884/my-app/warranty/bcju7zrmokatfc9asqyc.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "tôi cần size 40 mà"
+  },
+  {
+    "_id": "69b8b787f331b9c92cf014ea",
+    "orderId": "69b8b779f331b9c92cf0146e",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:08:07.616Z",
+    "returnDate": "2026-03-24T02:08:07.616Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773713313/my-app/warranty/dt1b4ivpfuhoy4xkz5sd.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hỏng giày của tôi rồi"
+  },
+  {
+    "_id": "69b8b80ff331b9c92cf019b2",
+    "orderId": "69b8b5a77969da398a4b723a",
+    "productId": "68edef5a94ccdfa02f7c040c",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:10:23.884Z",
+    "returnDate": "2026-03-24T02:10:23.884Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773713445/my-app/warranty/bfhrkmtfoekxkrii9nzm.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "jjjjjj"
+  },
+  {
+    "_id": "69b8b8e1f331b9c92cf02548",
+    "orderId": "69b8b8c7f331b9c92cf0236a",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:13:53.571Z",
+    "returnDate": "2026-03-24T02:13:53.571Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773713652/my-app/warranty/a2lza5fn5lt5vkwvwvvg.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hahahajaj"
+  },
+  {
+    "_id": "69b8bceaf331b9c92cf03281",
+    "orderId": "69b8bcd5f331b9c92cf03179",
+    "productId": "694e9f3ae3753360b3bcfd8b",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:31:06.009Z",
+    "returnDate": "2026-03-24T02:31:06.009Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773714694/my-app/warranty/qicwfdqbzc9lgntv0auw.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "sai màu rồi"
+  },
+  {
+    "_id": "69b8be4fbbf8c794ca599bdd",
+    "orderId": "69b8be3bf331b9c92cf03dc5",
+    "productId": "694e9d75e3753360b3bcfcfd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:37:03.682Z",
+    "returnDate": "2026-03-24T02:37:03.682Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773715048/my-app/warranty/q7wcrckieyajatnmvg6i.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "jaajajaj"
+  },
+  {
+    "_id": "69b8c0968f75d7aa1c5a4e88",
+    "orderId": "69b8c0878f75d7aa1c5a4dd9",
+    "productId": "68edf15994ccdfa02f7c0412",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "not_as_described",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:46:46.197Z",
+    "returnDate": "2026-03-24T02:46:46.197Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773715633/my-app/warranty/azw1mwsiqlw78p4au4au.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hâjjaja"
+  },
+  {
+    "_id": "69b8c1e68f75d7aa1c5a5493",
+    "orderId": "69b8c1c78f75d7aa1c5a532f",
+    "productId": "69421bc547884f41a46b543d",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-17T02:52:22.471Z",
+    "returnDate": "2026-03-24T02:52:22.471Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773715960/my-app/warranty/fkfwyahszlgpu3t4nhcy.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "jjjaja"
+  },
+  {
+    "_id": "69b8c8788f75d7aa1c5a61c8",
+    "orderId": "69b8c8688f75d7aa1c5a60e0",
+    "productId": "68edf0c777ad57de8852f1bd",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-03-17T03:20:24.312Z",
+    "returnDate": "2026-03-24T03:20:24.312Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773717641/my-app/warranty/ijxgkeajzullvmbndyrj.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hhhahaha"
+  },
+  {
+    "_id": "69b8c9341b7d9bcac88f1e7f",
+    "orderId": "69b8c90c99fc4e6afeea5eea",
+    "productId": "68edf0fe77ad57de8852f251",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_color",
+    "status": "approved",
+    "receivedDate": "2026-03-17T03:23:32.844Z",
+    "returnDate": "2026-03-24T03:23:32.844Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773717828/my-app/warranty/zflrazhbn7cj5id5eguc.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "jaajaja"
+  },
+  {
+    "_id": "69b8cb9727cf54fa96bc86b1",
+    "orderId": "69b8cb8b1b7d9bcac88f2560",
+    "productId": "68edf15994ccdfa02f7c0412",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "damaged",
+    "status": "approved",
+    "receivedDate": "2026-03-17T03:33:43.675Z",
+    "returnDate": "2026-03-24T03:33:43.675Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773718439/my-app/warranty/lx8sfmobjk7ejgsxqqob.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hahah"
+  },
+  {
+    "_id": "69b8d8bddbb898bf3f858804",
+    "orderId": "69b8d8addbb898bf3f85877d",
+    "productId": "68edf15994ccdfa02f7c0412",
+    "userId": "693cd9e92687b31deaf3bdec",
+    "reason": "wrong_size",
+    "status": "approved",
+    "receivedDate": "2026-03-17T04:29:49.088Z",
+    "returnDate": "2026-03-24T04:29:49.088Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773721822/my-app/warranty/om9g40xptghxbwdek6l9.png"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "hahah"
+  },
+  {
+    "_id": "69bac4b0eab78dc3bed899af",
+    "orderId": "69bac47beab78dc3bed8975e",
+    "productId": "69421d2947884f41a46b5590",
+    "userId": "69bac361eab78dc3bed89385",
+    "reason": "other",
+    "status": "pending",
+    "receivedDate": "2026-03-18T15:28:48.880Z",
+    "returnDate": "2026-03-25T15:28:48.880Z",
+    "images": [
+      "https://res.cloudinary.com/dj3nelocj/image/upload/v1773847758/my-app/warranty/ohh800yzxomocuebni6o.jpg"
+    ],
+    "emailSent": false,
+    "__v": 0,
+    "description": "toi khong thich"
+  }
+]
