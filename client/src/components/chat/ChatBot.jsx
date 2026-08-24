@@ -334,7 +334,7 @@ function Chatbot() {
                     </div>
                 </div>
             ) : (
-                <Tooltip title="Chat vá»›i AI Assistant" placement="left">
+                <Tooltip title="Chat với AI Assistant" placement="left">
                     <div className="relative">
                         <button
                             onClick={() => setIsOpen(true)}
